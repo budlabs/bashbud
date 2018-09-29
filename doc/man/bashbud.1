@@ -1,0 +1,100 @@
+.TH BASHBUD 1 2018\-09\-20 Linux "User Manuals"
+.SH NAME
+.PP
+\fB\fCbashbud\fR \- Boilerplate and template maker for bash scripts
+
+.SH SYNOPSIS
+.PP
+bashbud \fB\fC\-\-help\fR|\fB\fC\-h\fR
+.br
+bashbud \fB\fC\-\-version\fR|\fB\fC\-v\fR
+.br
+bashbud \fB\fC\-\-lib\fR
+.br
+bashbud \fB\fC\-\-mode\fR|\fB\fC\-m\fR [MODE] \fBPROJECT\fP
+.br
+bashbud \fB\fC\-\-publish\fR|\fB\fC\-p\fR PROJECT \fBPATH\fP
+.br
+bashbud \fB\fC\-\-new\fR|\fB\fC\-n\fR  PROJECT
+.br
+bashbud \fB\fC\-\-bump\fR|\fB\fC\-b\fR PROJECT
+.br
+bashbud \fB\fC\-\-lorem\fR PROJECT
+
+.SH DESCRIPTION
+.PP
+\fB\fCbashbud\fR can be used to quickly create new scripts with cli\-option support and automatic documentation applied.
+
+.SH OPTIONS
+.PP
+\fB\fC\-\-bump\fR|\fB\fC\-b\fR PROJECT
+.br
+\fB\fCbump\fR option will update PROJECT by setting update date in \fB\fCmanifest.md\fR to the current date, and also bump the verion number with (current version + 0.001). It will also temporarly set the project in development mode (if it isn't already) and generate readme and manpage files for PROJECT.
+
+.PP
+\fB\fC\-\-help\fR|\fB\fC\-h\fR
+.br
+Show help and exit.
+
+.PP
+\fB\fC\-\-lib\fR
+.br
+If this flag is set all files in \fIbashbud/dev\fP will be concatenated into a new \fB\fCbblib.sh\fR file. This option is inteded only for developers  developing the \fB\fCbblib.sh\fR file.
+
+.PP
+\fB\fC\-\-lorem\fR PROJECT
+.br
+This will print all options and environment varialbes declared in \fB\fCmanifest.md\fR of PROJECT, that are missing descriptions. A file (doc/info/lorem.md) will get created (if it doesn't exist), containing placeholder (lorem impsum) text for all these options/
+
+.PP
+\fB\fC\-\-mode\fR|\fB\fC\-m\fR MODE
+.br
+Toggles the mode of PROJECT between \fBprivate\fP and \fBdevelopment\fP\&. MODE can also be explicitly set by specifying it.
+
+.PP
+\fB\fC\-\-new\fR|\fB\fC\-n\fR PROJECT
+.br
+This will create a new script named "BASHBUD\_NEW\_SCRIPT\_DIR/NAME/NAME.sh" and copy the info template to the same directory. The bashbud.sh lib script will get linked to the lib directory of the script.
+
+.PP
+\fB\fC\-\-publish\fR|\fB\fC\-p\fR PROJECT
+.br
+This will \fIpublish\fP PROJECT to \fBPATH\fP (\fIif PATH is not given it will default to:\fP \fB\fCout/PROJECT.sh\fR). The published file is a single file script with all files in the \fB\fClib\fR directory appended (excluding \fB\fCbblib.sh\fR), this is the fastest and most portable version of the script, and is intended for releases and installed versions.
+
+.PP
+\fB\fC\-\-version\fR|\fB\fC\-v\fR
+.br
+Show version and exit.
+
+.SH ENVIRONMENT
+.PP
+\fBBASHBUD\_NEW\_SCRIPT\_PATH\fP
+.br
+Path to a directory where new scripts are linked. It is recommended to have this directory in PATH.
+
+.PP
+\fBBASHBUD\_ALL\_SCRIPTS\_PATH\fP
+.br
+Array of directories, separated by \fB:\fP in which \fB\fCbashbud\fR projects cand be stored. Used to list and search for projects.
+
+.PP
+\fBBASHBUD\_NEW\_SCRIPT\_DIR\fP
+.br
+Path to directory where new scripts are placed.
+
+.SH DEPENDENCIES
+.PP
+bash
+.br
+gawk
+.br
+sed
+
+.SH AUTHOR
+.PP
+budRich 
+\[la]https://github.com/budlabs\[ra]
+
+.SH SEE ALSO
+.PP
+bash(1), awk(1), sed(1)

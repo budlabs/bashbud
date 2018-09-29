@@ -1,0 +1,165 @@
+#!/bin/env bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+main(){
+  local trgdir
+
+  IFS=$'\n\t'
+  BASHBUD_ALL_SCRIPTS_PATH="${BASHBUD_ALL_SCRIPTS_PATH}:$HOME/tmp/bb2"
+
+  if [[ -n ${__new:-} ]]; then
+    trgdir="$HOME/tmp/bb2/$__new"
+    # trgdir="${BASHBUD_NEW_SCRIPT_DIR:-}/$__new"
+    if [[ -d $trgdir ]]; then
+      ERX "project ${__new:-} already exist at $trgdir"
+    else
+      newproject "$trgdir"
+    fi
+  elif [[ -n ${__develop:-} ]]; then
+    togglemode "${__develop}"
+  elif ((${__lib:-0}==1)); then
+    local source dir f
+    source="$(readlink -f "${BASH_SOURCE[0]}")"
+    dir="$(cd "$(dirname "${source}")" && pwd)"
+
+    {
+      echo '#!/bin/env bash'
+      echo
+      for f in "$dir/dev/"*.sh; do
+        [[ ${f##*/} = init.sh ]] && continue
+        # remove shebang from files
+        tail +2 "$f"
+      done
+      tail +2 "$dir/dev/init.sh"
+    } > "$dir"/lib/bblib.sh
+  elif ((${__hasoption:-0}==0)) && [[ -z "${__lastarg:-}" ]]; then
+    listprojects
+  fi
+}
+
+dateupdate(){
+
+  local f="${!#:-}"
+
+  [[ -f $f ]] && [[ manifest.md = "${f##*/}" ]] && {
+
+    while getopts cu option; do
+      case "${option}" in
+        c ) dtu+=("created") ;;
+        u ) dtu+=("updated") ;;
+        *) exit 1 ;;
+      esac
+    done
+
+    trg="${#dtu[@]}"
+    ((trg>1)) \
+      && srch="^created:$|^updated:$" \
+      || srch="^${dtu[0]}:\$"
+
+
+    awk -v today="$(date +'%Y-%m-%d')" -v trg="trg" -v srch="$srch" '
+      fnd != trg && $1 ~ srch {sub($2,today,$0);fnd++}
+      {print}
+    ' "$f"
+  }
+
+}
+
+togglemode(){
+  local mode trg ppth pmain pinfo plib pbb
+  local vinfo hinfo
+
+  trg="$1"
+
+  eval "$(listprojects | awk -v trg="$trg" '
+    $1==trg {print "mode=" $2 ";ppth=" $3}')"
+
+  [[ -z ${mode:-} ]] && ERX "no project named $trg"
+
+  [[ ${__lastarg:-} = publish ]] && mode=publish
+
+  echo "sss ${mode:-}"
+
+  pmain="${ppth:=}/${trg}.sh"
+  pinfo="${ppth}/manifest.md"
+  plib="${ppth}/lib"
+  pbb="${plib}/bashbud.sh"
+
+  [[ -f $pmain ]] || ERX "$pmain doesn't exist"
+  [[ -f $pinfo ]] || ERX "$pinfo doesn't exist"
+  [[ -f $pbb   ]] || ERX "$pbb doesn't exist"
+
+  if [[ $mode = develop ]]; then
+    ${pmain} -vv > "${pbb%.sh}.prod"
+    mv -f "${pbb}" "${pbb%.sh}.dev"
+    mv -f "${pbb%.sh}.prod" "${pbb}"
+  elif [[ $mode = production ]]; then
+    mv -f "${pbb%.sh}.dev" "${pbb}"
+  elif [[ $mode = publish ]]; then
+    {
+      awk '/#bashbud$/ {exit};{print}' "${pmain}"
+      ${pmain} -vv
+      awk '
+        /#bashbud$/ {start=1}
+        start==1 && $0 !~ /#bashbud$/ {print}
+      ' "${pmain}"
+    } > "${pmain%.sh}.prod"
+    mv "${pmain}" "${pmain%.sh}.dev"
+    mv "${pmain%.sh}.prod" "${pmain}"
+  fi 
+
+}
+
+listprojects(){
+  local mode
+
+  OFS="${IFS}"
+  IFS=:; for d in ${BASHBUD_ALL_SCRIPTS_PATH}; do
+    [[ -d $d ]] && for dd in "${d}"/*; do
+      [[ ! -d $dd ]] && continue
+      if [[ -f "${dd}/lib/bashbud.sh" ]]; then
+        [[ -f "${dd}/lib/bashbud.dev" ]] \
+          && mode=production || mode=develop
+        printf '%-12s  %-10s  %s\n' "${dd##*/}" "$mode" "${dd/$HOME/'~'}"
+      fi
+    done
+  done
+  IFS="${OFS}"
+}
+
+newproject(){
+  local trgdir="${1:-}"
+  
+  mkdir -p "${trgdir}"
+  (
+    cd "$trgdir" || ERX "couldn't create directory $trgdir"
+    # git init
+    cp -r "$___dir/tmp"/* "$trgdir"
+    ln "$___dir/lib/bblib.sh" "${trgdir}/lib/bashbud.sh"
+    
+    chmod +x \
+      "${trgdir}/lib/bashbud.sh" \
+      "${trgdir}/main.sh"
+
+    # set date in manifest
+    echo "$(dateupdate -cu "${trgdir}/manifest.md")" \
+      > "${trgdir}/manifest.md"
+
+    mv "${trgdir}/main.sh" "${trgdir}/${__new}.sh"
+
+    mkdir -p "${BASHBUD_NEW_SCRIPT_PATH}"
+    ln -s "${trgdir}/${__new}.sh" \
+       "${BASHBUD_NEW_SCRIPT_PATH}/${__new}"
+  )
+}
+
+
+
+___source="$(readlink -f "${BASH_SOURCE[0]}")" #bashbud
+___dir="$(cd "$(dirname "${___source}")" && pwd)" #bashbud
+. "${___dir}/lib/bblib.sh" #bashbud
+
+main "${@:-}"

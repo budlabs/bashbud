@@ -1,0 +1,1 @@
+this text is the content of the file: `doc/readme/banner.md`  The content of this file will only be visible in `README.md` and is appended to the top of the `README.md` (after the title, before table of contents).
