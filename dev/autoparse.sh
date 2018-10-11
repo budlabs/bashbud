@@ -11,9 +11,10 @@ ___autoparse(){
 
   ((${#___environment_variables[@]}>0)) \
     && eval "$(
-    for e in "${!___environment_variables[@]}"; do
+    for e in $(for eo in "${!___environment_variables[@]}"; do echo "$eo"; done | sort); do
+      es="${e#*-}"
       printf '%s=\"${%s:=%s}\"\n' \
-        "$e" "$e" "${___environment_variables[$e]}"
+        "$es" "$es" "${___environment_variables[$e]}"
     done
   )"
 
@@ -108,7 +109,7 @@ ___autoparse(){
   aure="+(${aure%|})"
 
   lopt="help,version,"
-  sopt="h::v::"
+  sopt="hv::"
 
   for o in "${!___autoopts[@]}"; do
     [[ ${___autoopts[$o]} =~ ([:]*)$ ]] \
@@ -125,8 +126,6 @@ ___autoparse(){
     --longoptions "$lopt" \
     -- "$@"
   )"
-
-  __hasoption=0
 
   while true; do
     if [[ $1 = -- ]];then
@@ -151,18 +150,17 @@ ___autoparse(){
 
     case "${pl:-}" in
       $aure  ) 
-        eval __"$pl"='${pa}'
+        eval __o["$pl"]='${pa}'
         [[ ${options[$pl]} =~ [:] ]] && [[ -n $pa ]] && shift 
-        __hasoption=1
         pl=pa=po=""
       ;;
       version ) 
         [[ -z ${pa:-} ]] \
-          && ___printinfo "version" >&2 \
-          || ___printinfo "${pa:-}"
+          && ___callfunc "printversion" >&2 \
+          || ___callfunc "${pa:-}"
           exit
       ;;
-      help    ) ___printinfo "${pa:-}" >&2        ; exit  ;;
+      help    ) ___printhelp >&2        ; exit  ;;
       -- ) shift ; break ;;
       *  ) break ;;
     esac

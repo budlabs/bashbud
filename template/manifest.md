@@ -8,9 +8,8 @@ repo:          https://github.com/budlabs
 created:       2018-09-20
 dependencies:  [bash, gawk, sed]
 see-also:      [bash(1), awk(1), sed(1)]
-environment-varables:
-    BASHBUD_NEW_SCRIPT_DIR:  $HOME/tmp/bashbud
-    BASHBUD_NEW_SCRIPT_PATH: $HOME/src/bashbud
+environment-variables:
+    ENV_VAR_TEST:  $HOME/.config
 synopsis: |
     --help|-h
     --version|-v

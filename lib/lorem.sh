@@ -17,7 +17,7 @@ letslorem() {
   local trg="${curpath##*/}"
   local pmain="${curpath}/${trg}.sh"
 
-  alor=($(${pmain} -vlorem))
+  alor=($(${pmain} -vprintlorem))
 
   mkdir -p "${curpath}/doc/info"
   for l in "${alor[@]}"; do

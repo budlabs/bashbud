@@ -8,33 +8,34 @@ main(){
   local trgdir
 
   IFS=$'\n\t'
-  BASHBUD_ALL_SCRIPTS_PATH+=":$HOME/tmp/bb2"
 
-  if [[ -n ${__new:-} ]]; then
-    trgdir="$HOME/tmp/bb2/$__new"
-    # trgdir="${BASHBUD_NEW_SCRIPT_DIR:-}/$__new"
-    if [[ -d $trgdir ]]; then
-      ERX "project ${__new:-} already exist at $trgdir"
+  if [[ -n ${__o[new]:-} ]]; then
+    newproject "${__o[new]:-}"
+    # trgdir="$HOME/tmp/bb2/$__new"
+    
+  elif [[ -n ${__o[bump]:-} ]]; then
+    bumpproject "${__o[bump]}"
+  elif [[ -n ${__o[mode]:-} ]]; then
+
+    if [[ -z ${__lastarg:-} ]]; then
+      setmode "${__o[mode]:-}" toggle
     else
-      newproject "$trgdir"
+      setmode "${__lastarg}" "${__o[mode]:-}"
     fi
-  elif [[ -n ${__bump:-} ]]; then
-    bumpproject "${__bump}"
-  elif [[ -n ${__mode:-} ]]; then
-    setmode
-  elif [[ -n ${__publish:-} ]]; then
+    
+  elif [[ -n ${__o[publish]:-} ]]; then
     publishproject
-  elif ((${__hasoption:-0}==0)) && [[ -z "${__lastarg:-}" ]]; then
+  elif [[ -z ${__o[*]:-} ]] && [[ -z "${__lastarg:-}" ]]; then
     listprojects
-    # ___printprodcode
-  elif [[ -n ${__lorem:-} ]]; then
-    letslorem "${__lorem}"
-  elif ((${__lib:-0}==1)); then
+  elif [[ -n ${__o[lorem]:-} ]]; then
+    letslorem "${__o[lorem]}"
+  elif ((${__o[lib]:-0}==1)); then
     composelib "$___dir"
   fi
 }
 ___source="$(readlink -f "${BASH_SOURCE[0]}")" #bashbud
 ___dir="$(cd "$(dirname "${___source}")" && pwd)" #bashbud
-. "${___dir}/lib/bblib.sh" #bashbud
-BASHBUD_ALL_SCRIPTS_PATH+=":${___dir%/*}" #bashbud
+. "${___dir}/lib/base.sh" #bashbud
+BASHBUD_PROJECTS_PATH+=":${___dir%/*}" #bashbud
+
 main "${@:-}"

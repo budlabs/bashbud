@@ -11,8 +11,9 @@ composelib() {
     for f in "$dir/dev/"*.sh; do
       [[ ${f##*/} = init.sh ]] && continue
       # remove shebang from files
-      tail +2 "$f"
+      grep -v '^#!/bin/.*' "$f"
     done
     tail +2 "$dir/dev/init.sh"
-  } > "$dir"/lib/bblib.sh
+  } > "$dir"/lib/base.sh
+  
 }

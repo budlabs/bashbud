@@ -68,19 +68,24 @@ Show version and exit.
 
 .SH ENVIRONMENT
 .PP
-\fBBASHBUD\_NEW\_SCRIPT\_PATH\fP
+\fBBASHBUD\_DIR\fP
 .br
-Path to a directory where new scripts are linked. It is recommended to have this directory in PATH.
+Defaults to: $XDG\_CONFIG\_HOME/bashbud
 
 .PP
-\fBBASHBUD\_ALL\_SCRIPTS\_PATH\fP
+\fBBASHBUD\_PROJECTS\_DIR\fP
 .br
-Array of directories, separated by \fB:\fP in which \fB\fCbashbud\fR projects cand be stored. Used to list and search for projects.
+Defaults to: $BASHBUD\_DIR/projects
 
 .PP
-\fBBASHBUD\_NEW\_SCRIPT\_DIR\fP
+\fBBASHBUD\_SCRIPTS\_DIR\fP
 .br
-Path to directory where new scripts are placed.
+Defaults to: $BASHBUD\_DIR/scripts
+
+.PP
+\fBBASHBUD\_PROJECTS\_PATH\fP
+.br
+Defaults to: $BASHBUD\_PROJECTS\_DIR
 
 .SH DEPENDENCIES
 .PP

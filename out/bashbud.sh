@@ -1,5 +1,17 @@
 #!/bin/env bash
 
+___printversion(){
+cat << 'EOB' >&2
+bashbud - version: 0.026
+updated: 2018-10-03 by budRich
+EOB
+}
+
+: "${BASHBUD_DIR:=$XDG_CONFIG_HOME/bashbud}"
+: "${BASHBUD_PROJECTS_DIR:=$BASHBUD_DIR/projects}"
+: "${BASHBUD_SCRIPTS_DIR:=$BASHBUD_DIR/scripts}"
+: "${BASHBUD_PROJECTS_PATH:=$BASHBUD_PROJECTS_DIR}"
+
 set -o errexit
 set -o pipefail
 set -o nounset
@@ -8,129 +20,144 @@ main(){
   local trgdir
 
   IFS=$'\n\t'
-  BASHBUD_ALL_SCRIPTS_PATH+=":$HOME/tmp/bb2"
 
-  if [[ -n ${__new:-} ]]; then
-    trgdir="$HOME/tmp/bb2/$__new"
-    # trgdir="${BASHBUD_NEW_SCRIPT_DIR:-}/$__new"
-    if [[ -d $trgdir ]]; then
-      ERX "project ${__new:-} already exist at $trgdir"
+  if [[ -n ${__o[new]:-} ]]; then
+    newproject "${__o[new]:-}"
+    # trgdir="$HOME/tmp/bb2/$__new"
+    
+  elif [[ -n ${__o[bump]:-} ]]; then
+    bumpproject "${__o[bump]}"
+  elif [[ -n ${__o[mode]:-} ]]; then
+
+    if [[ -z ${__lastarg:-} ]]; then
+      setmode "${__o[mode]:-}" toggle
     else
-      newproject "$trgdir"
+      setmode "${__lastarg}" "${__o[mode]:-}"
     fi
-  elif [[ -n ${__bump:-} ]]; then
-    bumpproject "${__bump}"
-  elif [[ -n ${__mode:-} ]]; then
-    setmode
-  elif [[ -n ${__publish:-} ]]; then
+    
+  elif [[ -n ${__o[publish]:-} ]]; then
     publishproject
-  elif ((${__hasoption:-0}==0)) && [[ -z "${__lastarg:-}" ]]; then
+  elif [[ -z ${__o[*]:-} ]] && [[ -z "${__lastarg:-}" ]]; then
     listprojects
-    # ___printprodcode
-  elif ((${__lib:-0}==1)); then
+  elif [[ -n ${__o[lorem]:-} ]]; then
+    letslorem "${__o[lorem]}"
+  elif ((${__o[lib]:-0}==1)); then
     composelib "$___dir"
   fi
 }
-___printversion(){
->&2 echo \
-'bashbud - version: 0.02
-updated: 2018-09-27 by budRich'
-}
-
-OFS="${IFS}"
-IFS=$' \n\t'
-BASHBUD_NEW_SCRIPT_PATH="${BASHBUD_NEW_SCRIPT_PATH:=/home/bud/src/bashbud}"
-BASHBUD_ALL_SCRIPTS_PATH="${BASHBUD_ALL_SCRIPTS_PATH:=/home/bud/tmp/bashbud}"
-BASHBUD_NEW_SCRIPT_DIR="${BASHBUD_NEW_SCRIPT_DIR:=/home/bud/tmp/bashbud}"
 
 ___printhelp(){
->&2 echo \
-'bashbud - Boilerplate and template maker for bash scripts
+cat << 'EOB' >&2
+bashbud - Boilerplate and template maker for bash scripts
 
-SYNOPSIS
---------
+ SYNOPSIS
+ --------
 
-bashbud --help|-h  
+ bashbud --help|-h  
 bashbud --version|-v  
-bashbud --list|-l  
 bashbud --lib  
 bashbud --mode|-m [MODE] PROJECT  
 bashbud --publish|-p PROJECT PATH  
 bashbud --new|-n  PROJECT  
 bashbud --bump|-b PROJECT  
+bashbud --lorem PROJECT  
 
 
-DESCRIPTION
------------
+ DESCRIPTION
+ -----------
 
-bashbud can be used to quickly create new scripts with cli-option support and 
+ bashbud can be used to quickly create new scripts with cli-option support and 
 automatic documentation applied.
+ 
 
-
-OPTIONS
--------
+ OPTIONS
+ -------
+ 
+--bump|-b PROJECT  
+bump option will update PROJECT by setting update date in manifest.md to the 
+current date, and also bump the verion number with (current version + 0.001). 
+It will also temporarly set the project in development mode (if it isn't 
+already) and generate readme and manpage files for PROJECT.
 
 --help|-h   
 Show help and exit.
 
---list|-l   
-Search "BASHBUD_ALL_SCRIPTS_PATH" for bashbud
-projects and list their name and status. Status can be either: development or 
-production.
+--lib   
+If this flag is set all files in bashbud/dev will be concatenated into a new 
+bblib.sh file. This option is inteded only for developers  developing the 
+bblib.sh file.
+
+--lorem PROJECT  
+This will print all options and environment varialbes declared in manifest.md 
+of PROJECT, that are missing descriptions. A file (doc/info/lorem.md) will get 
+created (if it doesn't exist), containing placeholder (lorem impsum) text for 
+all these options/
+
+--mode|-m MODE  
+Toggles the mode of PROJECT between private and development. MODE can also be 
+explicitly set by specifying it.
 
 --new|-n PROJECT  
 This will create a new script named "BASHBUD_NEW_SCRIPT_DIR/NAME/NAME.sh" and 
 copy the info template to the same directory. The bashbud.sh lib script will 
 get linked to the lib directory of the script.
 
+--publish|-p PROJECT  
+This will publish PROJECT to PATH (if PATH is not given it will default to: 
+out/PROJECT.sh). The published file is a single file script with all files in 
+the lib directory appended (excluding bblib.sh), this is the fastest and most 
+portable version of the script, and is intended for releases and installed 
+versions.
+
 --version|-v   
 Show version and exit.
 
 
-ENVIRONMENT
------------
+ ENVIRONMENT
+ -----------
+ 
+BASHBUD_DIR  
+Defaults to: $XDG_CONFIG_HOME/bashbud  
 
-BASHBUD_NEW_SCRIPT_PATH  
-Path to a directory where new scripts are linked. It is recommended to have 
-this directory in PATH.
+BASHBUD_PROJECTS_DIR  
+Defaults to: $BASHBUD_DIR/projects  
 
-BASHBUD_ALL_SCRIPTS_PATH  
-Array of directories, separated by : in which bashbud projects cand be stored. 
-Used to list and search for projects.
+BASHBUD_SCRIPTS_DIR  
+Defaults to: $BASHBUD_DIR/scripts  
 
-BASHBUD_NEW_SCRIPT_DIR  
-Path to directory where new scripts are placed.
+BASHBUD_PROJECTS_PATH  
+Defaults to: $BASHBUD_PROJECTS_DIR  
 
 
-DEPENDENCIES
-------------
-
+ DEPENDENCIES
+ ------------
+ 
 bash  
 gawk  
-sed  '
+sed  
+EOB
 }
 
-ERR(){ >&2 echo "[WARNING]" "$*"; }
-ERX(){ >&2 echo "[ERROR]" "$*" && exit 1 ; }
+OFS="${IFS}"
+IFS=$' \n\t'
 
+declare -A __o
 eval set -- "$(getopt --name "bashbud" \
-  --options "hvm:lp:n:b:" \
-  --longoptions "help,version,mode:,list,publish:,new:,bump:,lib" \
+  --options "hvm:p:nb:" \
+  --longoptions "help,version,mode:,publish:,new:,lorem:,bump:,lib" \
   -- "$@"
 )"
-
-__hasopts=0
 
 while true; do
   case "$1" in
     -v | --version ) ___printversion ; exit ;;
     -h | --help ) ___printhelp ; exit ;;
-    -m | --mode ) __mode="${2:-}" ; shift ; __hasopts=1 ;;
-    -l | --list ) __list=1 ; __hasopts=1 ;;
-    -p | --publish ) __publish="${2:-}" ; shift ; __hasopts=1 ;;
-    -n | --new ) __new="${2:-}" ; shift ; __hasopts=1 ;;
-    -b | --bump ) __bump="${2:-}" ; shift ; __hasopts=1 ;;
-    --lib ) __lib=1 ; __hasopts=1 ;;
+    -m | --mode ) __o[mode]="${2:-}" ; shift ;;
+    -p | --publish ) __o[publish]="${2:-}" ; shift ;;
+    -n | --new ) __o[new]="${2:-}" ; shift ;;
+    - | --lorem ) __o[lorem]="${2:-}" ; shift ;;
+    -b | --bump ) __o[bump]="${2:-}" ; shift ;;
+    --lib ) __o[lib]=1 ;;
     -- ) shift ; break ;;
     *  ) break ;;
   esac
@@ -141,16 +168,14 @@ done
   && __lastarg="" \
   || true
 
-
 IFS="${OFS}"
-#!/bin/env bash
+
 
 bumpproject(){
   local project pmain curpath curmode
-  # get current mode
 
-  project="${__bump:-}"
-
+  project="${1:-}"
+  
   eval "$(
     listprojects | awk -v srch="$project" '
       $1 == srch {
@@ -165,7 +190,7 @@ bumpproject(){
     && ERX "could not find project: $project"
 
   curpath="${curpath/'~'/$HOME}"
-  setdevmode "${curpath}" || true
+  [[ $curmode != develop ]] && setdevmode "${curpath}"
 
   pmain="${curpath}/${project}.sh"
 
@@ -174,18 +199,16 @@ bumpproject(){
     > "${curpath}/manifest.md"
 
   # generate files
-  ${pmain} -hman
-  ${pmain} -hmdg
+  ${pmain} -vcomposemanpage
+  ${pmain} -vcomposereadme > "${curpath}/README.md"
 
   # reset mode if necessary
-  [[ private = "${curmode:-}" ]] \
+  [[ $curmode = private ]] \
     && setprivmode "${curpath}"
+
+  # coolon
+  :
 }
-
-
-
-# update date and version
-#!/bin/env bash
 
 composelib() {
   local dir f
@@ -198,12 +221,12 @@ composelib() {
     for f in "$dir/dev/"*.sh; do
       [[ ${f##*/} = init.sh ]] && continue
       # remove shebang from files
-      tail +2 "$f"
+      grep -v '^#!/bin/.*' "$f"
     done
     tail +2 "$dir/dev/init.sh"
-  } > "$dir"/lib/bblib.sh
+  } > "$dir"/lib/base.sh
+  
 }
-#!/bin/env bash
 
 dateupdate(){
 
@@ -245,22 +268,35 @@ dateupdate(){
   }
 
 }
-#!/bin/env bash
+
+ERR(){ >&2 echo "[WARNING]" "$*"; }
+ERX(){ >&2 echo "[ERROR]" "$*" && exit 1 ; }
+getproject(){
+  local name
+
+  name="$1"
+  
+  listprojects | awk -v srch="$name" '
+    $1 == srch {
+      print "curmode=" $2
+      print "curpath=\"" $3 "\""
+      exit
+    }
+  '
+}
 
 listprojects(){
   local mode
 
   OFS="${IFS}"
-  IFS=:; for d in ${BASHBUD_ALL_SCRIPTS_PATH}; do
+  IFS=: ; for d in ${BASHBUD_PROJECTS_PATH//'~'/$HOME}; do
     [[ -d $d ]] && for dd in "${d}"/*; do
       [[ ! -d $dd ]] && continue
-      if [[ -f "${dd}/lib/bblib.sh" ]]; then
-        if [[ -f ${dd}/${dd##*/}.dev ]]; then
-          mode=public
-        elif [[ -f "${dd}/lib/bblib.dev" ]]; then
-          mode=private
-        else
+      if [[ -f "${dd}/lib/base.sh" ]]; then
+        if [[ -f "${dd}/lib/base.dev" ]]; then
           mode=develop
+        else
+          mode=private
         fi
         printf '%-12s  %-10s  %s\n' "${dd##*/}" "$mode" "${dd/$HOME/'~'}"
       fi
@@ -268,15 +304,66 @@ listprojects(){
   done
   IFS="${OFS}"
 }
-#!/bin/env bash
+
+letslorem() {
+  local project curmode curpath
+
+  project="$1"
+
+  eval "$(getproject "$project")"
+
+  [[ -z ${curmode:-} ]] \
+    && ERX "no project named $project found."
+
+  curpath="${curpath/'~'/$HOME}"
+  # if curmode is not develop, set it to develop
+  [[ $curmode != develop ]] && setdevmode "${curpath:-}"
+
+  local trg="${curpath##*/}"
+  local pmain="${curpath}/${trg}.sh"
+
+  alor=($(${pmain} -vprintlorem))
+
+  mkdir -p "${curpath}/doc/info"
+  for l in "${alor[@]}"; do
+    echo "$l"
+    printf '# %s\n\n%s\n\n' "$l" "$(loremtext)" \
+      >> "${curpath}/doc/info/lorem.md"
+  done
+
+  [[ $curmode != develop ]] && setprivmode "${curpath:-}"
+
+}
+
+loremtext(){
+echo '
+Lorem ipsumLorem ipsum in ex duis magna veniam
+proident incididunt voluptate minim aliquip dolore
+incididunt sunt exercitation et officia aute sunt
+fugiat. Lorem ipsum enim sed quis fugiat consequat
+quis magna fugiat minim tempor nulla sed ex aute
+elit. Nulla cupidatat ea enim voluptate voluptate
+laborum esse fugiat sed nulla consequat laborum
+tempor sint aliquip. Pariatur ut eiusmod pariatur
+voluptate id fugiat in sunt dolor id eu amet.
+Lorem ipsum veniam commodo dolore quis non ullamco
+ad sint proident adipisicing in occaecat ut elit.
+ad excepteur do fugiat dolore anim consequat dolor
+aute cupidatat est eu.
+'
+}
 
 newproject(){
-  local trgdir tmpdir d f
+  local trgdir tmpdir project d f
 
-  trgdir="${1:-}"
+  project="${1:-}"
+  trgdir="${BASHBUD_PROJECTS_DIR:-}/${project}"
 
+  [[ -d $trgdir ]] \
+    && ERX "project ${project} already exist at $trgdir"
+  
   atdir=(
-    "${XDG_CONFIG_HOME:-$HOME/.config}/bashbud/template"
+    "${BASHBUD_DIR}/template"
     "/usr/share/doc/bashbud/template"
   )
 
@@ -322,8 +409,9 @@ newproject(){
       done
     }
 
-    ln -f "/lib/bblib.sh" "${trgdir}/lib/bblib.sh"
-    
+    ln -f "/lib/bblib.sh" "${trgdir}/lib/base.sh"
+    touch "${trgdir}/lib/base.dev"
+
     chmod +x \
       "${trgdir}/main.sh"
 
@@ -331,22 +419,25 @@ newproject(){
     echo "$(dateupdate -cu "${trgdir}/manifest.md")" \
       > "${trgdir}/manifest.md"
 
-    mv "${trgdir}/main.sh" "${trgdir}/${__new}.sh"
+    mv "${trgdir}/main.sh" "${trgdir}/${project}.sh"
 
-    sleep 2
-    mkdir -p "${BASHBUD_NEW_SCRIPT_PATH}"
-    ln -s "${trgdir}/${__new}.sh" \
-       "${BASHBUD_NEW_SCRIPT_PATH}/${__new}"
+    mkdir -p "${BASHBUD_SCRIPTS_DIR}"
+    ln -fs "${trgdir}/${project}.sh" \
+       "${BASHBUD_SCRIPTS_DIR}/${project}"
   )
+
+  bumpproject "${project}"
+  setprivmode "${trgdir}"
+  
+  echo "created: ${trgdir}/${project}.sh"
 }
-#!/bin/env bash
 
 publishproject() {
   ERR "setting publish project"
 
   local project target pmain curpath curmode
 
-  project="${__publish:-}"
+  project="${__o[publish]:-}"
 
   eval "$(
     listprojects | awk -v srch="$project" '
@@ -362,7 +453,7 @@ publishproject() {
     && ERX "could not find project: $project"
 
   curpath="${curpath/'~'/$HOME}"
-  setdevmode "${curpath}" || true
+  [[ $curmode != develop ]] && setdevmode "${curpath}"
 
   [[ -z ${__lastarg:-} ]] \
     && target="${curpath}/out/${project}.sh" \
@@ -372,48 +463,27 @@ publishproject() {
 
   pmain="${curpath}/${project}.sh"
 
-  {
-    awk '/#bashbud$/ {exit};{print}' "${pmain}"
-    ${pmain} -vvv
-    awk '
-      /#bashbud$/ {start=1}
-      start==1 && $0 !~ /#bashbud$/ {print}
-    ' "${pmain}"
-  } > "${target}"
+  ${pmain} -vhardpublic > "${target}"
+
   chmod +x "${target}"
 
-  [[ private = "${curmode:-}" ]] \
-    && setprivmode "${curpath}"
+  [[ $curmode = private ]] && setprivmode "${curpath}"
 }
-#!/bin/env bash
 
 setmode(){
 
   local name curmode trgmode curpath
 
-  if [[ -z ${__lastarg:-} ]]; then
-    name=${__mode}
-    trgmode=toggle
-  else
-    name=${__lastarg}
-    trgmode=${__mode}
-  fi
-  
-  case "$trgmode" in toggle ) trgmode=toggle  ;;
+  name="$1"
+  trgmode="$2"
+
+  case "$trgmode" in 
+    toggle ) trgmode=toggle  ;;
     pri*   ) trgmode=private ;;
-    # pub*   ) trgmode=public  ;;
     dev*|* ) trgmode=develop ;;
   esac
 
-  eval "$(
-    listprojects | awk -v srch="$name" '
-      $1 == srch {
-        print "curmode=" $2
-        print "curpath=\"" $3 "\""
-        exit
-      }
-    '
-  )"
+  eval "$(getproject "$name")"
 
   [[ -z ${curmode:-} ]] \
     && ERX "no project named $name found."
@@ -430,7 +500,6 @@ setmode(){
     toggle ) [[ $curmode = develop ]] && \
                setprivmode "${curpath:-}" ;;
     pri*   )   setprivmode "${curpath:-}" ;;
-    # pub*   )   setpubmode  "${curpath:-}" ;;
     dev*   ) : ;;
     *      ) : ;;
   esac
@@ -446,11 +515,10 @@ setprivmode() {
 
   local trg="${dir##*/}"
   local pmain="${dir}/${trg}.sh"
-  local pbb="${dir}/lib/bblib.sh"
+  local pbb="${dir}/lib/base.sh"
 
-  ${pmain} -vv > "${pbb%.sh}.prod"
-  mv -f "${pbb}" "${pbb%.sh}.dev"
-  mv -f "${pbb%.sh}.prod" "${pbb}"
+  ${pmain} -vhardbase > "${pbb%.sh}.dev"
+  mv -f "${pbb%.sh}.dev" "${pbb}"
 }
 
 setdevmode() {
@@ -459,14 +527,12 @@ setdevmode() {
 
   [[ -d $dir ]] || ERX "directory $dir doesn't exist"
 
-  local trg="${dir##*/}"
-  local pmain="${dir}/${trg}.sh"
-  local pbb="${dir}/lib/bblib.sh"
+  local pbb="${dir}/lib/base.sh"
 
-  # restore lib file
-  [[ -f ${pbb%.sh}.dev ]] && mv -f "${pbb%.sh}.dev" "${pbb}"
-
-  # restore script
-  [[ -f ${pmain%.sh}.dev ]] && mv -f "${pmain%.sh}.dev" "${pmain}"
+  [[ -f ${pbb%.sh}.dev ]] || {
+    mv "$pbb" "${pbb%.sh}".dev
+    ln -f "/lib/bblib.sh" "$pbb"
+  }
 }
+
 main "${@:-}"

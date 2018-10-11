@@ -22,6 +22,6 @@ main(){
 
 ___source="$(readlink -f "${BASH_SOURCE[0]}")" #bashbud
 ___dir="$(cd "$(dirname "$___source")" && pwd )" #bashbud
-. "${___dir}/lib/bblib.sh" #bashbud
+. "${___dir}/lib/base.sh" #bashbud
 
 main "${@:-}"

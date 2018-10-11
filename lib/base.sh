@@ -12,9 +12,10 @@ ___autoparse(){
 
   ((${#___environment_variables[@]}>0)) \
     && eval "$(
-    for e in "${!___environment_variables[@]}"; do
+    for e in $(for eo in "${!___environment_variables[@]}"; do echo "$eo"; done | sort); do
+      es="${e#*-}"
       printf '%s=\"${%s:=%s}\"\n' \
-        "$e" "$e" "${___environment_variables[$e]}"
+        "$es" "$es" "${___environment_variables[$e]}"
     done
   )"
 
@@ -109,7 +110,7 @@ ___autoparse(){
   aure="+(${aure%|})"
 
   lopt="help,version,"
-  sopt="h::v::"
+  sopt="hv::"
 
   for o in "${!___autoopts[@]}"; do
     [[ ${___autoopts[$o]} =~ ([:]*)$ ]] \
@@ -126,8 +127,6 @@ ___autoparse(){
     --longoptions "$lopt" \
     -- "$@"
   )"
-
-  __hasoption=0
 
   while true; do
     if [[ $1 = -- ]];then
@@ -152,18 +151,17 @@ ___autoparse(){
 
     case "${pl:-}" in
       $aure  ) 
-        eval __"$pl"='${pa}'
+        eval __o["$pl"]='${pa}'
         [[ ${options[$pl]} =~ [:] ]] && [[ -n $pa ]] && shift 
-        __hasoption=1
         pl=pa=po=""
       ;;
       version ) 
         [[ -z ${pa:-} ]] \
-          && ___printinfo "version" >&2 \
-          || ___printinfo "${pa:-}"
+          && ___callfunc "printversion" >&2 \
+          || ___callfunc "${pa:-}"
           exit
       ;;
-      help    ) ___printinfo "${pa:-}" >&2        ; exit  ;;
+      help    ) ___printhelp >&2        ; exit  ;;
       -- ) shift ; break ;;
       *  ) break ;;
     esac
@@ -173,6 +171,15 @@ ___autoparse(){
   [[ ${__lastarg:="${!#:-}"} = -- ]] \
     && __lastarg= \
     || true
+}
+
+___callfunc(){ eval "___${1}" ;}
+
+___composemanpage(){
+  mkdir -p "${___dir}/doc/man"
+  printf '%s' "# ${___about}" > "${___dir}/doc/man/${___name}.md" 
+  printf '%s' "${___header}" "${___about}" "${___footer}" | \
+    go-md2man > "${___dir}/doc/man/${___name}.1"
 }
 
 ___composereadme(){
@@ -282,6 +289,179 @@ ___composereadme(){
   }
 }
 
+___hardbase(){
+
+  echo '#!/bin/env bash'
+  echo
+
+  ___hardversion
+  echo
+  
+  ___hardenv
+  ___hardhelp
+  ___hardopts
+  ___hardstdin
+  ___hardlibloop
+}
+
+___hardenv(){
+  local e es lst
+  ((${#___environment_variables[@]}>0)) && {
+    
+    lst="$(
+      for eo in "${!___environment_variables[@]}"; do 
+        echo "$eo"
+      done | sort
+    )"
+
+    for e in ${lst}; do
+      es="${e#*-}"
+      printf ': \"${%s:=%s}\"\n' \
+        "$es" "${___environment_variables[$e]}"
+    done
+  }
+}
+
+___hardhelp(){
+  # printf '%s\n%s \\\n'"'"'%s'"'"'\n}\n' \
+  #   '___printhelp(){' '>&2 echo' "$(
+  #     ___printhelp | sed 's/'"'"'/'"'"'"'"'"'"'"'"'/g'
+  #   )"
+  
+  # echo
+  echo '___printhelp(){'
+  echo "cat << 'EOB' >&2"
+  ___printhelp
+  echo 'EOB'
+  echo '}'
+}
+
+___hardlibloop(){
+ printf '%s\n' \
+   'for ___f in "${___dir}/lib"/*; do' \
+   '  [[ ${___f##*/} =~ ^(bashbud|base) ]] && continue' \
+   '  source "$___f"' \
+   'done' 
+}
+
+___hardopts(){
+
+  echo 'OFS="${IFS}"'
+  echo "IFS=\$' \n\t'"
+  echo
+  echo 'declare -A __o'
+
+  printf 'eval set -- "$(getopt --name "%s" \\\n' "$___name"
+  printf '  --options "%s" \\\n' "${___vvsopts//::/}"
+  printf '  --longoptions "%s" \\\n' "${___vvlopts%,}"
+  printf '  -- "$@"\n)"\n'
+
+  echo
+
+  printf 'while true; do\n  case "$1" in\n'
+  printf '    %s ; exit ;;\n' \
+    '-v | --version ) ___printversion' \
+    '-h | --help ) ___printhelp'
+
+  ((${#___autoopts[@]}>0)) && for o in "${!___autoopts[@]}"; do
+    echo -n "    "
+    [[ -n ${___autoopts[$o]:-} ]] \
+      && echo -n "-${___autoopts[$o]//:} | "
+    echo -n "--$o ) "
+    isflag=0
+    for f in "${___vvflags[@]}"; do
+      [[ $f = "$o" ]] && isflag=1
+    done
+    ((isflag==1)) \
+      && echo -n "__o[${o}]=1" \
+      || echo -n "__o[${o}]=\"\${2:-}\" ; shift" 
+    echo " ;;"
+  done
+
+  printf '    %s ;;\n' \
+    '-- ) shift ; break' \
+    '*  ) break'
+
+
+  printf '  %s\n  %s\n%s\n' "esac" "shift" "done"
+
+  echo
+
+  # __lastarg
+  printf '%s\n  %s\n  %s\n' \
+    '[[ ${__lastarg:="${!#:-}"} =~ ^--$|${0}$ ]] \' \
+    '&& __lastarg="" \' \
+    '|| true'
+  
+  echo
+
+  echo 'IFS="${OFS}"'
+  
+}
+
+___hardpublic(){
+
+  local f pmain
+  
+  pmain="${___dir}/${___name}.sh"
+
+  echo '#!/bin/env bash'
+  echo
+
+  ___hardversion
+
+  echo
+
+  ___hardenv
+
+  grep -v '^#!/bin/.*' "${pmain}" \
+    | awk '/#bashbud$/ {exit};{print}'
+
+  echo
+
+  ___hardhelp
+
+  echo
+  
+  ___hardopts
+  ___hardstdin
+
+  for f in "${___dir}/lib"/*; do
+    [[ ${f##*/} =~ ^(bashbud|base) ]] && continue
+    grep -v '^#!/bin/.*' "$f"
+  done
+
+  awk '
+    /#bashbud$/ {start=1}
+    start==1 && $0 !~ /#bashbud$/ {print}
+  ' "${pmain}"
+}
+
+___hardstdin(){
+  # include __stdin if it is used in main script
+  grep '.*__stdin.*' "${___source}"  > /dev/null 2>&1 && {
+    printf '%s\n' '__=""' '__stdin=""' 'read -N1 -t0.01 __  && {'
+    echo '  (( $? <= 128 ))  && {'
+    printf '    %s\n' \
+      "IFS= read -rd '' __stdin" \
+      '__stdin="$__$__stdin"'
+    printf '  }\n}\n'
+  }
+  echo
+}
+
+___hardversion(){
+  # printf '%s\n%s \\\n'"'"'%s'"'"'\n}\n' \
+  #   '___printversion(){' \
+  #   '>&2 echo' \
+  #   "$(___printversion)"
+  echo '___printversion(){'
+  echo "cat << 'EOB' >&2"
+  ___printversion
+  echo 'EOB'
+  echo '}'
+}
+
 ___parsemanifest(){
   local f="$1"
   awk '
@@ -290,7 +470,7 @@ ___parsemanifest(){
     # esacpe single quotes
     gsub(sqo,sqol)
 
-    if (match($0,/[[:space:]]*[#] (long|option|env)-(.*)[[:space:]]*$/,ma)) {
+    if (match($0,/[[:space:]]*[#] (additional|long|option|env)-(.*)[[:space:]]*$/,ma)) {
       curvar=ma[1]"-"ma[2]
       start=1
     }
@@ -324,15 +504,15 @@ ___parseyaml(){
 
   awk '
     BEGIN {
-      aafrm="___%s[%s]=\"%s\"\n"
+      aafrm="___%s[%s-%s]=\"%s\"\n"
       iafrm="___%s+=(\"%s\")\n"
     }
-    /./ && match($0,/([[:space:]]*)([-]{,1})[[:space:]]*([a-zA-Z_-]*)([:]{,1})[[:space:]]*(.*)[[:space:]]*$/,ma) {
+    /./ && match($0,/([[:space:]]*)([-]{,1})[[:space:]]*([0-9a-zA-Z_-]*)([:]{,1})[[:space:]]*(.*)[[:space:]]*$/,ma) {
       iskey=islist=0
       curind=length(ma[1])
       rol=ma[5]
 
-      if (curind > lastind) {parkey=lastkey}
+      if (curind > lastind) {parkey=lastkey;asindx=0}
       if (curind < lastind && $0 !~ /^[[:space:]]*$/) {
         block="none"
       }
@@ -374,7 +554,8 @@ ___parseyaml(){
 
       # associative array
       if (curind>0 && iskey==1) {
-        printf  aafrm, gensub("-","_","g",parkey), curkey, rol
+        gsub(/[$]/,"\\$",rol)
+        printf  aafrm, gensub("-","_","g",parkey), asindx++, curkey, rol
       } 
 
       # indexed array list
@@ -412,288 +593,152 @@ ___parseyaml(){
   ' "$f"
 }
 
-___printinfo(){
-
-  setinfo
-
-  case "$1" in
-    # print version info to stderr
-    version )
-      printf '%s\n' \
-        "$___name - version: $___version" \
-        "updated: $___updated by $___author"
-      ;;
-    # print help in markdown format to stdout
-    md ) printf '%s' "# ${___infoabout}" ;;
-
-    lorem )
-      
-      ((${#___autoopts[@]}>0)) && {
-        for o in "${!___autoopts[@]}"; do
-          [[ -z ${___info[option-${o}]:-} ]] \
-            && alorem+=("option-${o}")
-        done
-      }
-
-      ((${#___environment_variables[@]}>0)) && {
-
-        for e in "${!___environment_variables[@]}"; do
-          [[ -z ${___info[env-${e}]:-} ]] \
-            && alorem+=("env-${e}")
-        done
-      }
-
-      [[ -z ${___info[long-description]:-} ]] \
-        && echo "long-description"
-
-      for l in "${alorem[@]}"; do
-        echo "$l"
-      done
-    ;;
-    # print help in markdown format to README.md
-    mdg ) 
-      ___composereadme > "${___dir:-.}/README.md"
-    ;;
-    
-    # print help in troff format to __dir/__name.1
-    man ) 
-      mkdir -p "${___dir}/doc/man"
-      printf '%s' "# ${___about}" > "${___dir}/doc/man/${___name}.md" 
-      printf '%s' "${___header}" "${___about}" "${___footer}" | \
-        go-md2man > "${___dir}/doc/man/${___name}.1"
-    ;;
-
-    vv )
-      ___printprodcode 
-
-      for ___f in "${___dir}/lib"/*; do
-        [[ ${___f##*/} =~ ^(bashbud|bblib) ]] && continue
-        cat "$___f"
-      done
-    ;;
-
-    v ) 
-      ___printprodcode 
-      # include other files in /lib
-      printf '%s\n' \
-        'for ___f in "${___dir}/lib"/*; do' \
-        '  [[ ${___f##*/} =~ ^(bashbud|bblib) ]] && continue' \
-        '  source "$___f"' \
-        'done'
-    ;;
-
-    
-
-    # print help stripped of markdown to stderr
-    * ) 
-      printf '%s' "${___about}" | awk '
-         BEGIN{ind=0}
-         $0~/^```/{
-           if(ind!="1"){ind="1"}
-           else{ind="0"}
-           print ""
-         }
-         $0!~/^```/{
-           gsub("[`*]","",$0)
-           if(ind=="1"){$0="   " $0}
-           print $0
-         }
-       ' | fold -80 -s
-    ;;
-  esac
+___printversion(){
+  printf '%s\n' \
+    "$___name - version: $___version" \
+    "updated: $___updated by $___author"
 }
 
-___printprodcode(){
+___printhelp(){
 
-  local infformat e o
+  ___setinfo
 
-  infformat='%s\n%s \\\n'"'"'%s'"'"'\n}\n'
+  printf '%s' "${___about}" | awk '
+     BEGIN{ind=0}
+     $0~/^```/{
+       if(ind!="1"){ind="1"}
+       else{ind="0"}
+       print ""
+     }
+     $0!~/^```/{
+       gsub("[`*]","",$0)
+       if(ind=="1"){$0="   " $0}
+       print $0
+     }
+   ' | fold -80 -s
+ }
 
-  # --version info
-  printf "$infformat" \
-    '___printversion(){' '>&2 echo' "$(___printinfo version)"
-  
-  echo 
+ ___setinfo(){
+ local o lo so 
 
-  echo 'OFS="${IFS}"'
-  echo "IFS=\$' \n\t'"
-  echo
+ # shellcheck disable=SC2016
+ ___about="$(
+ echo "\`${___name}\` - ${___description}"
+ echo "
+ SYNOPSIS
+ --------
 
-  # if envrionemt variables are defined in manifest
+ ${___synopsis}"
+
+ [[ -n ${___info[long-description]:-} ]] && {
+ echo "
+ DESCRIPTION
+ -----------
+
+ ${___info[long-description]}
+ "
+ }
+
+ echo "
+ OPTIONS
+ -------
+ "
+
+ for o in $(printf '%s\n' "${!___info[@]}" | sort); do
+   [[ $o =~ ^options ]] || continue
+   lo=${o#*-}
+   [[ -z ${___info[option-${lo}]:-} ]] && continue
+   so="${___info[$o]:-}"
+   [[ $so ]] \
+     && printf '`--%s`|`-%s`' "$lo" "$so" \
+     || printf '`--%s`' "$lo" 
+   echo " ${___info[optarg-${lo}]:-}  "
+   printf '%s\n\n' "${___info[option-${lo}]:-}"
+ done 
+
+ ((${#___environment_variables[@]}>0)) && {
+ echo "
+ ENVIRONMENT
+ -----------
+ "
+
+ for e in $(for eo in "${!___environment_variables[@]}"; do echo "$eo"; done | sort); do
+   es="${e#*-}"
+   printf '**%s**  \nDefaults to: %s  \n' "$es" "${___environment_variables[$e]}"
+   [[ -n ${___info[env-${es}]:-} ]] && {
+     echo "${___info[env-${es}]}"
+   }
+   echo
+ done
+ }
+
+ [[ -n ${___info[additional-info]:-}  ]] \
+   && echo "${___info[additional-info]}"
+
+ [[ -n ${___dependencies[0]:-} ]] && {
+ echo "
+ DEPENDENCIES
+ ------------
+ "
+ for d in "${___dependencies[@]}"; do
+   echo "${d}  "
+ done
+ }
+ )"
+
+ ___header="
+ ${___name^^} 1 ${___created} Linux \"User Manuals\"
+ =======================================
+
+ NAME
+ ----
+ "
+
+ ___footer="$(
+ echo "
+ AUTHOR
+ ------
+
+ ${___author} <${___repo}>
+ "
+
+ [[ -n ${___see_also[0]:-} ]] && {
+ echo "
+ SEE ALSO
+ --------
+ "
+
+ s=""
+ for d in "${___see_also[@]}"; do
+   s+="${d}, "
+ done
+ echo "${s%, }  "
+ }
+ )"
+ }
+
+___printlorem(){
+  ((${#___autoopts[@]}>0)) && {
+    for o in "${!___autoopts[@]}"; do
+      [[ -z ${___info[option-${o}]:-} ]] \
+        && alorem+=("option-${o}")
+    done
+  }
+
   ((${#___environment_variables[@]}>0)) && {
-    for e in "${!___environment_variables[@]}"; do
-      printf '%s=\"${%s:=%s}\"\n' \
-        "$e" "$e" "${___environment_variables[$e]}"
+    for e in $(for eo in "${!___environment_variables[@]}"; do echo "$eo"; done | sort); do
+      es="${e#*-}"
+      [[ -z ${___info[env-${es}]:-} ]] \
+        && alorem+=("env-${es}")
     done
-
-    echo
   }
 
-  # --help
-  printf "$infformat" \
-    '___printhelp(){' '>&2 echo' "$(
-      ___printinfo help | sed 's/'"'"'/'"'"'"'"'"'"'"'"'/g'
-    )"
-  
-  echo
+  [[ -z ${___info[long-description]:-} ]] \
+    && echo "long-description"
 
-  # getopts start
-  printf 'eval set -- "$(getopt --name "%s" \\\n' "$___name"
-  printf '  --options "%s" \\\n' "${___vvsopts//::/}"
-  printf '  --longoptions "%s" \\\n' "${___vvlopts%,}"
-  printf '  -- "$@"\n)"\n'
-
-  echo
-  echo '__hasopts=0'
-  echo
-
-  printf 'while true; do\n  case "$1" in\n'
-  printf '    %s ; exit ;;\n' \
-    '-v | --version ) ___printversion' \
-    '-h | --help ) ___printhelp'
-
-  ((${#___autoopts[@]}>0)) && for o in "${!___autoopts[@]}"; do
-    echo -n "    "
-    [[ -n ${___autoopts[$o]:-} ]] \
-      && echo -n "-${___autoopts[$o]//:} | "
-    echo -n "--$o ) "
-    isflag=0
-    for f in "${___vvflags[@]}"; do
-      [[ $f = "$o" ]] && isflag=1
-    done
-    ((isflag==1)) \
-      && echo -n "__${o}=1" \
-      || echo -n "__${o}=\"\${2:-}\" ; shift" 
-    echo " ; __hasopts=1 ;;"
+  for l in "${alorem[@]}"; do
+    echo "$l"
   done
-
-  printf '    %s ;;\n' \
-    '-- ) shift ; break' \
-    '*  ) break'
-
-
-  printf '  %s\n  %s\n%s\n' "esac" "shift" "done"
-
-  # getopts end
-  echo
-
-  # __lastarg
-  printf '%s\n  %s\n  %s\n' \
-    '[[ ${__lastarg:="${!#:-}"} =~ ^--$|${0}$ ]] \' \
-    '&& __lastarg="" \' \
-    '|| true'
-  
-  echo
-
-  # include __stdin if it is used in main script
-  grep '.*__stdin.*' "${___source}"  > /dev/null 2>&1 && {
-    printf '%s\n' '__=""' '__stdin=""' 'read -N1 -t0.01 __  && {'
-    echo '  (( $? <= 128 ))  && {'
-    printf '    %s\n' \
-      "IFS= read -rd '' __stdin" \
-      '__stdin="$__$__stdin"'
-    printf '  }\n}\n'
-  }
-  echo
-
-  echo 'IFS="${OFS}"'
-
-}
-
-setinfo(){
-local o lo so 
-
-# shellcheck disable=SC2016
-___about="$(
-echo "\`${___name}\` - ${___description}"
-echo "
-SYNOPSIS
---------
-
-${___synopsis}"
-
-[[ -n ${___info[long-description]:-} ]] && {
-echo "
-DESCRIPTION
------------
-
-${___info[long-description]}
-"
-}
-
-echo "
-OPTIONS
--------
-"
-
-for o in $(printf '%s\n' "${!___info[@]}" | sort); do
-  [[ $o =~ ^options ]] || continue
-  lo=${o#*-}
-  [[ -z ${___info[option-${lo}]:-} ]] && continue
-  so="${___info[$o]:-}"
-  [[ $so ]] \
-    && printf '`--%s`|`-%s`' "$lo" "$so" \
-    || printf '`--%s`' "$lo" 
-  echo " ${___info[optarg-${lo}]:-}  "
-  printf '%s\n\n' "${___info[option-${lo}]:-}"
-done 
-
-((${#___environment_variables[@]}>0)) && {
-echo "
-ENVIRONMENT
------------
-"
-
-for e in "${!___environment_variables[@]}"; do
-  printf '**%s**  \n' "$e"
-  echo "${___info[env-${e}]}"
-  echo
-done
-}
-
-[[ -n ${___info[additional-info]:-}  ]] \
-  && echo "${___info[additional-info]}"
-
-[[ -n ${___dependencies[0]:-} ]] && {
-echo "
-DEPENDENCIES
-------------
-"
-for d in "${___dependencies[@]}"; do
-  echo "${d}  "
-done
-}
-)"
-
-___header="
-${___name^^} 1 ${___created} Linux \"User Manuals\"
-=======================================
-
-NAME
-----
-"
-
-___footer="$(
-echo "
-AUTHOR
-------
-
-${___author} <${___repo}>
-"
-
-[[ -n ${___see_also[0]:-} ]] && {
-echo "
-SEE ALSO
---------
-"
-
-s=""
-for d in "${___see_also[@]}"; do
-  s+="${d}, "
-done
-echo "${s%, }  "
-}
-)"
 }
 
 OFS="${IFS}"
@@ -702,6 +747,7 @@ IFS=$' \n\t'
 declare -A ___info
 declare -A ___environment_variables
 declare -A ___autoopts
+declare -A __o
 
 ___file="${___dir}/$(basename "${___source}")"
 ___name="$(basename "${___file}" .sh)"
@@ -736,7 +782,7 @@ eval "$(___parseyaml <(
 ___autoparse "${@}"
 
 for ___f in "${___dir}/lib"/*; do
-  [[ ${___f##*/} =~ ^(bashbud|bblib) ]] && continue
+  [[ ${___f##*/} =~ ^(bashbud|base) ]] && continue
   source "$___f"
 done
 

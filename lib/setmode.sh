@@ -4,17 +4,12 @@ setmode(){
 
   local name curmode trgmode curpath
 
-  if [[ -z ${__lastarg:-} ]]; then
-    name=${__mode}
-    trgmode=toggle
-  else
-    name=${__lastarg}
-    trgmode=${__mode}
-  fi
-  
-  case "$trgmode" in toggle ) trgmode=toggle  ;;
+  name="$1"
+  trgmode="$2"
+
+  case "$trgmode" in 
+    toggle ) trgmode=toggle  ;;
     pri*   ) trgmode=private ;;
-    # pub*   ) trgmode=public  ;;
     dev*|* ) trgmode=develop ;;
   esac
 
@@ -35,7 +30,6 @@ setmode(){
     toggle ) [[ $curmode = develop ]] && \
                setprivmode "${curpath:-}" ;;
     pri*   )   setprivmode "${curpath:-}" ;;
-    # pub*   )   setpubmode  "${curpath:-}" ;;
     dev*   ) : ;;
     *      ) : ;;
   esac
@@ -51,11 +45,10 @@ setprivmode() {
 
   local trg="${dir##*/}"
   local pmain="${dir}/${trg}.sh"
-  local pbb="${dir}/lib/bblib.sh"
+  local pbb="${dir}/lib/base.sh"
 
-  ${pmain} -vv > "${pbb%.sh}.prod"
-  mv -f "${pbb}" "${pbb%.sh}.dev"
-  mv -f "${pbb%.sh}.prod" "${pbb}"
+  ${pmain} -vhardbase > "${pbb%.sh}.dev"
+  mv -f "${pbb%.sh}.dev" "${pbb}"
 }
 
 setdevmode() {
@@ -64,13 +57,10 @@ setdevmode() {
 
   [[ -d $dir ]] || ERX "directory $dir doesn't exist"
 
-  local trg="${dir##*/}"
-  local pmain="${dir}/${trg}.sh"
-  local pbb="${dir}/lib/bblib.sh"
+  local pbb="${dir}/lib/base.sh"
 
-  # restore lib file
-  [[ -f ${pbb%.sh}.dev ]] && mv -f "${pbb%.sh}.dev" "${pbb}"
-
-  # restore script
-  [[ -f ${pmain%.sh}.dev ]] && mv -f "${pmain%.sh}.dev" "${pmain}"
+  [[ -f ${pbb%.sh}.dev ]] || {
+    mv "$pbb" "${pbb%.sh}".dev
+    ln -f "/lib/bblib.sh" "$pbb"
+  }
 }

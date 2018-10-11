@@ -2,10 +2,9 @@
 
 bumpproject(){
   local project pmain curpath curmode
-  # get current mode
 
-  project="${__bump:-}"
-
+  project="${1:-}"
+  
   eval "$(
     listprojects | awk -v srch="$project" '
       $1 == srch {
@@ -20,7 +19,7 @@ bumpproject(){
     && ERX "could not find project: $project"
 
   curpath="${curpath/'~'/$HOME}"
-  setdevmode "${curpath}" || true
+  [[ $curmode != develop ]] && setdevmode "${curpath}"
 
   pmain="${curpath}/${project}.sh"
 
@@ -29,14 +28,13 @@ bumpproject(){
     > "${curpath}/manifest.md"
 
   # generate files
-  ${pmain} -hman
-  ${pmain} -hmdg
+  ${pmain} -vcomposemanpage
+  ${pmain} -vcomposereadme > "${curpath}/README.md"
 
   # reset mode if necessary
-  [[ private = "${curmode:-}" ]] \
+  [[ $curmode = private ]] \
     && setprivmode "${curpath}"
+
+  # coolon
+  :
 }
-
-
-
-# update date and version

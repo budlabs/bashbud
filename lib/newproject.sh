@@ -1,12 +1,16 @@
 #!/bin/env bash
 
 newproject(){
-  local trgdir tmpdir d f
+  local trgdir tmpdir project d f
 
-  trgdir="${1:-}"
+  project="${1:-}"
+  trgdir="${BASHBUD_PROJECTS_DIR:-}/${project}"
 
+  [[ -d $trgdir ]] \
+    && ERX "project ${project} already exist at $trgdir"
+  
   atdir=(
-    "${XDG_CONFIG_HOME:-$HOME/.config}/bashbud/template"
+    "${BASHBUD_DIR}/template"
     "/usr/share/doc/bashbud/template"
   )
 
@@ -52,8 +56,9 @@ newproject(){
       done
     }
 
-    ln -f "/lib/bblib.sh" "${trgdir}/lib/bblib.sh"
-    
+    ln -f "/lib/bblib.sh" "${trgdir}/lib/base.sh"
+    touch "${trgdir}/lib/base.dev"
+
     chmod +x \
       "${trgdir}/main.sh"
 
@@ -61,10 +66,15 @@ newproject(){
     echo "$(dateupdate -cu "${trgdir}/manifest.md")" \
       > "${trgdir}/manifest.md"
 
-    mv "${trgdir}/main.sh" "${trgdir}/${__new}.sh"
+    mv "${trgdir}/main.sh" "${trgdir}/${project}.sh"
 
-    mkdir -p "${BASHBUD_NEW_SCRIPT_PATH/'~'/$HOME}"
-    ln -s "${trgdir}/${__new}.sh" \
-       "${BASHBUD_NEW_SCRIPT_PATH/'~'/$HOME}/${__new}"
+    mkdir -p "${BASHBUD_SCRIPTS_DIR}"
+    ln -fs "${trgdir}/${project}.sh" \
+       "${BASHBUD_SCRIPTS_DIR}/${project}"
   )
+
+  bumpproject "${project}"
+  setprivmode "${trgdir}"
+  
+  echo "created: ${trgdir}/${project}.sh"
 }

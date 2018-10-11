@@ -15,9 +15,15 @@ install:
 	test -d $(INSTMAN) || mkdir -p $(INSTMAN)
 	test -d $(DOCDIR)  || mkdir -p $(DOCDIR)
 
-	./bashbud.sh --publish bashbud ./pubBB || true
-	install -m 0755 pubBB $(INSTBIN)/bashbud 
-	install -m 0777 ./lib/bblib.sh $(LIBDIR)
+	# ./bashbud.sh --publish bashbud ./pubBB || true
+	install -m 0755 ./out/bashbud.sh $(INSTBIN)/bashbud 
+
+	if test -f $(LIBDIR)/bblib.sh; then \
+		cat ./lib/base.sh > $(LIBDIR)/bblib.sh ; \
+	else \
+		install -m 0777 ./lib/base.sh $(LIBDIR)/bblib.sh ; \
+	fi
+	
 	install -m 0644 ./doc/man/bashbud.1 $(INSTMAN);
 
 	@for fil in $$(find template); do \
@@ -29,7 +35,7 @@ install:
   	fi; \
 	done
 
-	# $(RM) pubBB
+	$(RM) pubBB
 .PHONY: install
 
 uninstall:

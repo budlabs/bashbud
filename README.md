@@ -1,6 +1,17 @@
 # **bashbud** - Boilerplate and template maker for bash scripts
 
-#### \[ [about](#about) \] \[ [usage](#usage) \] 
+#### \[ [about](#about) \] \[ [installation](#installation) \] \[ [usage](#usage) \] 
+
+**bashbud** was created to simplify documentation and creation of bashscripts. All global configurations and info for a script is defined in YAML format and all documentation is written in markdown. The YAML and markdown can all be written in the same file (`manifest.md`) or in any number of markdown files. **bahsbud** will generate sevearl different files based on the content in the *manifest*. A readme file in markdown, a man page in troff format and the main script itself will all contain information and variables defined in the manifest.  
+
+Commandline options are defined in a WYSIWYG style by writing a synopsis in the YAML part of the manifest. The values passed to the options will be available in the script as global variables named: `__LONG_OPTION_NAME`.
+
+# installation
+After cloning this repo, execute: `sudo make install` in the same directory as `Makefile`. After doing so you can execute `bashbud` with the options described below.  
+
+**bashbud** will by default store user settings and new projects in the path described in the [ENVIRONMENT variable] **BASHBUD_NEW_SCRIPT_DIR**, which defaults to **XDG_CONFIG_HOME**/bashbud (*usually ~/.config/bashbud*).  
+
+For more information, `bashbud --help` or `man bashbud`, or see the quickstart guide.
 
 # about
 `bashbud` can be used to quickly create new scripts with cli-option support and automatic documentation applied.

@@ -5,7 +5,7 @@ publishproject() {
 
   local project target pmain curpath curmode
 
-  project="${__publish:-}"
+  project="${__o[publish]:-}"
 
   eval "$(
     listprojects | awk -v srch="$project" '
@@ -21,7 +21,7 @@ publishproject() {
     && ERX "could not find project: $project"
 
   curpath="${curpath/'~'/$HOME}"
-  setdevmode "${curpath}" || true
+  [[ $curmode != develop ]] && setdevmode "${curpath}"
 
   [[ -z ${__lastarg:-} ]] \
     && target="${curpath}/out/${project}.sh" \
@@ -31,16 +31,9 @@ publishproject() {
 
   pmain="${curpath}/${project}.sh"
 
-  {
-    awk '/#bashbud$/ {exit};{print}' "${pmain}"
-    ${pmain} -vvv
-    awk '
-      /#bashbud$/ {start=1}
-      start==1 && $0 !~ /#bashbud$/ {print}
-    ' "${pmain}"
-  } > "${target}"
+  ${pmain} -vhardpublic > "${target}"
+
   chmod +x "${target}"
 
-  [[ private = "${curmode:-}" ]] \
-    && setprivmode "${curpath}"
+  [[ $curmode = private ]] && setprivmode "${curpath}"
 }

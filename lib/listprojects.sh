@@ -4,16 +4,14 @@ listprojects(){
   local mode
 
   OFS="${IFS}"
-  IFS=:; for d in ${BASHBUD_ALL_SCRIPTS_PATH//'~'/$HOME}; do
+  IFS=: ; for d in ${BASHBUD_PROJECTS_PATH//'~'/$HOME}; do
     [[ -d $d ]] && for dd in "${d}"/*; do
       [[ ! -d $dd ]] && continue
-      if [[ -f "${dd}/lib/bblib.sh" ]]; then
-        if [[ -f ${dd}/${dd##*/}.dev ]]; then
-          mode=public
-        elif [[ -f "${dd}/lib/bblib.dev" ]]; then
-          mode=private
-        else
+      if [[ -f "${dd}/lib/base.sh" ]]; then
+        if [[ -f "${dd}/lib/base.dev" ]]; then
           mode=develop
+        else
+          mode=private
         fi
         printf '%-12s  %-10s  %s\n' "${dd##*/}" "$mode" "${dd/$HOME/'~'}"
       fi

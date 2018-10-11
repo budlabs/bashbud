@@ -8,7 +8,7 @@ ___parsemanifest(){
     # esacpe single quotes
     gsub(sqo,sqol)
 
-    if (match($0,/[[:space:]]*[#] (long|option|env)-(.*)[[:space:]]*$/,ma)) {
+    if (match($0,/[[:space:]]*[#] (additional|long|option|env)-(.*)[[:space:]]*$/,ma)) {
       curvar=ma[1]"-"ma[2]
       start=1
     }

@@ -50,14 +50,17 @@ Show version and exit.
 ENVIRONMENT
 -----------
 
-**BASHBUD_NEW_SCRIPT_PATH**  
-Path to a directory where new scripts are linked. It is recommended to have this directory in PATH.
+**BASHBUD_DIR**  
+Defaults to: $XDG_CONFIG_HOME/bashbud  
 
-**BASHBUD_ALL_SCRIPTS_PATH**  
-Array of directories, separated by **:** in which `bashbud` projects cand be stored. Used to list and search for projects.
+**BASHBUD_PROJECTS_DIR**  
+Defaults to: $BASHBUD_DIR/projects  
 
-**BASHBUD_NEW_SCRIPT_DIR**  
-Path to directory where new scripts are placed.
+**BASHBUD_SCRIPTS_DIR**  
+Defaults to: $BASHBUD_DIR/scripts  
+
+**BASHBUD_PROJECTS_PATH**  
+Defaults to: $BASHBUD_PROJECTS_DIR  
 
 
 DEPENDENCIES

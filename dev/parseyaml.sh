@@ -5,15 +5,15 @@ ___parseyaml(){
 
   awk '
     BEGIN {
-      aafrm="___%s[%s]=\"%s\"\n"
+      aafrm="___%s[%s-%s]=\"%s\"\n"
       iafrm="___%s+=(\"%s\")\n"
     }
-    /./ && match($0,/([[:space:]]*)([-]{,1})[[:space:]]*([a-zA-Z_-]*)([:]{,1})[[:space:]]*(.*)[[:space:]]*$/,ma) {
+    /./ && match($0,/([[:space:]]*)([-]{,1})[[:space:]]*([0-9a-zA-Z_-]*)([:]{,1})[[:space:]]*(.*)[[:space:]]*$/,ma) {
       iskey=islist=0
       curind=length(ma[1])
       rol=ma[5]
 
-      if (curind > lastind) {parkey=lastkey}
+      if (curind > lastind) {parkey=lastkey;asindx=0}
       if (curind < lastind && $0 !~ /^[[:space:]]*$/) {
         block="none"
       }
@@ -55,7 +55,8 @@ ___parseyaml(){
 
       # associative array
       if (curind>0 && iskey==1) {
-        printf  aafrm, gensub("-","_","g",parkey), curkey, rol
+        gsub(/[$]/,"\\$",rol)
+        printf  aafrm, gensub("-","_","g",parkey), asindx++, curkey, rol
       } 
 
       # indexed array list

@@ -6,6 +6,7 @@ IFS=$' \n\t'
 declare -A ___info
 declare -A ___environment_variables
 declare -A ___autoopts
+declare -A __o
 
 ___file="${___dir}/$(basename "${___source}")"
 ___name="$(basename "${___file}" .sh)"
@@ -40,7 +41,7 @@ eval "$(___parseyaml <(
 ___autoparse "${@}"
 
 for ___f in "${___dir}/lib"/*; do
-  [[ ${___f##*/} =~ ^(bashbud|bblib) ]] && continue
+  [[ ${___f##*/} =~ ^(bashbud|base) ]] && continue
   source "$___f"
 done
 
