@@ -1,8 +1,8 @@
 ---
 description: >
   Boilerplate and template maker for bash scripts
-updated:       2018-10-03
-version:       0.026
+updated:       2018-10-17
+version:       0.035
 author:        budRich
 repo:          https://github.com/budlabs
 created:       2018-09-20
@@ -13,6 +13,7 @@ environment-variables:
     BASHBUD_PROJECTS_DIR: $BASHBUD_DIR/projects
     BASHBUD_SCRIPTS_DIR: $BASHBUD_DIR/scripts
     BASHBUD_PROJECTS_PATH: $BASHBUD_PROJECTS_DIR
+    BASHBUD_INFO_FOLD: 80
 synopsis: |
     --help|-h
     --version|-v

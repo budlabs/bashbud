@@ -176,6 +176,8 @@ ___autoparse(){
 ___callfunc(){ eval "___${1}" ;}
 
 ___composemanpage(){
+  ___setinfo
+  
   mkdir -p "${___dir}/doc/man"
   printf '%s' "# ${___about}" > "${___dir}/doc/man/${___name}.md" 
   printf '%s' "${___header}" "${___about}" "${___footer}" | \
@@ -298,7 +300,11 @@ ___hardbase(){
   echo
   
   ___hardenv
+  echo
+
   ___hardhelp
+  echo
+  
   ___hardopts
   ___hardstdin
   ___hardlibloop
@@ -323,12 +329,7 @@ ___hardenv(){
 }
 
 ___hardhelp(){
-  # printf '%s\n%s \\\n'"'"'%s'"'"'\n}\n' \
-  #   '___printhelp(){' '>&2 echo' "$(
-  #     ___printhelp | sed 's/'"'"'/'"'"'"'"'"'"'"'"'/g'
-  #   )"
   
-  # echo
   echo '___printhelp(){'
   echo "cat << 'EOB' >&2"
   ___printhelp
@@ -365,7 +366,7 @@ ___hardopts(){
 
   ((${#___autoopts[@]}>0)) && for o in "${!___autoopts[@]}"; do
     echo -n "    "
-    [[ -n ${___autoopts[$o]:-} ]] \
+    [[ ${___autoopts[$o]//:} != "" ]] \
       && echo -n "-${___autoopts[$o]//:} | "
     echo -n "--$o ) "
     isflag=0
@@ -465,20 +466,34 @@ ___hardversion(){
 ___parsemanifest(){
   local f="$1"
   awk '
-  BEGIN {sqo="'"'"'";sqol=sqo "\"" sqo "\"" sqo}
+  BEGIN {sqo="'"'"'";sqol=sqo "\"" sqo "\"" sqo;chain=0}
   {
     # esacpe single quotes
     gsub(sqo,sqol)
 
     if (match($0,/[[:space:]]*[#] (additional|long|option|env)-(.*)[[:space:]]*$/,ma)) {
+
+      if (curvar && avar[curvar]=="X") {
+        avar[curvar]="INCHAIN"
+        if (chain == 0) {chain=curvar}
+        else {chain=curvar " " chain }
+      }
+
       curvar=ma[1]"-"ma[2]
+      avar[curvar]="X"
       start=1
     }
 
-
-
     else if (start==1 && $0 !~ /^[[:space:]]*$/) {start++;blanks=0}
-    if (start==2) {avar[curvar]=$0;start++}
+    if (start==2) {
+      if (chain != 0) {
+        avar[curvar]="CHAIN=" chain "\n" $0
+        chain=0
+      } 
+      else
+        avar[curvar]=$0
+      start++
+    }
     
     else if (start>2 && $0 ~ /^[[:space:]]*$/) {blanks++}
     else if (start>2) {
@@ -615,107 +630,128 @@ ___printhelp(){
        if(ind=="1"){$0="   " $0}
        print $0
      }
-   ' | fold -80 -s
+   ' | fold "-${BASHBUD_INFO_FOLD:-80}" -s
  }
 
- ___setinfo(){
- local o lo so 
 
- # shellcheck disable=SC2016
- ___about="$(
- echo "\`${___name}\` - ${___description}"
- echo "
- SYNOPSIS
- --------
+___setinfo(){
+local o lo so 
 
- ${___synopsis}"
+# shellcheck disable=SC2016
+___about="$(
+echo "\`${___name}\` - ${___description}"
+echo "
+SYNOPSIS
+--------
 
- [[ -n ${___info[long-description]:-} ]] && {
- echo "
- DESCRIPTION
- -----------
+${___synopsis}"
 
- ${___info[long-description]}
- "
+[[ -n ${___info[long-description]:-} ]] && {
+echo "
+DESCRIPTION
+-----------
+
+${___info[long-description]}
+"
+}
+
+echo "
+OPTIONS
+-------
+"
+
+for o in $(printf '%s\n' "${!___info[@]}" | sort); do
+ [[ $o =~ ^options ]] || continue
+
+ lo=${o#*-}
+
+ [[ -z ${___info[option-${lo}]:-} ]] && continue
+ [[ ${___info[option-${lo}]} = INCHAIN ]] && continue
+
+ so="${___info[$o]:-}"
+ [[ $so ]] \
+   && printf '`--%s`|`-%s`' "$lo" "$so" \
+   || printf '`--%s`' "$lo" 
+ echo " ${___info[optarg-${lo}]:-}  "
+
+ [[ ${___info[option-${lo}]} =~ ^CHAIN= ]] && {
+   chain="$(echo "${___info[option-${lo}]}" | head -1)"
+   ___info[option-${lo}]="$(echo "${___info[option-${lo}]}" | tail +2)"
+
+   chain=${chain#*=}
+   for c in ${chain}; do
+     clo=${c#*-}
+     cso="${___info[options-$clo]:-}"
+     [[ $cso ]] \
+       && printf '`--%s`|`-%s`' "$clo" "$cso" \
+       || printf '`--%s`' "$clo" 
+     echo " ${___info[optarg-${clo}]:-}  "
+   done
  }
 
- echo "
- OPTIONS
- -------
- "
+ printf '%s\n\n' "${___info[option-${lo}]:-}"
+done 
 
- for o in $(printf '%s\n' "${!___info[@]}" | sort); do
-   [[ $o =~ ^options ]] || continue
-   lo=${o#*-}
-   [[ -z ${___info[option-${lo}]:-} ]] && continue
-   so="${___info[$o]:-}"
-   [[ $so ]] \
-     && printf '`--%s`|`-%s`' "$lo" "$so" \
-     || printf '`--%s`' "$lo" 
-   echo " ${___info[optarg-${lo}]:-}  "
-   printf '%s\n\n' "${___info[option-${lo}]:-}"
- done 
+((${#___environment_variables[@]}>0)) && {
+echo "
+ENVIRONMENT
+-----------
+"
 
- ((${#___environment_variables[@]}>0)) && {
- echo "
- ENVIRONMENT
- -----------
- "
-
- for e in $(for eo in "${!___environment_variables[@]}"; do echo "$eo"; done | sort); do
-   es="${e#*-}"
-   printf '**%s**  \nDefaults to: %s  \n' "$es" "${___environment_variables[$e]}"
-   [[ -n ${___info[env-${es}]:-} ]] && {
-     echo "${___info[env-${es}]}"
-   }
-   echo
- done
+for e in $(for eo in "${!___environment_variables[@]}"; do echo "$eo"; done | sort); do
+ es="${e#*-}"
+ printf '**%s**  \nDefaults to: %s  \n' "$es" "${___environment_variables[$e]}"
+ [[ -n ${___info[env-${es}]:-} ]] && {
+   echo "${___info[env-${es}]}"
  }
+ echo
+done
+}
 
- [[ -n ${___info[additional-info]:-}  ]] \
-   && echo "${___info[additional-info]}"
+[[ -n ${___info[additional-info]:-}  ]] \
+ && echo "${___info[additional-info]}"
 
- [[ -n ${___dependencies[0]:-} ]] && {
- echo "
- DEPENDENCIES
- ------------
- "
- for d in "${___dependencies[@]}"; do
-   echo "${d}  "
- done
- }
- )"
+[[ -n ${___dependencies[0]:-} ]] && {
+echo "
+DEPENDENCIES
+------------
+"
+for d in "${___dependencies[@]}"; do
+ echo "${d}  "
+done
+}
+)"
 
- ___header="
- ${___name^^} 1 ${___created} Linux \"User Manuals\"
- =======================================
+___header="
+${___name^^} 1 ${___created} Linux \"User Manuals\"
+=======================================
 
- NAME
- ----
- "
+NAME
+----
+"
 
- ___footer="$(
- echo "
- AUTHOR
- ------
+___footer="$(
+echo "
+AUTHOR
+------
 
- ${___author} <${___repo}>
- "
+${___author} <${___repo}>
+"
 
- [[ -n ${___see_also[0]:-} ]] && {
- echo "
- SEE ALSO
- --------
- "
+[[ -n ${___see_also[0]:-} ]] && {
+echo "
+SEE ALSO
+--------
+"
 
- s=""
- for d in "${___see_also[@]}"; do
-   s+="${d}, "
- done
- echo "${s%, }  "
- }
- )"
- }
+s=""
+for d in "${___see_also[@]}"; do
+ s+="${d}, "
+done
+echo "${s%, }  "
+}
+)"
+}
 
 ___printlorem(){
   ((${#___autoopts[@]}>0)) && {

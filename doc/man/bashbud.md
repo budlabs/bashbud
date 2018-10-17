@@ -62,6 +62,10 @@ Defaults to: $BASHBUD_DIR/scripts
 **BASHBUD_PROJECTS_PATH**  
 Defaults to: $BASHBUD_PROJECTS_DIR  
 
+**BASHBUD_INFO_FOLD**  
+Defaults to: 80  
+Width of text printed when `--help` option is triggered. (*same width will be used in `base.sh`*)
+
 
 DEPENDENCIES
 ------------

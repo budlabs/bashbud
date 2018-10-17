@@ -21,7 +21,7 @@ ___hardopts(){
 
   ((${#___autoopts[@]}>0)) && for o in "${!___autoopts[@]}"; do
     echo -n "    "
-    [[ -n ${___autoopts[$o]:-} ]] \
+    [[ ${___autoopts[$o]//:} != "" ]] \
       && echo -n "-${___autoopts[$o]//:} | "
     echo -n "--$o ) "
     isflag=0
