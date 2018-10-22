@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 OFS="${IFS}"
 IFS=$' \n\t'

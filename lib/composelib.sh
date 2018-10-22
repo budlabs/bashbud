@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 composelib() {
   local dir f
@@ -6,7 +6,7 @@ composelib() {
   dir="$1"
 
   {
-    echo '#!/bin/env bash'
+    echo '#!/usr/bin/env bash'
     echo
     for f in "$dir/dev/"*.sh; do
       [[ ${f##*/} = init.sh ]] && continue

@@ -1,8 +1,8 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 ___hardbase(){
 
-  echo '#!/bin/env bash'
+  echo '#!/usr/bin/env bash'
   echo
 
   ___hardversion

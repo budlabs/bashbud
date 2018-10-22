@@ -1,5 +1,6 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
+#!/usr/bin/env bash
 
 ___autoparse(){
   local ln sn au
@@ -172,8 +173,10 @@ ___autoparse(){
     && __lastarg= \
     || true
 }
+#!/usr/bin/env bash
 
 ___callfunc(){ eval "___${1}" ;}
+#!/usr/bin/env bash
 
 ___composemanpage(){
   ___setinfo
@@ -183,6 +186,7 @@ ___composemanpage(){
   printf '%s' "${___header}" "${___about}" "${___footer}" | \
     go-md2man > "${___dir}/doc/man/${___name}.1"
 }
+#!/usr/bin/env bash
 
 ___composereadme(){
 
@@ -290,10 +294,11 @@ ___composereadme(){
     echo
   }
 }
+#!/usr/bin/env bash
 
 ___hardbase(){
 
-  echo '#!/bin/env bash'
+  echo '#!/usr/bin/env bash'
   echo
 
   ___hardversion
@@ -309,6 +314,7 @@ ___hardbase(){
   ___hardstdin
   ___hardlibloop
 }
+#!/usr/bin/env bash
 
 ___hardenv(){
   local e es lst
@@ -327,6 +333,7 @@ ___hardenv(){
     done
   }
 }
+#!/usr/bin/env bash
 
 ___hardhelp(){
   
@@ -336,6 +343,7 @@ ___hardhelp(){
   echo 'EOB'
   echo '}'
 }
+#!/usr/bin/env bash
 
 ___hardlibloop(){
  printf '%s\n' \
@@ -344,6 +352,7 @@ ___hardlibloop(){
    '  source "$___f"' \
    'done' 
 }
+#!/usr/bin/env bash
 
 ___hardopts(){
 
@@ -399,6 +408,7 @@ ___hardopts(){
   echo 'IFS="${OFS}"'
   
 }
+#!/usr/bin/env bash
 
 ___hardpublic(){
 
@@ -406,7 +416,7 @@ ___hardpublic(){
   
   pmain="${___dir}/${___name}.sh"
 
-  echo '#!/bin/env bash'
+  echo '#!/usr/bin/env bash'
   echo
 
   ___hardversion
@@ -415,7 +425,7 @@ ___hardpublic(){
 
   ___hardenv
 
-  grep -v '^#!/bin/.*' "${pmain}" \
+  grep -v '^#!/usr/bin/.*' "${pmain}" \
     | awk '/#bashbud$/ {exit};{print}'
 
   echo
@@ -429,7 +439,7 @@ ___hardpublic(){
 
   for f in "${___dir}/lib"/*; do
     [[ ${f##*/} =~ ^(bashbud|base) ]] && continue
-    grep -v '^#!/bin/.*' "$f"
+    grep -v '^#!/usr/bin/.*' "$f"
   done
 
   awk '
@@ -437,6 +447,7 @@ ___hardpublic(){
     start==1 && $0 !~ /#bashbud$/ {print}
   ' "${pmain}"
 }
+#!/usr/bin/env bash
 
 ___hardstdin(){
   # include __stdin if it is used in main script
@@ -450,6 +461,7 @@ ___hardstdin(){
   }
   echo
 }
+#!/usr/bin/env bash
 
 ___hardversion(){
   # printf '%s\n%s \\\n'"'"'%s'"'"'\n}\n' \
@@ -462,6 +474,7 @@ ___hardversion(){
   echo 'EOB'
   echo '}'
 }
+#!/usr/bin/env bash
 
 ___parsemanifest(){
   local f="$1"
@@ -513,6 +526,7 @@ ___parsemanifest(){
   }
   ' "$f"
 }
+#!/usr/bin/env bash
 
 ___parseyaml(){
   local f="$1"
@@ -607,6 +621,7 @@ ___parseyaml(){
     }
   ' "$f"
 }
+#!/usr/bin/env bash
 
 ___printversion(){
   printf '%s\n' \
@@ -752,6 +767,7 @@ echo "${s%, }  "
 }
 )"
 }
+#!/usr/bin/env bash
 
 ___printlorem(){
   ((${#___autoopts[@]}>0)) && {

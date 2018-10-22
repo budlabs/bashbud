@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 ___hardpublic(){
 
@@ -6,7 +6,7 @@ ___hardpublic(){
   
   pmain="${___dir}/${___name}.sh"
 
-  echo '#!/bin/env bash'
+  echo '#!/usr/bin/env bash'
   echo
 
   ___hardversion
@@ -15,7 +15,7 @@ ___hardpublic(){
 
   ___hardenv
 
-  grep -v '^#!/bin/.*' "${pmain}" \
+  grep -v '^#!/usr/bin/.*' "${pmain}" \
     | awk '/#bashbud$/ {exit};{print}'
 
   echo
@@ -29,7 +29,7 @@ ___hardpublic(){
 
   for f in "${___dir}/lib"/*; do
     [[ ${f##*/} =~ ^(bashbud|base) ]] && continue
-    grep -v '^#!/bin/.*' "$f"
+    grep -v '^#!/usr/bin/.*' "$f"
   done
 
   awk '

@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 bumpproject(){
   local project pmain curpath curmode

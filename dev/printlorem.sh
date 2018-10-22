@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 ___printlorem(){
   ((${#___autoopts[@]}>0)) && {

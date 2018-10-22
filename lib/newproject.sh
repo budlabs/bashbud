@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 newproject(){
   local trgdir tmpdir project d f
@@ -10,8 +10,8 @@ newproject(){
     && ERX "project ${project} already exist at $trgdir"
   
   atdir=(
-    "${BASHBUD_DIR}/template"
-    "/usr/share/doc/bashbud/template"
+    "${BASHBUD_DIR}/base"
+    "/usr/share/doc/bashbud/base"
   )
 
   for d in "${!atdir[@]}"; do
@@ -22,7 +22,7 @@ newproject(){
   done
 
   [[ -z ${tmpdir:-} ]] && {
-    ERX "couldn't locate template directory. " \
+    ERX "couldn't locate base directory. " \
     "Please install bashbud correctly. " \
     "See README.md for instructions how."
   }

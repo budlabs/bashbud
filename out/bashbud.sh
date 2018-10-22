@@ -1,9 +1,9 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 ___printversion(){
 cat << 'EOB' >&2
-bashbud - version: 0.026
-updated: 2018-10-03 by budRich
+bashbud - version: 0.035
+updated: 2018-10-17 by budRich
 EOB
 }
 
@@ -11,6 +11,7 @@ EOB
 : "${BASHBUD_PROJECTS_DIR:=$BASHBUD_DIR/projects}"
 : "${BASHBUD_SCRIPTS_DIR:=$BASHBUD_DIR/scripts}"
 : "${BASHBUD_PROJECTS_PATH:=$BASHBUD_PROJECTS_DIR}"
+: "${BASHBUD_INFO_FOLD:=80}"
 
 set -o errexit
 set -o pipefail
@@ -50,10 +51,10 @@ ___printhelp(){
 cat << 'EOB' >&2
 bashbud - Boilerplate and template maker for bash scripts
 
- SYNOPSIS
- --------
+SYNOPSIS
+--------
 
- bashbud --help|-h  
+bashbud --help|-h  
 bashbud --version|-v  
 bashbud --lib  
 bashbud --mode|-m [MODE] PROJECT  
@@ -63,16 +64,16 @@ bashbud --bump|-b PROJECT
 bashbud --lorem PROJECT  
 
 
- DESCRIPTION
- -----------
+DESCRIPTION
+-----------
 
- bashbud can be used to quickly create new scripts with cli-option support and 
+bashbud can be used to quickly create new scripts with cli-option support and 
 automatic documentation applied.
- 
 
- OPTIONS
- -------
- 
+
+OPTIONS
+-------
+
 --bump|-b PROJECT  
 bump option will update PROJECT by setting update date in manifest.md to the 
 current date, and also bump the verion number with (current version + 0.001). 
@@ -113,9 +114,9 @@ versions.
 Show version and exit.
 
 
- ENVIRONMENT
- -----------
- 
+ENVIRONMENT
+-----------
+
 BASHBUD_DIR  
 Defaults to: $XDG_CONFIG_HOME/bashbud  
 
@@ -128,10 +129,15 @@ Defaults to: $BASHBUD_DIR/scripts
 BASHBUD_PROJECTS_PATH  
 Defaults to: $BASHBUD_PROJECTS_DIR  
 
+BASHBUD_INFO_FOLD  
+Defaults to: 80  
+Width of text printed when --help option is triggered. (same width will be used 
+in base.sh)
 
- DEPENDENCIES
- ------------
- 
+
+DEPENDENCIES
+------------
+
 bash  
 gawk  
 sed  
@@ -155,7 +161,7 @@ while true; do
     -m | --mode ) __o[mode]="${2:-}" ; shift ;;
     -p | --publish ) __o[publish]="${2:-}" ; shift ;;
     -n | --new ) __o[new]="${2:-}" ; shift ;;
-    - | --lorem ) __o[lorem]="${2:-}" ; shift ;;
+    --lorem ) __o[lorem]="${2:-}" ; shift ;;
     -b | --bump ) __o[bump]="${2:-}" ; shift ;;
     --lib ) __o[lib]=1 ;;
     -- ) shift ; break ;;
@@ -216,7 +222,7 @@ composelib() {
   dir="$1"
 
   {
-    echo '#!/bin/env bash'
+    echo '#!/usr/bin/env bash'
     echo
     for f in "$dir/dev/"*.sh; do
       [[ ${f##*/} = init.sh ]] && continue

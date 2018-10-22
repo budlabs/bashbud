@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 ___hardstdin(){
   # include __stdin if it is used in main script
