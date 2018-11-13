@@ -74,7 +74,6 @@ newproject(){
   )
 
   bumpproject "${project}"
-  setprivmode "${trgdir}"
   
-  echo "created: ${trgdir}/${project}.sh"
+  echo "${trgdir}/${project}.sh"
 }

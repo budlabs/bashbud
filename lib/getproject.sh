@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 getproject(){
   local name
 
@@ -5,8 +7,7 @@ getproject(){
   
   listprojects | awk -v srch="$name" '
     $1 == srch {
-      print "curmode=" $2
-      print "curpath=\"" $3 "\""
+      print "curpath=\"" $2 "\""
       exit
     }
   '
