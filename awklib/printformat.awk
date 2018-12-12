@@ -29,10 +29,6 @@ function printformat(e,s,f,n,r,spliton,txa,cxa,i,l) {
   else if (l == 4)
     r = sprintf(f,cxa[1],cxa[2],cxa[3],cxa[4])
 
-  print e
-  print r
-  print ""
-
   return r
 
 }

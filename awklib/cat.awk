@@ -1,5 +1,4 @@
 function cat(e,r,trg,nfiles,filetype,cattype,catv,catfile,catdir,tmpfile) {
-  print e
   catv=""
   nfiles=0
   split(e,ea," ")
@@ -24,6 +23,7 @@ function cat(e,r,trg,nfiles,filetype,cattype,catv,catfile,catdir,tmpfile) {
   else {
     cattype="file"
     catex = isfile(trg)
+    filetype=gensub(/.*[.]/,"","g",trg)
   }
 
   # catex = 1 - file/dir doesnt exist
@@ -45,7 +45,6 @@ function cat(e,r,trg,nfiles,filetype,cattype,catv,catfile,catdir,tmpfile) {
 
       close(cmd)
 
-      if (filetype == "md") {print "jjjj"}
 
       # find ./tmp -maxdepth 1 -type f | sed s/.*[.]// | sort -u
       cmd = "find " catdir " -maxdepth 1 -type f "
@@ -53,7 +52,12 @@ function cat(e,r,trg,nfiles,filetype,cattype,catv,catfile,catdir,tmpfile) {
       if (nfiles > 0) {
         cmd = cmd "| head -" nfiles " "
       }
-      cmd = cmd "| cut -d ' ' -f2-9 | xargs cat"
+      # if markdown files append new lines at EOF
+      cmd = cmd "| cut -d ' ' -f2-9 | xargs "
+      if (filetype == "md")
+        cmd = cmd "-i sh -c \"cat {} && echo\""
+      else
+        cmd = cmd "cat"
     } else {
       cmd = "cat " trg
     }
@@ -72,6 +76,7 @@ function cat(e,r,trg,nfiles,filetype,cattype,catv,catfile,catdir,tmpfile) {
 
     close(cmd)
 
+    if (filetype == "md") {tmpfile=mdcat(tmpfile)}
     r=tmpfile
   } 
   

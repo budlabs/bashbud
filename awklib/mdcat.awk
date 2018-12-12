@@ -11,7 +11,7 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
     mdline=mdbody[k]
 
     # toggle code block
-    if (mdline ~ /^~~~.*/) {
+    if (mdline ~ /^```.*/) {
       incode = !incode
       thisline="tilde"
     }
@@ -32,13 +32,12 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
     }
 
     # numbered list: /^\s*[0-9]+[.])\s.*/
-    else if (mdline ~ /\s*[0-9]+[.]\s.*/) {
+    else if (mdline ~ /^\s*[0-9]+[.]\s.*/) {
       thisline="list"
     }
 
     # unnumbered list: /^\s*[*]\s.*/
-    else if (mdline ~ /\s*[*]\s.*/) {
-      # print mdline
+    else if (mdline ~ /^\s*[*]\s.*/) {
       thisline="list"
     }
 
@@ -49,12 +48,20 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
 
     else {
       thisline="normal"
-      nextfx=" "
     }
 
+    if (incode && thisline != "tilde") {
+      thisline="code"
+    }
 
     if (r=="") {r=mdline}
     else {
+
+      if (lastline ~ /normal|dspace/) {
+        if (!(thisline=="normal" && lastline=="normal")) {
+          r=r "%%%WRAPTHIS%%%"
+        }
+      }
 
       if (incode) {
         r=r mdline "\n"
@@ -94,6 +101,24 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
 
     lastline=thisline
   }
+
+  # wrap paragraphs
+  split("",mdbody)
+  split(r,mdbody,"\n")
+  r=""
+
+  for (k in mdbody) {
+    mdline=mdbody[k]
+    if (mdline ~ /%%%WRAPTHIS%%%$/) {
+      sub(/%%%WRAPTHIS%%%$/,"",mdline)
+      if (templatevars["wrap"]>0)
+        mdline=wrap(mdline,templatevars["wrap"])
+    }
+
+    if (r=="") {r=mdline}
+    else {r=r "\n" mdline}
+  }
+
   return r
 }
   

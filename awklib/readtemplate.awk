@@ -2,6 +2,7 @@ function readtemplate(r) {
   # end of template expand whole body
   # print to file, reset vars 
   if ($0 ~ /^___PRINT_TEMPLATE___.*/) {
+    print templatevars["target"]
     if (templatevars["target"] != "")
       print expandbody(doca[0]) > templatevars["target"]
     templateinit()

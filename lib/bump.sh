@@ -59,6 +59,7 @@ generate(){
     @include "awklib/cat"
     @include "awklib/setvar"
     @include "awklib/mdcat"
+    @include "awklib/wrap"
 
     BEGIN {
       sqo="'"'"'"

@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+newproject2(){
+  :
+
+  # __lastarg
+}
+
 newproject(){
   local trgdir tmpdir project d f
 
