@@ -48,6 +48,7 @@ function expandbody(body,r,lastif,toreplace,toexpand) {
           if (l%2==0) {
             toexpand=lapa[l]
             toreplace=gensub("[*]","[*]","g",lapa[l])
+            toreplace=gensub(/\^/,"\\\\^","g",toreplace)
             toreplace=gensub("[[]","@@@@","g",toreplace)
             toreplace=gensub("[]]","[]]","g",toreplace)
             toreplace=gensub("@@@@","[[]","g",toreplace)

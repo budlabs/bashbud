@@ -41,7 +41,7 @@ function readyaml() {
     # SYNOPSIS
     if (parkey="synopsis") {
       synline=gensub(/^[[:space:]]*/,"","g",$0)
-      synline=gensub(/[][]/,"","g",synline)
+      # synline=gensub(/[][]/,"","g",synline)
       synline=gensub(/[*]{2}.*/,"","g",synline)
       synline=gensub(/[|]/," | ","g",synline)
 
@@ -57,7 +57,7 @@ function readyaml() {
         if (field == "|") {curlink=lastopt}
 
         # longoptions:
-        else if (match(field,/^--(\w+)/,ma)) {
+        else if (match(field,/^[[]?--(\w+)/,ma)) {
           curlng=ma[1]
           if (optnum[curlng] !~ /./) {optnum[curlng] = curopt++}
           gsub(field" ","`"field"` ",oline)
@@ -70,7 +70,7 @@ function readyaml() {
         }
 
         # shortoption:
-        else if (match(field,/^[-]([a-zA-Z])/,ma)) {
+        else if (match(field,/^[[]?[-]([a-zA-Z])/,ma)) {
           curshrt=ma[1]
           gsub(field" ","`"field"` ",oline)
           lastopt=curshrt
@@ -81,7 +81,8 @@ function readyaml() {
 
         # arguments
         else {
-          amani["options"][optnum[lastkey]][lastkey]["arg"]=field
+          if (field ~ /^[^[]/)
+            amani["options"][optnum[lastkey]][lastkey]["arg"]=field
         }
       }
     }
@@ -101,7 +102,8 @@ function readyaml() {
 
   # indexed array list
   else if (curind>0 && iskey==0 && islist==1) {
-    amani[gensub("-","_","g",parkey)][isindx++]=listitem
+    amani[gensub("-","_","g",parkey)][isindx][listitem]["index"]=isindx
+    isindx++
   } 
 
   # indexed array brackets
@@ -111,7 +113,9 @@ function readyaml() {
     isindx=0
     split(thislist,la,",")
     for (li in la) {
-      amani[gensub("-","_","g",curkey)][isindx++]=la[li]
+      amani[gensub("-","_","g",curkey)][isindx][la[li]]["index"]=isindx
+      isindx++
+      # amani[gensub("-","_","g",curkey)][isindx++]=la[li]
     }
   } 
 

@@ -5,27 +5,32 @@ set -o pipefail
 set -o nounset
 
 main(){
-  local trgdir
 
   IFS=$'\n\t'
 
-
+  # --new|-n  [GENERATOR]  **TARGET_DIR**
   if [[ ${__o[new]:-} = 1 ]]; then
+    
     case $# in
-      1 ) ERX "no directory specified" ;;
-      3 ) newproject2 "$1" ;;
+      0 ) ERX "no directory specified" ;;
+      2 ) newproject "$1" ;;
+      1 ) newproject      ;;
+      * ) ___printhelp    ;;
     esac
-  elif [[ -n ${__o[bump]:-} ]]; then
-    bumpproject "${__o[bump]}"
-  elif [[ -z ${__o[*]:-} ]] && [[ -z "${__lastarg:-}" ]]; then
-    listprojects
-  elif [[ -n ${__o[lorem]:-} ]]; then
-    letslorem "${__o[lorem]}"
+
+  # --bump|-b  [PROJECT_DIR]
+  elif [[ ${__o[bump]:-} = 1 ]]; then
+    bumpproject "${1:-$PWD}"
+  elif [[ ${__o[version]:-} = 1 ]]; then
+    ___printversion
+    exit
   else
     ___printhelp
     exit
   fi
 }
 
-source init.sh #bashbud
-main "${@:-}" #bashbud
+___source="$(readlink -f "${BASH_SOURCE[0]}")"  #bashbud
+___dir="${___source%/*}"                        #bashbud
+source "$___dir/init.sh"                        #bashbud
+main "$@"                                       #bashbud

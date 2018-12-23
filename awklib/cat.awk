@@ -76,7 +76,10 @@ function cat(e,r,trg,nfiles,filetype,cattype,catv,catfile,catdir,tmpfile) {
 
     close(cmd)
 
-    if (filetype == "md") {tmpfile=mdcat(tmpfile)}
+    if (filetype == "md") {
+      tmpfile=mdcat(tmpfile)
+      tmpfile=wrapcheck(tmpfile)
+    }
     r=tmpfile
   } 
   

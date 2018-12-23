@@ -58,7 +58,7 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
     else {
 
       if (lastline ~ /normal|dspace/) {
-        if (!(thisline=="normal" && lastline=="normal")) {
+        if (!(thisline ~ /normal|dspace/ && lastline=="normal")) {
           r=r "%%%WRAPTHIS%%%"
         }
       }
@@ -102,21 +102,11 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
     lastline=thisline
   }
 
-  # wrap paragraphs
   split("",mdbody)
   split(r,mdbody,"\n")
-  r=""
-
-  for (k in mdbody) {
-    mdline=mdbody[k]
-    if (mdline ~ /%%%WRAPTHIS%%%$/) {
-      sub(/%%%WRAPTHIS%%%$/,"",mdline)
-      if (templatevars["wrap"]>0)
-        mdline=wrap(mdline,templatevars["wrap"])
-    }
-
-    if (r=="") {r=mdline}
-    else {r=r "\n" mdline}
+  
+  if (length(mdbody) == 1 && lastline ~ /normal|dspace/) {
+    r = r "%%%WRAPTHIS%%%"
   }
 
   return r

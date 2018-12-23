@@ -1,48 +1,58 @@
 #!/usr/bin/env bash
 
 bumpproject(){
-  local project curpath
+  local projectdir="${1/'~'/$HOME}"
 
-  if [[ -d "$1" ]]; then
-    curpath="$1"
-  else
-    project="${1:-}"
-    
-    eval "$(getproject "$project")"
+  [[ -f "$projectdir/manifest.md" ]] \
+    || ERX "$projectdir doesn't contain manifest.md"
 
-    [[ -z ${curpath:-} ]] \
-      && ERX "could not find project: $project"
-  fi
+  # update date and version number
+  dateupdate -bu "$projectdir/manifest.md"
 
-  curpath="${curpath/'~'/$HOME}"
-
-  echo "$(dateupdate -bu "${curpath}/manifest.md")" \
-    > "${curpath}/manifest.md"
-
-  generate "$curpath"
-
+  generate "$projectdir"
 }
 
-generate(){
-  local dir
+generate() {
+  local generatortype genpath
+  local projectdir="${1/'~'/$HOME}"
+  local templatedir="$projectdir/bashbud"
+  local projectname="${projectdir##*/}"
 
-  dir="${1:-.}"
+  # prepend full path if dirname is relative
+  [[ $projectdir =~ ^[^/] ]] \
+    && projectdir="$PWD/$projectdir"
 
-  [[ $dir = "." ]] \
-    && name="${PWD##*/}" \
-    || name="${dir##*/}"
+  # get generator and license type from manifest
+  eval "$(awk '
+    /^type:/ {print "generatortype=" $2}
+    /^license:/ {print "licensetype=" $2}
+    /^[.]{3}$/ {exit}
+    ' "$projectdir/manifest.md"
+  )"
 
-  if [[ -d ${dir}/generators ]]; then
-    gendir="$dir/generators"
-  elif [[ -d ${BASHBUD_DIR}/generators ]]; then
-    gendir="${BASHBUD_DIR}/generators"
-  elif [[ -d /usr/share/doc/bashbud/generators ]]; then
-    gendir="/usr/share/doc/bashbud/generators"
-  else
-    ERX "no generators found"
+
+  [[ -f $BASHBUD_DIR/licenses/${licensetype:=X} ]] \
+    && licensetemplate="$BASHBUD_DIR/licenses/$licensetype"
+
+  # templatedir path priority:
+  # 1. $projectdir/bashbud
+  # 2. $BASHBUD_DIR/generators/${generatortype:=default}/__templates
+  # 3. /usr/share/bashbud/generators/${generatortype:=default}/__templates
+
+  if [[ ! -d "$templatedir" ]]; then
+
+    genpath="generators/${generatortype:=default}/__templates"
+    
+    if [[ -d "$BASHBUD_DIR/$genpath" ]]; then
+      templatedir="$BASHBUD_DIR/$genpath"
+    elif [[ -d "/usr/share/bashbud/$genpath" ]]; then
+      templatedir="/usr/share/bashbud/$genpath"
+    else
+      ERX "could not locate generator: $generatortype"
+    fi
   fi
 
-  awk -v name="$name" -v dir="$dir" '
+  awk -v name="$projectname" -v dir="$projectdir" '
 
     @include "awklib/isfile"
     @include "awklib/isdir"
@@ -60,6 +70,7 @@ generate(){
     @include "awklib/setvar"
     @include "awklib/mdcat"
     @include "awklib/wrap"
+    @include "awklib/wrapcheck"
 
     BEGIN {
       sqo="'"'"'"
@@ -114,17 +125,25 @@ generate(){
 
 
   ' <(
-    cat "$dir/manifest.md"
-    [[ -d $dir/manifest.d ]] \
-      && cat "$dir/manifest.d/"*
+    cat "$projectdir/manifest.md"
+    [[ -d $projectdir/manifest.d ]] \
+      && cat "$projectdir/manifest.d/"*
     echo "___START___"
-    for d in "$gendir"/* ; do
+    for d in "$templatedir"/* ; do
       [[ -d $d ]] || continue
 
-      [[ -f $d/template ]] && {
-        cat "$d/template"
-        echo "___PRINT_TEMPLATE___${d##*/}"
+      [[ -f $d/__template ]] && {
+        cat "$d/__template"
+        echo "___PRINT_TEMPLATE___${d}"
       }
     done
+
+    [[ -n ${licensetemplate:-} ]] && {
+      cat "$licensetemplate"
+      echo "___PRINT_TEMPLATE___${licensetemplate%/*}"
+    }
+    
   )
+
+
 }

@@ -1,0 +1,83 @@
+.TH BASHBUD 1 2018\-12\-14 Linx "User Manuals"
+.SH NAME
+.PP
+\fB\fCbashbud\fR \- Boilerplate and template maker for bash scripts
+
+.SH SYNOPSIS
+.PP
+.RS
+
+.nf
+\-\-new|\-n   [GENERATOR] **TARGET\_DIR**
+\-\-bump|\-b  [PROJECT\_DIR]
+\-\-help|\-h
+\-\-version|\-v
+
+.fi
+.RE
+
+.SH DESCRIPTION
+.PP
+\fB\fCbashbud\fR can be used to quickly create new
+scripts with cli\-option support and automatic
+documentation applied.
+
+.SH OPTIONS
+.PP
+\fB\fC\-\-new\fR|\fB\fC\-n\fR
+.br
+This will create a new script named
+"BASHBUD\_NEW\_SCRIPT\_DIR/NAME/NAME.sh" and copy the
+info template to the same directory. The
+bashbud.sh lib script will get linked to the lib
+directory of the script.
+
+.PP
+\fB\fC\-\-bump\fR|\fB\fC\-b\fR
+.br
+\fB\fCbump\fR option will update PROJECT by setting
+update date in \fB\fCmanifest.md\fR to the current date,
+and also bump the verion number with (current
+version + 0.001). It will also temporarly set the
+project in development mode (if it isn't already)
+and generate readme and manpage files for PROJECT.
+
+.PP
+\fB\fC\-\-help\fR|\fB\fC\-h\fR
+.br
+Show help and exit.
+
+.PP
+\fB\fC\-\-version\fR|\fB\fC\-v\fR
+.br
+Show version and exit.
+
+.SH ENVIRONMENT
+.PP
+\fB\fCBASHBUD\_DIR\fR
+.br
+bashbud config dir location.
+defaults to: $XDG\_CONFIG\_HOME/bashbud
+
+.PP
+\fB\fCBASHBUD\_DATEFORMAT\fR
+.br
+Timeformat string to be used in manifest for
+updated and created keys. See \fB\fCdate(1)\fR for more
+info.
+defaults to: %Y\-%m\-%d
+
+.SH DEPENDENCIES
+.PP
+\fB\fCbash\fR
+\fB\fCgawk\fR
+\fB\fCsed\fR
+
+.SH AUTHOR
+.PP
+budRich 
+\[la]https://github.com/budlabs\[ra]
+
+.SH SEE ALSO
+.PP
+bash(1), awk(1), sed(1),

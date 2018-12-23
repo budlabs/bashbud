@@ -1,85 +1,46 @@
 #!/usr/bin/env bash
 
-newproject2(){
-  :
-
-  # __lastarg
-}
-
+# --new|-n  [GENERATOR]  **TARGET_DIR**
 newproject(){
-  local trgdir tmpdir project d f
 
-  project="${1:-}"
-  trgdir="${BASHBUD_PROJECTS_DIR:-}/${project}"
+  local f fn dn
 
-  [[ -d $trgdir ]] \
-    && ERX "project ${project} already exist at $trgdir"
+  local generator="${1:-default}"
+  local generatordir="$BASHBUD_DIR/generators/$generator"
+  local targetdir="${__lastarg/'~'/$HOME}"
+
+  # test if targetdir exist
+  [[ -d $targetdir ]] \
+    && ERX "$targetdir already exist."
+
+  # test if generator exist
+  [[ -d $generatordir ]] \
+    || ERX "generator DIR $generatordir doesn't exist"
   
-  atdir=(
-    "${BASHBUD_DIR}/base"
-    "/usr/share/doc/bashbud/base"
-  )
+  # create targetdir
+  mkdir -p "$targetdir"
 
-  for d in "${!atdir[@]}"; do
-    [[ -d ${atdir[$d]} ]] && {
-      tmpdir="$d"
-      break
-    }
+  # copy all files and directories from generatordir
+  # not starting with "__"
+  for f in "$generatordir"/*; do
+    fn="${f##*/}"
+    [[ $fn =~ ^__ ]] && continue
+    cp -rf "$f" "$targetdir"
   done
 
-  [[ -z ${tmpdir:-} ]] && {
-    ERX "couldn't locate base directory. " \
-    "Please install bashbud correctly. " \
-    "See README.md for instructions how."
-  }
+  # if __link dir exist, link files and creat
+  # directories if needed
+  if [[ -s "$generatordir/__link" ]]; then
+    for f in $(find "$generatordir/__link" -type f); do
+      dn="${f%/*}"
+      dn="${dn/$generatordir\/__link/$targetdir}"
+      mkdir -p "$dn"
+      ln -f "$f" "$dn"
+    done
+  fi
 
-  [[ -f /lib/bblib.sh ]] || {
-    ERX "couldn't locate /lib/bblib.sh" \
-    "Please install bashbud correctly." \
-    "See README.md for instructions how."
-  }
+  # update dates in manifest.md
+  dateupdate -cu "$targetdir/manifest.md"
 
-  ((tmpdir!=0)) && {
-    ERR "moving ${atdir[$tmpdir]} to ${atdir[0]}"
-    mkdir -p "${atdir[0]%/*}"
-    cp -r "${atdir[$tmpdir]}" "${atdir[0]}" 
-    tmpdir=0
-  }
-  
-  tmpdir=${atdir[$tmpdir]}
-
-  mkdir -p "${trgdir}"
-  (
-    cd "$trgdir" || ERX "couldn't create directory $trgdir"
-    # git init
-    cp -r "$tmpdir"/* "$trgdir"
-    [[ $(ls -A "${trgdir}/lib") ]] \
-      && rm "${trgdir}/lib/"*
-
-    [[ $(ls -A "${tmpdir}/lib") ]] && {
-      for f in "${tmpdir}/lib"/*; do
-        ln "$f" "${trgdir}/lib"
-      done
-    }
-
-    ln -f "/lib/bblib.sh" "${trgdir}/lib/base.sh"
-    touch "${trgdir}/lib/base.dev"
-
-    chmod +x \
-      "${trgdir}/main.sh"
-
-    # set date in manifest
-    echo "$(dateupdate -cu "${trgdir}/manifest.md")" \
-      > "${trgdir}/manifest.md"
-
-    mv "${trgdir}/main.sh" "${trgdir}/${project}.sh"
-
-    mkdir -p "${BASHBUD_SCRIPTS_DIR}"
-    ln -fs "${trgdir}/${project}.sh" \
-       "${BASHBUD_SCRIPTS_DIR}/${project}"
-  )
-
-  bumpproject "${project}"
-  
-  echo "${trgdir}/${project}.sh"
+  bumpproject "$targetdir"
 }

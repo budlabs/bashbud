@@ -1,6 +1,4 @@
 function readmanifest(ma,ach) {
-  # esacpe single quotes
-  gsub(sqo,sqol)
 
   if (match($0,/[[:space:]]*[#] (.*)[[:space:]]*$/,ma)) {
 

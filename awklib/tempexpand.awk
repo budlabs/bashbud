@@ -1,26 +1,35 @@
-function tempexpand(stuff,premd,txa,astf,expanderz,tmpfile) {
+function tempexpand(stuff,premd,txa,astf,nsub,expanderz,tmpfile) {
   expanderz=""
 
   split(stuff,txa," ")
 
 
-  if (length(txa)==1) {
 
-    if (stuff ~ /^amani[[].*/) {
-      sub("amani[[]","",stuff)
-      sub("[]]$","",stuff)
-      gsub("[][]"," ",stuff)
-      split(stuff, astf, " ")
-      if (length(astf)==1) {expanderz=amani[astf[1]]}
-      else if (length(astf)==2) {expanderz=amani[astf[1]][astf[2]]}
-      else if (length(astf)==3) {expanderz=amani[astf[1]][astf[2]][astf[3]]}
-      else if (length(astf)==4) {expanderz=amani[astf[1]][astf[2]][astf[3]][astf[4]]}
-    }
 
-    else {
-      expanderz=amani[stuff]
-    }
+  if (txa[1] ~ /^amani[[].*/) {
+    sub("amani[[]","",txa[1])
+    sub("[]]$","",txa[1])
+    gsub("[][]"," ",txa[1])
+    split(txa[1], astf, " ")
+    if (length(astf)==1) {expanderz=amani[astf[1]]}
+    else if (length(astf)==2) {expanderz=amani[astf[1]][astf[2]]}
+    else if (length(astf)==3) {expanderz=amani[astf[1]][astf[2]][astf[3]]}
+    else if (length(astf)==4) {expanderz=amani[astf[1]][astf[2]][astf[3]][astf[4]]}
   }
+
+  else {
+    expanderz=amani[txa[1]]
+  }
+
+  if (txa[2] ~ /[0-9]*:[0-9]*/) {
+    split(txa[2],nsub,":")
+    expanderz=substr(expanderz,nsub[1],nsub[2])
+  }
+
+  else if (txa[2] == "^^") {
+    expanderz=toupper(expanderz)
+  }
+
 
   
 
@@ -51,20 +60,22 @@ function tempexpand(stuff,premd,txa,astf,expanderz,tmpfile) {
 
   
   if (expanderz !~ /./) {expanderz=stuff}
+  expanderz = wrapcheck(expanderz)
   # fold
 
-  if (length(expanderz)>templatevars["wrap"] && templatevars["wrap"] != 0) {
-    tmpfile=""
-    cmd = "echo " sqo expanderz sqo " | fold -" templatevars["wrap"] " -s"
 
-    while ( ( cmd | getline result ) > 0 ) {
-      tmpfile=tmpfile "\n" result
-    }
+  # if (length(expanderz)>templatevars["wrap"] && templatevars["wrap"] != 0) {
+  #   tmpfile=""
+  #   cmd = "echo " sqo expanderz sqo " | fold -" templatevars["wrap"] " -s"
 
-    close(cmd)
-    expanderz=tmpfile
-  }
-  
+  #   while ( ( cmd | getline result ) > 0 ) {
+  #     tmpfile=tmpfile "\n" result
+  #   }
 
+  #   close(cmd)
+  #   expanderz=tmpfile
+  # }
+  # if (txa[2] == "^^")
+  #   print gensub("\n$","","g",expanderz)
   return gensub("\n$","","g",expanderz)
 }

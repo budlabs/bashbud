@@ -25,9 +25,10 @@ dateupdate(){
 
 
     awk \
+      -i inplace \
       -v bump="$bump" \
-      -v today="$(date +'%Y-%m-%d')" \
-      -v trg="trg" \
+      -v today="$(date +"${BASHBUD_DATEFORMAT}")" \
+      -v trg="$trg" \
       -v srch="$srch" '
         bump == 1 && $1 == "version:" {
           newver=$2 + 0.001
