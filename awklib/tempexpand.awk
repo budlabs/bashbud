@@ -3,9 +3,6 @@ function tempexpand(stuff,premd,txa,astf,nsub,expanderz,tmpfile) {
 
   split(stuff,txa," ")
 
-
-
-
   if (txa[1] ~ /^amani[[].*/) {
     sub("amani[[]","",txa[1])
     sub("[]]$","",txa[1])
@@ -29,9 +26,6 @@ function tempexpand(stuff,premd,txa,astf,nsub,expanderz,tmpfile) {
   else if (txa[2] == "^^") {
     expanderz=toupper(expanderz)
   }
-
-
-  
 
   # remove markdown
   if (templatevars["markdown"]=="false") {
@@ -61,21 +55,5 @@ function tempexpand(stuff,premd,txa,astf,nsub,expanderz,tmpfile) {
   
   if (expanderz !~ /./) {expanderz=stuff}
   expanderz = wrapcheck(expanderz)
-  # fold
-
-
-  # if (length(expanderz)>templatevars["wrap"] && templatevars["wrap"] != 0) {
-  #   tmpfile=""
-  #   cmd = "echo " sqo expanderz sqo " | fold -" templatevars["wrap"] " -s"
-
-  #   while ( ( cmd | getline result ) > 0 ) {
-  #     tmpfile=tmpfile "\n" result
-  #   }
-
-  #   close(cmd)
-  #   expanderz=tmpfile
-  # }
-  # if (txa[2] == "^^")
-  #   print gensub("\n$","","g",expanderz)
   return gensub("\n$","","g",expanderz)
 }

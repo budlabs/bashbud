@@ -17,6 +17,10 @@ newproject(){
   [[ -d $generatordir ]] \
     || ERX "generator DIR $generatordir doesn't exist"
   
+  # execute any pre-generate script
+  [[ -x "$generatordir/__pre-generate" ]] \
+    && "$generatordir/__pre-generate" "$targetdir"
+
   # create targetdir
   mkdir -p "$targetdir"
 
@@ -28,19 +32,20 @@ newproject(){
     cp -rf "$f" "$targetdir"
   done
 
-  # if __link dir exist, link files and creat
+  # if __link dir exist, link files and create
   # directories if needed
   if [[ -s "$generatordir/__link" ]]; then
     for f in $(find "$generatordir/__link" -type f); do
       dn="${f%/*}"
       dn="${dn/$generatordir\/__link/$targetdir}"
-      mkdir -p "$dn"
+      [[ -d $dn ]] || mkdir -p "$dn"
       ln -f "$f" "$dn"
     done
   fi
 
-  # update dates in manifest.md
-  dateupdate -cu "$targetdir/manifest.md"
+  # execute any post-generate script
+  [[ -x "$generatordir/__post-generate" ]] \
+    && "$generatordir/__post-generate" "$targetdir"
 
   bumpproject "$targetdir"
 }

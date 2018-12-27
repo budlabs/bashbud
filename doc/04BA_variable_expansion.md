@@ -1,4 +1,4 @@
-### variable expansion
+# variable expansion
 
 the simplest expression that can be defined in a **template body** is variable expansion.
 Simply write the name of a variable defined in the *manifest* and it will get expanded in the generated file.

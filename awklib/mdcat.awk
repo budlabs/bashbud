@@ -11,7 +11,7 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
     mdline=mdbody[k]
 
     # toggle code block
-    if (mdline ~ /^```.*/) {
+    if (mdline ~ /^[`]{3}.*/) {
       incode = !incode
       thisline="tilde"
     }
@@ -63,11 +63,11 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
         }
       }
 
-      if (incode) {
+      if (thisline == "code") {
         r=r mdline "\n"
       }
 
-      else if (thisline=="heading" || thisline=="hr") {
+      else if (thisline ~ /^(heading|hr|tilde)$/) {
         r=r "\n" mdline "\n"
       }
 

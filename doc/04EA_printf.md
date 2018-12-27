@@ -13,7 +13,19 @@ STRINGFORMAT and strings needs to be enclosed in the same type of quotes.
 EXAMPLE
 -------
 
-We use the same **manifest** as before.  
+
+**~/scripts/hello/manifest.md**  
+```text
+---
+updated:       2018-12-14
+version:       1.165
+author:        budRich
+created:       2001-11-09
+dependencies:  [bash, gawk, sed]
+...
+```
+
+ 
 **__template**  
 ```text
 ---

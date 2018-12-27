@@ -3,8 +3,8 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-bashbud - version: 1.165
-updated: 2018-12-14 by budRich
+bashbud - version: 1.212
+updated: 2018-12-27 by budRich
 EOB
 }
 
@@ -28,28 +28,12 @@ OPTIONS
 -------
 
 --new|-n  
-This will create a new script named
-"BASHBUD_NEW_SCRIPT_DIR/NAME/NAME.sh" and copy the
-info template to the same directory. The
-bashbud.sh lib script will get linked to the lib
-directory of the script.
-
 
 --bump|-b  
-bump option will update PROJECT by setting update
-date in manifest.md to the current date, and also
-bump the verion number with (current version +
-0.001). It will also temporarly set the project in
-development mode (if it isn't already) and
-generate readme and manpage files for PROJECT.
-
 
 --help|-h  
-Show help and exit.
-
 
 --version|-v  
-Show version and exit.
 EOB
 }
 

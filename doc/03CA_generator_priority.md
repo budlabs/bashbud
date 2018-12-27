@@ -40,7 +40,7 @@ BASHBUD_DIR/
 ```
 
 
-**project 1 directory**  
+**project 1 directory**
 ```
 PROJECT_DIR/
   manifest.md

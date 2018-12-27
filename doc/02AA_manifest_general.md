@@ -42,9 +42,3 @@ Creates a file with the string "hello world" to FILE
 # options-version-description
 Print version info to `stderr` and exit.
 ```
-
-
-
-
-
-

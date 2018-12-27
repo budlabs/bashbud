@@ -1,19 +1,51 @@
-function cat(e,r,trg,nfiles,filetype,cattype,catv,catfile,catdir,tmpfile) {
+function cat(e,r,trg,cea,catsort,catorder,nfiles,narg,ea,filetype,cattype,catv,catfile,catdir,tmpfile) {
   catv=""
   nfiles=0
   split(e,ea," ")
+  catsort="name"
+  catorder="asc"
 
-  if (ea[1] == "-v") {catv=ea[2];trg=ea[3]}
-  else {trg=ea[1]}
+  # number of arguments
+  narg = length(ea)
 
+  # target is the last argument
+  trg = ea[narg]
   trg = dir "/" trg
 
   catfile=gensub(".*/","","g",trg)
   catdir=gensub(catfile,"","g",trg)
 
-  # if last arg is an int
-  if (ea[length(ea)] ~ /^[0-9]*$/)
-    nfiles=ea[length(ea)]
+  Optind = 1    # skip ea[0] (cat)
+
+  # parse options:
+  # -v 'REGEX'  - grep -v 'REGEX'
+  # -t          - sort by time (defaults to name)
+  # -d          - sort order descending (defaults to asc)
+  # -n INT      - print the INT first results (defaults to all)
+  
+  # ascending (A before B)  
+  # decending (New before old)
+
+  while ((cea = getopt(narg-1, ea, "v:tdn:")) != -1) {
+    switch (cea) {
+      case "v":
+        catv = Optarg
+      break
+
+      case "t":
+        catsort = "time"
+      break
+
+      case "d":
+        catorder = "desc"
+      break
+
+      case "n":
+        if (Optarg ~ /^[0-9]*$/)
+          nfiles = Optarg
+      break
+    }
+  }
 
   # if fil ends with *: dir
   if (catfile == "*") {
@@ -45,24 +77,37 @@ function cat(e,r,trg,nfiles,filetype,cattype,catv,catfile,catdir,tmpfile) {
 
       close(cmd)
 
-
-      # find ./tmp -maxdepth 1 -type f | sed s/.*[.]// | sort -u
       cmd = "find " catdir " -maxdepth 1 -type f "
-      cmd = cmd "-printf \"%C@ %p\\n\" | sort -rn "
+
+      if (catsort == "time") {
+        cmd = cmd "-printf \"%C@ %p\\n\" | sort -n"
+        if (catorder == "desc")
+          cmd = cmd "r"
+        cmd = cmd "| cut -d ' ' -f2-9 "
+      }
+      else if (catorder == "desc")
+        cmd = cmd "| sort -r"
+      else
+        cmd = cmd "| sort"
+
       if (nfiles > 0) {
         cmd = cmd "| head -" nfiles " "
       }
+
+      cmd = cmd "| xargs "
+
+
       # if markdown files append new lines at EOF
-      cmd = cmd "| cut -d ' ' -f2-9 | xargs "
       if (filetype == "md")
         cmd = cmd "-i sh -c \"cat {} && echo\""
       else
         cmd = cmd "cat"
+
     } else {
       cmd = "cat " trg
     }
 
-    if (catv!="") {
+    if (catv != "") {
       cmd = cmd " | grep -v " catv
     }
 
@@ -81,9 +126,7 @@ function cat(e,r,trg,nfiles,filetype,cattype,catv,catfile,catdir,tmpfile) {
       tmpfile=wrapcheck(tmpfile)
     }
     r=tmpfile
-  } 
-  
+  }
 
   return r
-
 }

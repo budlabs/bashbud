@@ -3,8 +3,8 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-bashbud - version: 1.165
-updated: 2018-12-14 by budRich
+bashbud - version: 1.212
+updated: 2018-12-27 by budRich
 EOB
 }
 
@@ -60,48 +60,22 @@ OPTIONS
 -------
 
 --new|-n  
-This will create a new script named
-"BASHBUD_NEW_SCRIPT_DIR/NAME/NAME.sh" and copy the
-info template to the same directory. The
-bashbud.sh lib script will get linked to the lib
-directory of the script.
-
 
 --bump|-b  
-bump option will update PROJECT by setting update
-date in manifest.md to the current date, and also
-bump the verion number with (current version +
-0.001). It will also temporarly set the project in
-development mode (if it isn't already) and
-generate readme and manpage files for PROJECT.
-
 
 --help|-h  
-Show help and exit.
-
 
 --version|-v  
-Show version and exit.
 EOB
 }
 
 bumpproject(){
+  local generatortype licensetype genpath
   local projectdir="${1/'~'/$HOME}"
+  local templatedir="$projectdir/bashbud"
 
   [[ -f "$projectdir/manifest.md" ]] \
     || ERX "$projectdir doesn't contain manifest.md"
-
-  # update date and version number
-  dateupdate -bu "$projectdir/manifest.md"
-
-  generate "$projectdir"
-}
-
-generate() {
-  local generatortype genpath
-  local projectdir="${1/'~'/$HOME}"
-  local templatedir="$projectdir/bashbud"
-  local projectname="${projectdir##*/}"
 
   # prepend full path if dirname is relative
   [[ $projectdir =~ ^[^/] ]] \
@@ -109,18 +83,20 @@ generate() {
 
   # get generator and license type from manifest
   eval "$(awk '
-    /^type:/ {print "generatortype=" $2}
+    /^generator:/ {print "generatortype=" $2}
     /^license:/ {print "licensetype=" $2}
     /^[.]{3}$/ {exit}
     ' "$projectdir/manifest.md"
   )"
 
-
   [[ -f $BASHBUD_DIR/licenses/${licensetype:=X} ]] \
     && licensetemplate="$BASHBUD_DIR/licenses/$licensetype"
 
+  
+  # Find template DIR
+
   # templatedir path priority:
-  # 1. $projectdir/bashbud
+  # 1. $projectdir/bashbud (default)
   # 2. $BASHBUD_DIR/generators/${generatortype:=default}/__templates
   # 3. /usr/share/bashbud/generators/${generatortype:=default}/__templates
 
@@ -136,6 +112,108 @@ generate() {
       ERX "could not locate generator: $generatortype"
     fi
   fi
+
+  # execute any pre-apply script
+  [[ -x "$templatedir/__pre-apply" ]] \
+    && "$templatedir/__pre-apply" "$projectdir"
+
+
+  # determine file order/generate file list
+  setstream "$projectdir" "$templatedir" "$licensetemplate" \
+    | generate "$projectdir"
+
+}
+
+setstream() {
+  local projectdir="$1"
+  local templatedir="$2"
+  local licensetemplate="${3:-}"
+
+  local templatelist
+
+  cat "$projectdir/manifest.md"
+  echo "___START___"
+  
+  # make a list of all templates, 
+  # with __order in mind.
+  templatelist="$(
+  if [[ -f "$templatedir/__order" ]]; then
+    awk '
+      /^[^#]/ && $0 !~ /^\s*$/ {print}
+    ' "$templatedir/__order"
+    ls $templatedir | grep -v '^__'
+  else
+    ls $templatedir | grep -v '^__'
+  fi | awk -v d="$templatedir" '
+    !a[$0]++ {print d "/" $0}
+  ')"
+
+  for d in ${templatelist}; do
+    [[ -d $d ]] || continue
+
+    [[ -f $d/__template ]] && {
+      cat "$d/__template"
+      echo "___PRINT_TEMPLATE___${d}"
+    }
+  done
+
+  [[ -n ${licensetemplate:-} ]] && {
+    cat "$licensetemplate"
+    echo "___PRINT_TEMPLATE___${licensetemplate%/*}"
+  }
+}
+
+
+
+dateupdate(){
+
+  local f bump
+
+  f="${!#:-}"
+  bump=0
+
+  [[ -f $f ]] && [[ manifest.md = "${f##*/}" ]] && {
+
+    while getopts cub option; do
+      case "${option}" in
+        c ) dtu+=("created") ;;
+        u ) dtu+=("updated") ;;
+        b ) bump=1 ;;
+        *) exit 1 ;;
+      esac
+    done
+
+    trg=${#dtu[@]}
+    ((trg>1)) \
+      && srch="^created:$|^updated:$" \
+      || srch="^${dtu[0]}:\$"
+
+
+    awk \
+      -i inplace \
+      -v bump="$bump" \
+      -v today="$(date +"${BASHBUD_DATEFORMAT}")" \
+      -v trg="$trg" \
+      -v srch="$srch" '
+        bump == 1 && $1 == "version:" {
+          newver=$2 + 0.001
+          sub($2,newver,$0)
+          bump=0
+        }
+        fnd != trg && $1 ~ srch {sub($2,today,$0);fnd++}
+        {print}
+    ' "$f"
+  }
+
+}
+
+ERM(){ >&2 echo "$*"; }
+ERR(){ >&2 echo "[WARNING]" "$*"; }
+ERX(){ >&2 echo "[ERROR]" "$*" && exit 1 ; }
+
+generate() {
+  local projectdir="${1/'~'/$HOME}"
+  local projectname="${projectdir##*/}"
 
   awk -v name="$projectname" -v dir="$projectdir" '
 
@@ -156,6 +234,7 @@ generate() {
     @include "awklib/mdcat"
     @include "awklib/wrap"
     @include "awklib/wrapcheck"
+    @include "getopt"
 
     BEGIN {
       sqo="'"'"'"
@@ -209,70 +288,7 @@ generate() {
     }
 
 
-  ' <(
-    cat "$projectdir/manifest.md"
-    [[ -d $projectdir/manifest.d ]] \
-      && cat "$projectdir/manifest.d/"*
-    echo "___START___"
-    for d in "$templatedir"/* ; do
-      [[ -d $d ]] || continue
-
-      [[ -f $d/__template ]] && {
-        cat "$d/__template"
-        echo "___PRINT_TEMPLATE___${d}"
-      }
-    done
-
-    [[ -n ${licensetemplate:-} ]] && {
-      cat "$licensetemplate"
-      echo "___PRINT_TEMPLATE___${licensetemplate%/*}"
-    }
-    
-  )
-
-
-}
-
-dateupdate(){
-
-  local f bump
-
-  f="${!#:-}"
-  bump=0
-
-  [[ -f $f ]] && [[ manifest.md = "${f##*/}" ]] && {
-
-    while getopts cub option; do
-      case "${option}" in
-        c ) dtu+=("created") ;;
-        u ) dtu+=("updated") ;;
-        b ) bump=1 ;;
-        *) exit 1 ;;
-      esac
-    done
-
-    trg=${#dtu[@]}
-    ((trg>1)) \
-      && srch="^created:$|^updated:$" \
-      || srch="^${dtu[0]}:\$"
-
-
-    awk \
-      -i inplace \
-      -v bump="$bump" \
-      -v today="$(date +"${BASHBUD_DATEFORMAT}")" \
-      -v trg="$trg" \
-      -v srch="$srch" '
-        bump == 1 && $1 == "version:" {
-          newver=$2 + 0.001
-          sub($2,newver,$0)
-          bump=0
-        }
-        fnd != trg && $1 ~ srch {sub($2,today,$0);fnd++}
-        {print}
-    ' "$f"
-  }
-
+  ' < /dev/stdin
 }
 
 # --new|-n  [GENERATOR]  **TARGET_DIR**
@@ -319,10 +335,6 @@ newproject(){
 
   bumpproject "$targetdir"
 }
-
-ERM(){ >&2 echo "$*"; }
-ERR(){ >&2 echo "[WARNING]" "$*"; }
-ERX(){ >&2 echo "[ERROR]" "$*" && exit 1 ; }
 
 OFS="${IFS}"
 IFS=$' \n\t'

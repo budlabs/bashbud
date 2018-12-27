@@ -39,7 +39,5 @@ function loop(cb,rets,obj,alias,body,r,i,j,k,repla,atl) {
     else {rets=rets r}
   }
 
-
   return rets
-
 }

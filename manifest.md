@@ -1,8 +1,8 @@
 ---
 description: >
   Boilerplate and template maker for bash scripts
-updated:       2018-12-14
-version:       1.165
+updated:       2018-12-27
+version:       1.212
 author:        budRich
 repo:          https://github.com/budlabs
 created:       2018-09-20
