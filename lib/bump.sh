@@ -25,12 +25,6 @@ bumpproject(){
 
   
   # Find template DIR
-
-  # templatedir path priority:
-  # 1. $projectdir/bashbud (default)
-  # 2. $BASHBUD_DIR/generators/${generatortype:=default}/__templates
-  # 3. /usr/share/bashbud/generators/${generatortype:=default}/__templates
-
   if [[ ! -d "$templatedir" ]]; then
 
     genpath="generators/${generatortype:=default}/__templates"

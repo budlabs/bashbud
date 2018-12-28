@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+today="$(date +%Y-%m-%d)"
+manifest="$1/manifest.md"
+
+awk -i inplace -v today="$today" '
+    $1 == "created:" {
+      sub($2,today,$0)
+    }
+    {print}
+' "$manifest"
