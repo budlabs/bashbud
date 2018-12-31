@@ -5,3 +5,34 @@
 
 projectdir=$1
 rm -f "$projectdir"/___{version,envs,help,getopt}
+
+# create TOC for wiki
+wdir="$projectdir/wiki/doc"
+wurl="https://github.com/budRich/bashbud/wiki"
+
+l1=l2=l3=""
+# if last main != new main
+for f in "$wdir/"*.md; do
+  fn="${f#${wdir}/}"
+  loc="${fn%%_*}"
+  name="${fn%.*}"
+  name="${name#*_}"
+  md="[$name]($wurl/${loc}_${name})"
+  s1="${loc:0:2}"
+  s2="${loc:2:1}"
+  s3="${loc:3:1}"
+  if [[ $l1 != "$s1" ]]; then
+    echo "- $md"
+  elif [[ $l2 != "$s2" ]]; then
+    echo "  - $md"
+  else
+    echo "    - $md"
+  fi
+  l1="$s1"
+  l2="$s2"
+  l3="$s3"
+done
+
+
+# /home/bud/git/tek/bashbud/wiki/doc/06AA_template_order.md
+# https://github.com/budRich/bashbud/wiki/01AA_project
