@@ -62,18 +62,12 @@ Show help and exit.
 Show version and exit.
 
 .SH USAGE
-.PP
-/home/bud/git/tek/bashbud/doc/01AA\_project.md
-
 
 .SH bashbud project
 .PP
 A project in the bashbud context refers to a
 directory and it's content that contains a
 [manifest.md] file.
-
-.PP
-/home/bud/git/tek/bashbud/doc/02AA\_manifest.md
 
 
 .SH the manifest
@@ -139,9 +133,6 @@ Print version info to `stderr` and exit.
 .fi
 .RE
 
-.PP
-/home/bud/git/tek/bashbud/doc/02BA\_manifest\_frontmatter.md
-
 .SH manifest front matter
 .PP
 The manifest front matter is the only mandatory
@@ -164,9 +155,6 @@ overridden by a [project specific generator].
 
 .PP
 Another special variable is [synopsis].
-
-.PP
-/home/bud/git/tek/bashbud/doc/02CA\_synopsis\_variable.md
 
 .SH the synopsis variable and options array
 .PP
@@ -246,9 +234,6 @@ is also desired to have a mandatory argument,
 that doesn't belong to the preceding option. Such
 arguments should be enclosed withing double
 asterisks (\fB\fC**DIRECTORY**\fR).
-
-.PP
-/home/bud/git/tek/bashbud/doc/02DA\_manifest\_body.md
 
 .SH manifest body
 .PP
@@ -362,9 +347,6 @@ markdown syntax, to make a hard linebreak in
 markdown end the line with two space characters or
 add a blank line after the line to break.
 
-.PP
-/home/bud/git/tek/bashbud/doc/03AA\_generators.md
-
 .SH generators
 .PP
 A generator is a directory containing templates
@@ -394,9 +376,6 @@ command\-line option, it will process the templates
 and scripts corresponding to the projects
 generator.
 
-.PP
-/home/bud/git/tek/bashbud/doc/03BA\_generator\_types.md
-
 
 .SH generator types
 .PP
@@ -424,9 +403,6 @@ If no \fBPSG\fP exists and no value to the
 \fB\fCgenerator\fR key in the manifest is declared. The
 \fB\fCdefault\fR \fBSWG\fP will be used if no \fB\fCdefault\fR
 \fBUSG\fP exists.
-
-.PP
-/home/bud/git/tek/bashbud/doc/03BB\_project\_specific\_generator.md
 
 
 .SH Project specific generators (\fBPSG\fP)
@@ -492,9 +468,6 @@ When this project would get updated with the
 \fB\fC\-\-bump\fR command\-line option,  the templates
 within the subdirectories of the \fIbashbud\fP
 directory would get get processed.
-
-.PP
-/home/bud/git/tek/bashbud/doc/03BC\_user\_specific\_generator.md
 
 
 .SH user specific generators (\fBUSG\fP)
@@ -601,9 +574,6 @@ generator consists of only the \fB\fC\_\_templates\fR
 directory, renamed to \fB\fCbashbud\fR and place in the
 root of \fIPROJECT\_DIR\fP\&.
 
-.PP
-/home/bud/git/tek/bashbud/doc/03BD\_system\_wide\_generator.md
-
 
 .SH system wide generator (\fBSWG\fP)
 .PP
@@ -624,9 +594,6 @@ name, \fBUSG\fP will have priority.
 By default there only exist one \fBSWG\fP:
 \fB\fCdefault\fR\&.
 
-.PP
-/home/bud/git/tek/bashbud/doc/03BE\_linked\_generators.md
-
 
 .SH linked generators
 .PP
@@ -644,9 +611,6 @@ also a way to use \fB\fC\-\-new\fR with \fBPSG\fP\&.
 
 .PP
 This is the recommended way of using bashbud.
-
-.PP
-/home/bud/git/tek/bashbud/doc/03CA\_generator\_priority.md
 
 
 .SH generator priority
@@ -800,9 +764,6 @@ ignoring the \fBUSG\fP mygen, even if it is
 specified in the manifest and exist in
 \fIBASHBUD\_DIR\fP\&.
 
-.PP
-/home/bud/git/tek/bashbud/doc/04AA\_templates.md
-
 
 .SH templates
 .PP
@@ -888,9 +849,6 @@ T}	0
 \fB\fCbashbud\fR will parse the \fBtemplate body\fP and
 evaluate and expand the expressions defined within
 double percentage symbols (\fB\fC%%\fR).
-
-.PP
-/home/bud/git/tek/bashbud/doc/04BA\_variable\_expansion.md
 
 
 .SH variable expansion
@@ -1030,9 +988,6 @@ Long description is now included with the
 markdown markup, notice also that the text is
 wrapped at the first space before column 50.
 
-.PP
-/home/bud/git/tek/bashbud/doc/04CA\_if\_statements.md
-
 
 .SH if statements
 .PP
@@ -1141,9 +1096,6 @@ budrich wrote this
 
 .fi
 .RE
-
-.PP
-/home/bud/git/tek/bashbud/doc/04DA\_arrays.md
 
 .SH array definitions
 .PP
@@ -1338,9 +1290,6 @@ defaults to: %Y\-%m\-%d
 .fi
 .RE
 
-.PP
-/home/bud/git/tek/bashbud/doc/04EA\_printf.md
-
 .SH printformat
 .PP
 \fB\fCprintf\fR functionality is available and is
@@ -1426,9 +1375,6 @@ bash,gawk,sed,
 
 .fi
 .RE
-
-.PP
-/home/bud/git/tek/bashbud/doc/04FA\_cat.md
 
 .SH import file content with cat
 .PP
@@ -1802,9 +1748,6 @@ Notice how none of the lines are wrapped since
 the files imported aren't markdown files with the
 \fB\fCmd\fR extension.
 
-.PP
-/home/bud/git/tek/bashbud/doc/05AA\_extension\_scripts.md
-
 
 .SH extension scripts
 .PP
@@ -1813,9 +1756,6 @@ with scripts. Before and after some operations are
 performed \fBbashbud\fP looks for files named and
 located in certain places, if these files exist
 and is executable, they will be executed.
-
-.PP
-/home/bud/git/tek/bashbud/doc/05BA\_template\_scripts.md
 
 .SH template scripts
 .PP
@@ -1899,9 +1839,6 @@ it should work as expected with f.i. python or
 perl scripts as long as they are executable and
 have the appropriate shebang.
 
-.PP
-/home/bud/git/tek/bashbud/doc/05CA\_bump\_scripts.md
-
 .SH bump scripts
 .PP
 Whenever a project is updated with the \fB\fC\-\-bump\fR
@@ -1951,9 +1888,6 @@ awk \-i inplace \-v today="$today" '
 This will increment the version number in the
 manifest front matter +0.001 and update the
 updated date, before any templates are processed.
-
-.PP
-/home/bud/git/tek/bashbud/doc/05DA\_generator\_scripts.md
 
 .SH generator scripts
 .PP
@@ -2023,9 +1957,6 @@ execute:
 Notice that the path to the new project is passed
 to the script, (\fIin bash that argument can be
 accessed with:\fP \fB\fC$1\fR)
-
-.PP
-/home/bud/git/tek/bashbud/doc/06AA\_template\_order.md
 
 .SH template order
 .PP

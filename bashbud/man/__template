@@ -45,7 +45,7 @@ OPTIONS
 
 USAGE
 -----
-%%cat -p doc/*%%
+%%cat wiki/doc/*%%
 
 %%if examples%%
 
