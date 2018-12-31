@@ -18,6 +18,7 @@ SYNOPSIS
 ```
 %%fi%%
 %%if long_description%%
+
 DESCRIPTION
 -----------
 %%long_description%%
@@ -42,7 +43,9 @@ OPTIONS
 %%done%%
 %%fi%%
 
-%%cat doc/*%%
+USAGE
+-----
+%%cat -p doc/*%%
 
 %%if examples%%
 

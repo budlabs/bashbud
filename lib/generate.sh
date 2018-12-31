@@ -73,8 +73,8 @@ generate() {
 
     END {
 
-      # for (k in amani["options"]["mode"]) {print k}
-      # print amani["options"]["mode"]["long"]
+      # for (k in amani["options"]) {print k}
+
     }
 
 

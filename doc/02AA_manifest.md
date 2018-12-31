@@ -9,6 +9,7 @@ The manifest consist of three parts:
 
 Below is an example of how a manifest can look like:  
 
+**PROJECT_DIR/manifest.md**  
 ```text
 this is just an example
 any text before the start of the front matter

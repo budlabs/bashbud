@@ -21,12 +21,11 @@ main(){
   # --bump|-b  [PROJECT_DIR]
   elif [[ ${__o[bump]:-} = 1 ]]; then
     bumpproject "${1:-$PWD}"
+    
   elif [[ ${__o[version]:-} = 1 ]]; then
     ___printversion
-    exit
   else
     ___printhelp
-    exit
   fi
 }
 

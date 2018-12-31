@@ -24,7 +24,7 @@ synopsis'--help|-h [COMMAND]
 --new FILE **DIRECTORY**'
 ```
 
-The above is also what would be printed if `%%synopsis%%` would be used in a **bashbud template**.
+The above is also what would be printed if `%%synopsis%%` would be used in a [template].
 
 
 But as mentioned, the content of the synopsis will also get stored in a special array called *options*:   

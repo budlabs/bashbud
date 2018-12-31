@@ -1,9 +1,10 @@
-function cat(e,r,trg,cea,catsort,catorder,nfiles,narg,ea,filetype,cattype,catv,catfile,catdir,tmpfile) {
+function cat(e,r,trg,cea,catsort,catprint,catorder,nfiles,narg,ea,filetype,cattype,catv,catfile,catdir,tmpfile) {
   catv=""
   nfiles=0
   split(e,ea," ")
   catsort="name"
-  catorder="asc"
+  catorder="normal"
+  catprint=""
 
   # number of arguments
   narg = length(ea)
@@ -20,13 +21,13 @@ function cat(e,r,trg,cea,catsort,catorder,nfiles,narg,ea,filetype,cattype,catv,c
   # parse options:
   # -v 'REGEX'  - grep -v 'REGEX'
   # -t          - sort by time (defaults to name)
-  # -d          - sort order descending (defaults to asc)
+  # -r          - reverse sort order
   # -n INT      - print the INT first results (defaults to all)
   
   # ascending (A before B)  
   # decending (New before old)
 
-  while ((cea = getopt(narg-1, ea, "v:tdn:")) != -1) {
+  while ((cea = getopt(narg-1, ea, "v:trpn:")) != -1) {
     switch (cea) {
       case "v":
         catv = Optarg
@@ -37,7 +38,11 @@ function cat(e,r,trg,cea,catsort,catorder,nfiles,narg,ea,filetype,cattype,catv,c
       break
 
       case "d":
-        catorder = "desc"
+        catorder = "reverse"
+      break
+
+      case "p":
+        catprint = "print"
       break
 
       case "n":
@@ -81,11 +86,11 @@ function cat(e,r,trg,cea,catsort,catorder,nfiles,narg,ea,filetype,cattype,catv,c
 
       if (catsort == "time") {
         cmd = cmd "-printf \"%C@ %p\\n\" | sort -n"
-        if (catorder == "desc")
+        if (catorder == "normal")
           cmd = cmd "r"
         cmd = cmd "| cut -d ' ' -f2-9 "
       }
-      else if (catorder == "desc")
+      else if (catorder == "reverse")
         cmd = cmd "| sort -r"
       else
         cmd = cmd "| sort"
@@ -96,12 +101,23 @@ function cat(e,r,trg,cea,catsort,catorder,nfiles,narg,ea,filetype,cattype,catv,c
 
       cmd = cmd "| xargs "
 
+      # if -p flag, print file name
+      if (catprint != "") {
+        # if markdown files append new lines at EOF
+        if (filetype == "md")
+          cmd = cmd "-i sh -c \"echo {} && cat {} && echo\""
+        else
+          cmd = cmd "-i sh -c \"echo {} && cat {}\""
+      }
+      else {
+        # if markdown files append new lines at EOF
+        if (filetype == "md")
+          cmd = cmd "-i sh -c \"cat {} && echo\""
+        else
+          cmd = cmd "cat"
+      }
 
-      # if markdown files append new lines at EOF
-      if (filetype == "md")
-        cmd = cmd "-i sh -c \"cat {} && echo\""
-      else
-        cmd = cmd "cat"
+      
 
     } else {
       cmd = "cat " trg

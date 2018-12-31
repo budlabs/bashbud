@@ -3,14 +3,15 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-bashbud - version: 1.212
-updated: 2018-12-27 by budRich
+bashbud - version: 1.251
+updated: 2018-12-31 by budRich
 EOB
 }
 
+
 # environment variables
 : "${BASHBUD_DIR:=$XDG_CONFIG_HOME/bashbud}"
-: "${BASHBUD_DATEFORMAT:=%Y-%m-%d}"
+
 
 set -o errexit
 set -o pipefail
@@ -33,24 +34,21 @@ main(){
   # --bump|-b  [PROJECT_DIR]
   elif [[ ${__o[bump]:-} = 1 ]]; then
     bumpproject "${1:-$PWD}"
+    
   elif [[ ${__o[version]:-} = 1 ]]; then
     ___printversion
-    exit
   else
     ___printhelp
-    exit
   fi
 }
-
 
 ___printhelp(){
   
 cat << 'EOB' >&2
-bashbud - Boilerplate and template maker for bash scripts
+bashbud - Generate documents and manage projects
 
 SYNOPSIS
 --------
-
 --new|-n   [GENERATOR] TARGET_DIR
 --bump|-b  [PROJECT_DIR]
 --help|-h
@@ -60,14 +58,38 @@ OPTIONS
 -------
 
 --new|-n  
+Creates a new project at TARGET_DIR (if
+TARGET_DIR doesnt exist, if it does script will
+exit), based on GENERATOR. If GENERATOR is omitted
+the default generator will be used. After all
+files are copied and linked, the project is bumped
+(same as: bashbud --bump TARGET_DIR).
+
 
 --bump|-b  
+The current working direcory will be set as
+PROJECT_DIR if none is specified. When a project
+is bumped,  bashbud will read the manifest.md file
+in PROJECT_DIR, (or exit if no manifest.md file
+exists). If a generator type is specified in the
+front matter  (the YAML section starting the
+document) of the manifest.md file, that generator
+will be used to update the project based on the
+content of the manifest.md file and the manifest.d
+directory (if it exists). If a directory named
+bashbud exists within PROJECT_DIR, that directory
+will be used as a generator.
+
 
 --help|-h  
+Show help and exit.
+
 
 --version|-v  
+Show version and exit.
 EOB
 }
+
 
 bumpproject(){
   local generatortype licensetype genpath
@@ -94,12 +116,6 @@ bumpproject(){
 
   
   # Find template DIR
-
-  # templatedir path priority:
-  # 1. $projectdir/bashbud (default)
-  # 2. $BASHBUD_DIR/generators/${generatortype:=default}/__templates
-  # 3. /usr/share/bashbud/generators/${generatortype:=default}/__templates
-
   if [[ ! -d "$templatedir" ]]; then
 
     genpath="generators/${generatortype:=default}/__templates"
@@ -117,94 +133,13 @@ bumpproject(){
   [[ -x "$templatedir/__pre-apply" ]] \
     && "$templatedir/__pre-apply" "$projectdir"
 
-
-  # determine file order/generate file list
-  setstream "$projectdir" "$templatedir" "$licensetemplate" \
+  # process manifest and templates
+  setstream "$projectdir" "$templatedir" "${licensetemplate:-}" \
     | generate "$projectdir"
 
-}
-
-setstream() {
-  local projectdir="$1"
-  local templatedir="$2"
-  local licensetemplate="${3:-}"
-
-  local templatelist
-
-  cat "$projectdir/manifest.md"
-  echo "___START___"
-  
-  # make a list of all templates, 
-  # with __order in mind.
-  templatelist="$(
-  if [[ -f "$templatedir/__order" ]]; then
-    awk '
-      /^[^#]/ && $0 !~ /^\s*$/ {print}
-    ' "$templatedir/__order"
-    ls $templatedir | grep -v '^__'
-  else
-    ls $templatedir | grep -v '^__'
-  fi | awk -v d="$templatedir" '
-    !a[$0]++ {print d "/" $0}
-  ')"
-
-  for d in ${templatelist}; do
-    [[ -d $d ]] || continue
-
-    [[ -f $d/__template ]] && {
-      cat "$d/__template"
-      echo "___PRINT_TEMPLATE___${d}"
-    }
-  done
-
-  [[ -n ${licensetemplate:-} ]] && {
-    cat "$licensetemplate"
-    echo "___PRINT_TEMPLATE___${licensetemplate%/*}"
-  }
-}
-
-
-
-dateupdate(){
-
-  local f bump
-
-  f="${!#:-}"
-  bump=0
-
-  [[ -f $f ]] && [[ manifest.md = "${f##*/}" ]] && {
-
-    while getopts cub option; do
-      case "${option}" in
-        c ) dtu+=("created") ;;
-        u ) dtu+=("updated") ;;
-        b ) bump=1 ;;
-        *) exit 1 ;;
-      esac
-    done
-
-    trg=${#dtu[@]}
-    ((trg>1)) \
-      && srch="^created:$|^updated:$" \
-      || srch="^${dtu[0]}:\$"
-
-
-    awk \
-      -i inplace \
-      -v bump="$bump" \
-      -v today="$(date +"${BASHBUD_DATEFORMAT}")" \
-      -v trg="$trg" \
-      -v srch="$srch" '
-        bump == 1 && $1 == "version:" {
-          newver=$2 + 0.001
-          sub($2,newver,$0)
-          bump=0
-        }
-        fnd != trg && $1 ~ srch {sub($2,today,$0);fnd++}
-        {print}
-    ' "$f"
-  }
-
+  # execute any post-apply script
+  [[ -x "$templatedir/__post-apply" ]] \
+    && "$templatedir/__post-apply" "$projectdir"
 }
 
 ERM(){ >&2 echo "$*"; }
@@ -215,25 +150,26 @@ generate() {
   local projectdir="${1/'~'/$HOME}"
   local projectname="${projectdir##*/}"
 
-  awk -v name="$projectname" -v dir="$projectdir" '
+  AWKPATH="${___dir:-}/awklib:/usr/share/bashbud/awklib:$(gawk 'BEGIN {print ENVIRON["AWKPATH"]}')" \
+    awk -v name="$projectname" -v dir="$projectdir" '
 
-    @include "awklib/isfile"
-    @include "awklib/isdir"
-    @include "awklib/getif"
-    @include "awklib/tempexpand"
-    @include "awklib/loop"
-    @include "awklib/templateinit"
-    @include "awklib/readtemplate"
-    @include "awklib/readmanifest"
-    @include "awklib/readyaml"
-    @include "awklib/printformat"
-    @include "awklib/makemanifest"
-    @include "awklib/expandbody"
-    @include "awklib/cat"
-    @include "awklib/setvar"
-    @include "awklib/mdcat"
-    @include "awklib/wrap"
-    @include "awklib/wrapcheck"
+    @include "isfile"
+    @include "isdir"
+    @include "getif"
+    @include "tempexpand"
+    @include "loop"
+    @include "templateinit"
+    @include "readtemplate"
+    @include "readmanifest"
+    @include "readyaml"
+    @include "printformat"
+    @include "makemanifest"
+    @include "expandbody"
+    @include "cat"
+    @include "setvar"
+    @include "mdcat"
+    @include "wrap"
+    @include "wrapcheck"
     @include "getopt"
 
     BEGIN {
@@ -283,8 +219,8 @@ generate() {
 
     END {
 
-      # for (k in amani["options"]["mode"]) {print k}
-      # print amani["options"]["mode"]["long"]
+      # for (k in amani["options"]) {print k}
+
     }
 
 
@@ -308,6 +244,10 @@ newproject(){
   [[ -d $generatordir ]] \
     || ERX "generator DIR $generatordir doesn't exist"
   
+  # execute any pre-generate script
+  [[ -x "$generatordir/__pre-generate" ]] \
+    && "$generatordir/__pre-generate" "$targetdir"
+
   # create targetdir
   mkdir -p "$targetdir"
 
@@ -319,26 +259,67 @@ newproject(){
     cp -rf "$f" "$targetdir"
   done
 
-  # if __link dir exist, link files and creat
+  # if __link dir exist, link files and create
   # directories if needed
   if [[ -s "$generatordir/__link" ]]; then
     for f in $(find "$generatordir/__link" -type f); do
       dn="${f%/*}"
       dn="${dn/$generatordir\/__link/$targetdir}"
-      mkdir -p "$dn"
+      [[ -d $dn ]] || mkdir -p "$dn"
       ln -f "$f" "$dn"
     done
   fi
 
-  # update dates in manifest.md
-  dateupdate -cu "$targetdir/manifest.md"
+  # execute any post-generate script
+  [[ -x "$generatordir/__post-generate" ]] \
+    && "$generatordir/__post-generate" "$targetdir"
 
   bumpproject "$targetdir"
 }
 
-OFS="${IFS}"
-IFS=$' \n\t'
+setstream() {
+  local projectdir="$1"
+  local templatedir="$2"
+  local licensetemplate="${3:-}"
 
+  local templatelist
+
+  cat "$projectdir/manifest.md"
+  [[ -d $projectdir/manifest.d ]] && {
+    for f in $projectdir/manifest.d/*; do
+      cat "$f"
+    done
+  }
+  echo "___START___"
+  
+  # make a list of all templates, 
+  # with __order in mind.
+  templatelist="$(
+  if [[ -f "$templatedir/__order" ]]; then
+    awk '
+      /^[^#]/ && $0 !~ /^\s*$/ {print}
+    ' "$templatedir/__order"
+    ls "$templatedir" | grep -v '^__'
+  else
+    ls "$templatedir" | grep -v '^__'
+  fi | awk -v d="$templatedir" '
+    !a[$0]++ {print d "/" $0}
+  ')"
+
+  for d in ${templatelist}; do
+    [[ -d $d ]] || continue
+
+    [[ -f $d/__template ]] && {
+      cat "$d/__template"
+      echo "___PRINT_TEMPLATE___${d}"
+    }
+  done
+
+  [[ -n ${licensetemplate:-} ]] && {
+    cat "$licensetemplate"
+    echo "___PRINT_TEMPLATE___${licensetemplate%/*}"
+  }
+}
 declare -A __o
 eval set -- "$(getopt --name "bashbud" \
   --options "nbhv" \
@@ -362,7 +343,6 @@ done
   && __lastarg="" \
   || true
 
-IFS="${OFS}"
 
 main "${@:-}"
 

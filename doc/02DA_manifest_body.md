@@ -71,6 +71,8 @@ options[new][arg]=FILE
 options[new][description]='Creates a new FILE'
 ```
 
-Notice how the dash (`-`) in **PROJECT_DIR/manifest.d/options.md** is used to specify which array and key to use.
+Notice how the dash (`-`) in the headings in 
+**PROJECT_DIR/manifest.d/options.md** 
+is used to specify which array and key to use.
 Also take note that the linebreak in the `long_description` variable is translated to a space ` `.
-This is markdown syntax, to make a hard linebreak in markdown end the line with two space characters.
+This is markdown syntax, to make a hard linebreak in markdown end the line with two space characters or add a blank line after the line to break.

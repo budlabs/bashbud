@@ -5,9 +5,9 @@ or as the sole action when the `--bump` command-line option is used.
 
 A template consist of three parts:  
 
-1. YAML front matter
-2. template body
-3. comment area
+1. Comment area
+2. YAML front matter
+3. Template body
 
 below is a simple template example:  
 

@@ -8,6 +8,11 @@ setstream() {
   local templatelist
 
   cat "$projectdir/manifest.md"
+  [[ -d $projectdir/manifest.d ]] && {
+    for f in $projectdir/manifest.d/*; do
+      cat "$f"
+    done
+  }
   echo "___START___"
   
   # make a list of all templates, 

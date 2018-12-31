@@ -16,6 +16,12 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
       thisline="tilde"
     }
 
+    # tables
+    else if (mdline ~ /^[|].*$/) {
+      thisline="table"
+
+    }
+
     # line ending with doublespace
     else if (mdline ~ /.*[ ]{2,}$/) {
       thisline="dspace"
@@ -56,6 +62,12 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
 
     if (r=="") {r=mdline}
     else {
+
+      if (thisline == "table") {
+        if (lastline != "table")
+          r = r "\n"
+        r = r mdline "\n"
+      }
 
       if (lastline ~ /normal|dspace/) {
         if (!(thisline ~ /normal|dspace/ && lastline=="normal")) {

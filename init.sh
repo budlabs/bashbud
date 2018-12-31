@@ -3,19 +3,20 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-bashbud - version: 1.212
-updated: 2018-12-27 by budRich
+bashbud - version: 1.251
+updated: 2018-12-31 by budRich
 EOB
 }
 
+
 # environment variables
 : "${BASHBUD_DIR:=$XDG_CONFIG_HOME/bashbud}"
-: "${BASHBUD_DATEFORMAT:=%Y-%m-%d}"
+
 
 ___printhelp(){
   
 cat << 'EOB' >&2
-bashbud - Boilerplate and template maker for bash scripts
+bashbud - Generate documents and manage projects
 
 SYNOPSIS
 --------
@@ -28,18 +29,42 @@ OPTIONS
 -------
 
 --new|-n  
+Creates a new project at TARGET_DIR (if
+TARGET_DIR doesnt exist, if it does script will
+exit), based on GENERATOR. If GENERATOR is omitted
+the default generator will be used. After all
+files are copied and linked, the project is bumped
+(same as: bashbud --bump TARGET_DIR).
+
 
 --bump|-b  
+The current working direcory will be set as
+PROJECT_DIR if none is specified. When a project
+is bumped,  bashbud will read the manifest.md file
+in PROJECT_DIR, (or exit if no manifest.md file
+exists). If a generator type is specified in the
+front matter  (the YAML section starting the
+document) of the manifest.md file, that generator
+will be used to update the project based on the
+content of the manifest.md file and the manifest.d
+directory (if it exists). If a directory named
+bashbud exists within PROJECT_DIR, that directory
+will be used as a generator.
+
 
 --help|-h  
+Show help and exit.
+
 
 --version|-v  
+Show version and exit.
 EOB
 }
 
-OFS="${IFS}"
-IFS=$' \n\t'
 
+for ___f in "${___dir}/lib"/*; do
+  source "$___f"
+done
 declare -A __o
 eval set -- "$(getopt --name "bashbud" \
   --options "nbhv" \
@@ -64,10 +89,6 @@ done
   || true
 
 
-for ___f in "${___dir}/lib"/*; do
-  source "$___f"
-done
 
-IFS="${OFS}"
 
 

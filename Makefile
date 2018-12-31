@@ -18,12 +18,12 @@ install:
 
 	mkdir -p $(LIBDIR)/awklib
 	@for fil in awklib/*.awk ; do \
-		   install -m 0644 $$fil $(LIBDIR)/awklib; \
+		install -m 0644 $$fil $(LIBDIR)/awklib; \
 	done
 	
 	mkdir -p $(LIBDIR)/licenses
 	@for fil in licenses/* ; do \
-		   install -m 0644 $$fil $(LIBDIR)/licenses; \
+		install -m 0644 $$fil $(LIBDIR)/licenses; \
 	done
 
 	@for f in $(shell find default -type f); do \

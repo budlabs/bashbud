@@ -23,8 +23,15 @@ BASHBUD_DIR/
         envs.md
       main.sh
       manifest.md
+    nextgen/      
+      __link/     
+        ...
+      __templates/
+        ...
+      manifest.md
 ```
 
+Two **USG** exist in the filetree above: `default` and `nextgen`.
 All files and directories within the root directory of the generator (*default*) that doesn't start with two underscores are referred to in the documentation as base files.
 The base files will get copied to PROJECT_DIR when the project is created with the `--new` command-line option.  
 
@@ -53,4 +60,4 @@ PROJECT_DIR/
 The content of the `__templates` directory is only used when a project is updated with the `--bump` command-line option.
 The `__templates` directory is actually the only part of a generator needed when a PROJECT is updated. 
 Since a **PSG** can only be used to `--bump` a project, 
-a **PSG** generator consists of only the `__templates` directory, renamed to `bashbud`, place in the root of *PROJECT_DIR*. 
+a **PSG** generator consists of only the `__templates` directory, renamed to `bashbud` and place in the root of *PROJECT_DIR*. 

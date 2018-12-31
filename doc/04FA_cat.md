@@ -1,7 +1,22 @@
 ## import file content with cat
 
-Sometimes it can be desired to import files that with content not defined in the manifest.
-This can be done by using the **cat** function within templates:  
+Sometimes it can be desired to import files in a template.
+This can be done by using the **cat** function:  
+
+The syntax for the **cat function** is as follows:  
+`%%cat [OPTIONS] FILE|DIR/*%%`  
+
+The following options are available:  
+```
+-v 'REGEX'  - grep -v 'REGEX'
+-t          - sort by time (defaults to name)
+-r          - reverse sort order
+-n INT      - print the INT first results (defaults to all)
+-p          - print the full path to the file before printing the content
+```
+
+EXAMPLE  
+-------
 
 ```text
 example 1. import single file import:
@@ -11,13 +26,14 @@ example 2. import all files in a directory:
 %%cat DIR/*%%
 
 example 3. import the n last modified files in a directory:
-%%cat DIR/* n%%
+%%cat -tn n DIR/*%%
 
 example 4. import single file, exclude lines matching PATTERN:
 %%cat -v 'PATTERN' FILE%%
 
-example 5. import the three last modified files in a directory, exclude lines matching PATTERN:
-%%cat -v 'PATTERN' DIR/* 3%%
+example 5. import the three first files in alphabetic order from DIR
+and exclude lines matching PATTERN:
+%%cat -n 3 -v 'PATTERN' DIR/*%%
 ```
 
 If the imported file have the extension `md` (*FILE.md*),
@@ -85,7 +101,7 @@ DEATH() {
 }
 ```
 
-Now lets try the different ways the **cat** function can be used.  
+Now lets try the different ways the **cat function** can be used.  
 
 **__template**  
 ```text
@@ -96,8 +112,6 @@ wrap: 20
 ...
 example 1. import single file import:
 %%cat doc/test1.md%%
-
-text after import ...
 ```
 
 **PROJECT_DIR/cat-example1.txt**  
@@ -111,8 +125,6 @@ demonstrate how the
 cat function in
 bashbud templates
 work.
-
-text after import ...
 ```
 
 Notice how markdown markup is stripped from the file content and that the paragraph is wrapped at column 20.
@@ -128,8 +140,6 @@ wrap: 20
 ...
 example 2. import all files in a directory:
 %%cat doc/*%%
-
-text after import ...
 ```
 
 **PROJECT_DIR/cat-example2.txt**  
@@ -159,8 +169,6 @@ trailing blank
 lines
 
 
-
-text after import ...
 ```
 
 A blank line is automatically added after each file is imported. Take notice how wrapping and linebreaks are applied.  
@@ -175,9 +183,7 @@ markdown: true
 wrap: 0
 ...
 example 3. import the n last modified files in a directory:
-%%cat doc/* 2%%
-
-text after import ...
+%%cat -tn 2 doc/*%%
 ```
 
 **PROJECT_DIR/cat-example3.txt**  
@@ -192,8 +198,6 @@ last line ended with two spaces
 test3 file
 this file have two leading and trailing blank lines
 
-
-text after import ...
 ```
 
 
@@ -206,8 +210,6 @@ wrap: 20
 ...
 example 5. import all files in a directory, exclude lines matching PATTERN , (lines with a leading hash):
 %%cat -v '^#' functions/*%%
-
-text after import ...
 ```
 
 **PROJECT_DIR/cat-example5.txt**  
@@ -220,8 +222,6 @@ hello() { echo "hello $1" ;}
 DEATH() {
     exit
 }
-
-text after import ...
 ```
 
 Notice how none of the lines are wrapped since the files imported aren't markdown files with the `md` extension.

@@ -7,7 +7,7 @@ The priority of generators is as follows:
 2. user specific generator (**USG**)
 3. system wide generator (**SWG**)
 
-Below is are some example to illustrate how this works:  
+Below are some examples to illustrate how this works:  
 
 
 ```

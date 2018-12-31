@@ -15,4 +15,4 @@ else
   ERR 'Could not generate man page, go-md2man not found in PATH'
 fi
 
-# rm "$1"
+rm "$1"

@@ -4,10 +4,7 @@ function makemanifest(oname,okey,oarr,obj,ii,kk,kkk,k) {
 
   # concatenate markdown
   for (k in amantemp) {
-    
     amantemp[k]=mdcat(amantemp[k])
-    # if (k == "environ-BASHBUD_DATEFORMAT-description")
-    #   print amantemp[k]
   }
 
   # fix chains

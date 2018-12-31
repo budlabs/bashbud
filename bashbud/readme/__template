@@ -56,7 +56,7 @@ wrap:     60
 
 ## updates
 
-%%cat releasenotes/* 3%%
+%%cat -tn 3 releasenotes/*%%
 %%if readme_issues%%
 
 ## known issues

@@ -1,8 +1,8 @@
 ---
 description: >
-  Boilerplate and template maker for bash scripts
-updated:       2018-12-27
-version:       1.212
+  Generate documents and manage projects
+updated:       2018-12-31
+version:       1.251
 author:        budRich
 repo:          https://github.com/budlabs
 created:       2018-09-20
@@ -11,7 +11,6 @@ dependencies:  [bash, gawk, sed]
 see_also:      [bash(1), awk(1), sed(1)]
 environ:
     BASHBUD_DIR: $XDG_CONFIG_HOME/bashbud
-    BASHBUD_DATEFORMAT: %Y-%m-%d
 synopsis: |
     --new|-n   [GENERATOR] **TARGET_DIR**
     --bump|-b  [PROJECT_DIR]

@@ -5,10 +5,11 @@
 generating documents based on templates
 with content written in markdown.  
 
-It is intended to be used for bash script projects,
-but it can be used to genrate other type of documents.  
+**bashbud** was created to organize and structure bash script projects,
+but it can be used to generate any type of document,
+and be used for other programming (or non-programming) projects. 
 
-It is written in **AWK** and **BASH**.
+It is written in **GAWK** and **BASH**.
 **bashbud** itself is used to generate the documentation.
 
 # readme_install
