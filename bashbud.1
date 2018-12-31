@@ -1748,6 +1748,89 @@ Notice how none of the lines are wrapped since
 the files imported aren't markdown files with the
 \fB\fCmd\fR extension.
 
+.SH template order
+.PP
+To have templates being processed in a certain
+order, place a file named \fB\fC\_\_order\fR in the
+\fBtemplate directory\fP\&.
+
+.SH EXAMPLE
+.PP
+.RS
+
+.nf
+PROJECT\_DIR/
+  bashbud/
+    version/
+      \_\_template
+    about/
+      \_\_template
+    manual/
+      \_\_template
+    contact/
+      \_\_template
+    \_\_order
+  manifest.md
+
+
+.fi
+.RE
+
+.PP
+The project above has a \fBPSG\fP (in the bashbud
+directory) with four templates: version, about,
+contact and manual.
+
+.PP
+\fBPROJECT\_DIR/bashbud/\_\_order\fP
+
+.PP
+.RS
+
+.nf
+# order of templates:
+
+manual
+apple
+
+about
+contact
+
+
+.fi
+.RE
+
+.PP
+Blank lines, lines starting with \fB\fC#\fR and lines
+that are not names of existing templates are
+ignored.
+
+.PP
+Existing templates not included in the \fB\fC\_\_order\fR
+file will be appended in pseudorandom order to the
+list.
+
+.PP
+The order of the templates in the example project
+will look like this:
+
+.PP
+.RS
+
+.nf
+manual
+about
+contact
+version
+
+
+.fi
+.RE
+
+.PP
+This can be useful when the result of one
+template is used in another.
+
 
 .SH extension scripts
 .PP
@@ -1957,89 +2040,6 @@ execute:
 Notice that the path to the new project is passed
 to the script, (\fIin bash that argument can be
 accessed with:\fP \fB\fC$1\fR)
-
-.SH template order
-.PP
-To have templates being processed in a certain
-order, place a file named \fB\fC\_\_order\fR in the
-\fBtemplate directory\fP\&.
-
-.SH EXAMPLE
-.PP
-.RS
-
-.nf
-PROJECT\_DIR/
-  bashbud/
-    version/
-      \_\_template
-    about/
-      \_\_template
-    manual/
-      \_\_template
-    contact/
-      \_\_template
-    \_\_order
-  manifest.md
-
-
-.fi
-.RE
-
-.PP
-The project above has a \fBPSG\fP (in the bashbud
-directory) with four templates: version, about,
-contact and manual.
-
-.PP
-\fBPROJECT\_DIR/bashbud/\_\_order\fP
-
-.PP
-.RS
-
-.nf
-# order of templates:
-
-manual
-apple
-
-about
-contact
-
-
-.fi
-.RE
-
-.PP
-Blank lines, lines starting with \fB\fC#\fR and lines
-that are not names of existing templates are
-ignored.
-
-.PP
-Existing templates not included in the \fB\fC\_\_order\fR
-file will be appended in pseudorandom order to the
-list.
-
-.PP
-The order of the templates in the example project
-will look like this:
-
-.PP
-.RS
-
-.nf
-manual
-about
-contact
-version
-
-
-.fi
-.RE
-
-.PP
-This can be useful when the result of one
-template is used in another.
 
 .SH ENVIRONMENT
 .PP

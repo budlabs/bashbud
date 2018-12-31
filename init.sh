@@ -3,7 +3,7 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-bashbud - version: 1.268
+bashbud - version: 1.269
 updated: 2018-12-31 by budRich
 EOB
 }
