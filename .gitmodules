@@ -1,3 +1,3 @@
 [submodule "wiki"]
 	path = wiki
-	url = https://github.com/budRich/bashbud.wiki.git
+	url = git@github.com:budlabs/bashbud.wiki.git

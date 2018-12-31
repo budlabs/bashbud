@@ -14,12 +14,9 @@ wrap:     60
 
 %%readme_install%%
 %%fi%%
-%%if long_description%%
 
 ## usage
 
-%%long_description%%
-%%fi%%
 %%if synopsis%%
 
 ```text

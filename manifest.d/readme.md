@@ -9,7 +9,7 @@ with content written in markdown.
 but it can be used to generate any type of document,
 and be used for other programming (or non-programming) projects. 
 
-It is written in **GAWK** and **BASH**.
+It is written in **gawk** and **bash**.
 **bashbud** itself is used to generate the documentation.
 
 # readme_install
@@ -27,3 +27,5 @@ sudo make install
 # readme_usage
 
 See the [bashbud wiki] or the manpage `bashbud(1)` for a detailed description on how **bashbud** works and what it can do.
+
+[bashbud wiki]: https://github.com/budRich/bashbud/wiki
