@@ -7,9 +7,12 @@ projectdir=$1
 rm -f "$projectdir"/___{version,envs,help,getopt}
 
 # create TOC for wiki
-wdir="$projectdir/wiki/doc"
+wroot="$projectdir/wiki"
+whome="$wroot/The-bashbud-wiki.md"
+wdir="$wroot/doc"
 wurl="https://github.com/budRich/bashbud/wiki"
 
+cat "$wroot/_Header.md" > "$whome"
 l1=l2=l3=""
 # if last main != new main
 for f in "$wdir/"*.md; do
@@ -31,7 +34,7 @@ for f in "$wdir/"*.md; do
   l1="$s1"
   l2="$s2"
   l3="$s3"
-done
+done >> "$whome"
 
 
 # /home/bud/git/tek/bashbud/wiki/doc/06AA_template_order.md
