@@ -55,13 +55,6 @@ function readyaml() {
 
         if (field == "|") {curlink=lastopt}
 
-        # --help|-h
-        # --version|-v
-        # --show|-s CONTAINER
-        # --float|-a [--target|-t CRITERION]
-        # --hide|-z CONTAINER(s)
-        # --layout|-l LAYOUT
-        # --move|-m DIRECTION|CONTAINER [--speed|-p INT]  [--target|-t CRITERION]
 
         # longoptions:
         else if (match(field,/^[[]?--(\w+)/,ma)) {
@@ -75,7 +68,6 @@ function readyaml() {
           # amani["options"][curlng]["long"]=curlng
           lastkey=curlng
           curlink=0
-          print ma[1]
         }
 
         # shortoption:
@@ -89,7 +81,7 @@ function readyaml() {
         }
 
         # arguments
-        else if (match(field,/^[^[](\w+)[^]]$/,ma))
+        else if (match(field,/^[^[](\w+)[^]]$/,ma)) {
           amani["options"][optnum[lastkey]][lastkey]["arg"]=ma[1]
         }
       }
