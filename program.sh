@@ -3,7 +3,7 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-bashbud - version: 1.277
+bashbud - version: 1.278
 updated: 2019-01-01 by budRich
 EOB
 }
@@ -287,7 +287,7 @@ setstream() {
 
   cat "$projectdir/manifest.md"
   [[ -d $projectdir/manifest.d ]] && {
-    for f in $projectdir/manifest.d/*; do
+    for f in "$projectdir/manifest.d/"*; do
       cat "$f"
     done
   }
@@ -316,10 +316,10 @@ setstream() {
     }
   done
 
-  [[ -n ${licensetemplate:-} ]] && {
+  if [[ -f ${licensetemplate:-} ]]; then
     cat "$licensetemplate"
     echo "___PRINT_TEMPLATE___${licensetemplate%/*}"
-  }
+  fi
 }
 declare -A __o
 eval set -- "$(getopt --name "bashbud" \

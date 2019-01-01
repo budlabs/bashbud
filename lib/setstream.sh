@@ -9,7 +9,7 @@ setstream() {
 
   cat "$projectdir/manifest.md"
   [[ -d $projectdir/manifest.d ]] && {
-    for f in $projectdir/manifest.d/*; do
+    for f in "$projectdir/manifest.d/"*; do
       cat "$f"
     done
   }
@@ -38,8 +38,8 @@ setstream() {
     }
   done
 
-  [[ -n ${licensetemplate:-} ]] && {
+  if [[ -f ${licensetemplate:-} ]]; then
     cat "$licensetemplate"
     echo "___PRINT_TEMPLATE___${licensetemplate%/*}"
-  }
+  fi
 }

@@ -3,6 +3,7 @@
 # delete files only used to build:
 # program.sh and init.sh
 
+echo "$1"
 projectdir=$1
 rm -f "$projectdir"/___{version,envs,help,getopt}
 
