@@ -81,7 +81,7 @@ function readyaml() {
         }
 
         # arguments
-        else if (match(field,/^[^[](\w+)[^]]$/,ma)) {
+        else if (match(field,/^[^[](\w+)[]]?$/,ma)) {
           amani["options"][optnum[lastkey]][lastkey]["arg"]=ma[1]
         }
       }
