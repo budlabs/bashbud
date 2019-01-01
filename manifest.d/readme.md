@@ -28,5 +28,5 @@ sudo make install
 
 See the [bashbud wiki] or the manpage `bashbud(1)` for a detailed description on how **bashbud** works and what it can do.
 
-[bashbud wiki]: https://github.com/budRich/bashbud/wiki
+[bashbud wiki]: https://github.com/budRich/bashbud/wiki  
 [AUR]: https://aur.archlinux.org/packages/bashbud
