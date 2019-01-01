@@ -9,6 +9,7 @@ cat << 'EOB' >&2
 %%name%% - %%description%%
 
 %%if synopsis%%
+
 SYNOPSIS
 --------
 %%synopsis%%

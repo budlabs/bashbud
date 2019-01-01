@@ -41,7 +41,6 @@ function readyaml() {
     # SYNOPSIS
     if (parkey="synopsis") {
       synline=gensub(/^[[:space:]]*/,"","g",$0)
-      # synline=gensub(/[][]/,"","g",synline)
       synline=gensub(/[*]{2}.*/,"","g",synline)
       synline=gensub(/[|]/," | ","g",synline)
 
@@ -56,10 +55,19 @@ function readyaml() {
 
         if (field == "|") {curlink=lastopt}
 
+        # --help|-h
+        # --version|-v
+        # --show|-s CONTAINER
+        # --float|-a [--target|-t CRITERION]
+        # --hide|-z CONTAINER(s)
+        # --layout|-l LAYOUT
+        # --move|-m DIRECTION|CONTAINER [--speed|-p INT]  [--target|-t CRITERION]
+
         # longoptions:
         else if (match(field,/^[[]?--(\w+)/,ma)) {
           curlng=ma[1]
           if (optnum[curlng] !~ /./) {optnum[curlng] = curopt++}
+          gsub(/[][]/,"",field)
           gsub(field" ","`"field"` ",oline)
           if (curlink!=0) var=curlink; else var=""
           lastopt=curlng
@@ -67,6 +75,7 @@ function readyaml() {
           # amani["options"][curlng]["long"]=curlng
           lastkey=curlng
           curlink=0
+          print ma[1]
         }
 
         # shortoption:
@@ -80,9 +89,8 @@ function readyaml() {
         }
 
         # arguments
-        else {
-          if (field ~ /^[^[]/)
-            amani["options"][optnum[lastkey]][lastkey]["arg"]=field
+        else if (match(field,/^[^[](\w+)[^]]$/,ma))
+          amani["options"][optnum[lastkey]][lastkey]["arg"]=ma[1]
         }
       }
     }
