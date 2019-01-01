@@ -31,10 +31,10 @@ sudo make install
 
 
 ```text
---new|-n   [GENERATOR] **TARGET_DIR**
---bump|-b  [PROJECT_DIR]
---help|-h
---version|-v
+bashbud --new|-n   [GENERATOR] **TARGET_DIR**|-n   [GENERATOR] **TARGET_DIR**
+bashbud --bump|-b  [PROJECT_DIR]|-b  [PROJECT_DIR]
+bashbud --help|-h|-h
+bashbud --version|-v|-v
 ```
 
 
