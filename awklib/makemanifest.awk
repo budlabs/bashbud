@@ -1,13 +1,15 @@
 # loop manifest array
 # reorder to amani array
-function makemanifest(oname,ssplit,okey,oarr,obj,ii,kk,kkk,k) {
+function makemanifest(oname,ssplit,okey,sr,oarr,obj,ii,kk,kkk,k) {
 
   if (amani["synopsis"] ~ /./) {
     split(amani["synopsis"],ssplit,"\n")
+    sr=""
     for (l in ssplit) {
-      sub(ssplit[l], amani["name"] " " ssplit[l], amani["synopsis"])
+      if (sr=="") {sr=amani["name"] " " ssplit[l]}
+      else {sr=sr "\n" amani["name"] " " ssplit[l]}
     }
-
+    amani["synopsis"]=sr
   }
   # concatenate markdown
   for (k in amantemp) {

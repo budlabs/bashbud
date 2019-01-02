@@ -3,7 +3,7 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-bashbud - version: 1.281
+bashbud - version: 1.284
 updated: 2019-01-02 by budRich
 EOB
 }
@@ -21,10 +21,10 @@ bashbud - Generate documents and manage projects
 
 SYNOPSIS
 --------
-bashbud --new|-n   [GENERATOR] TARGET_DIR|-n   [GENERATOR] TARGET_DIR
-bashbud --bump|-b  [PROJECT_DIR]|-b  [PROJECT_DIR]
-bashbud --help|-h|-h
-bashbud --version|-v|-v
+bashbud --new|-n   [GENERATOR] TARGET_DIR
+bashbud --bump|-b  [PROJECT_DIR]
+bashbud --help|-h
+bashbud --version|-v
 
 OPTIONS
 -------

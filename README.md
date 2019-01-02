@@ -70,7 +70,6 @@ can do.
 
 [bashbud wiki]: https://github.com/budRich/bashbud/wiki 
 [AUR]: https://aur.archlinux.org/packages/bashbud
-
 ## updates
 
 ## BUD IS BACK
