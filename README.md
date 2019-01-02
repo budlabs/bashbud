@@ -29,13 +29,11 @@ sudo make install
 
 ## usage
 
+`bashbud` can be used to quickly create new scripts with
+cli-option support and automatic documentation applied.
 
-```text
-bashbud --new|-n   [GENERATOR] **TARGET_DIR**|-n   [GENERATOR] **TARGET_DIR**
-bashbud --bump|-b  [PROJECT_DIR]|-b  [PROJECT_DIR]
-bashbud --help|-h|-h
-bashbud --version|-v|-v
-```
+
+### commandline options
 
 
 `--new`|`-n`  

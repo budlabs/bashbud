@@ -17,11 +17,11 @@ wrap:     60
 
 ## usage
 
+%%long_description%%
+
 %%if synopsis%%
 
-```text
-%%synopsis%%
-```
+### commandline options
 
 %%for o in options%%
 
@@ -61,6 +61,8 @@ wrap:     60
 %%readme_issues%%
 %%fi%%
 
+%%if license%%
 ## license
 
 **%%name%%** is licensed with the **%%license ^^%% license**
+%%fi%%

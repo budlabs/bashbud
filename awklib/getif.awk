@@ -16,11 +16,17 @@ function getif(expression,trg,txa,r) {
   else if (isarray(amani[txa[1]])) {
     r=0
   }
-  else {
+  else if (txa[1] !~ /^[-][fd]$/) {
     trg=amani[txa[1]]
   }
+  else if (txa[1] == "-f") {
+    r = isfile(txa[2])
+  }
+  else if (txa[1] == "-d") {
+    r = isdir(txa[2])
+  }
   
-  if (r==1) {
+  if (r==1 && txa[1] !~ /^[-][fd]$/) {
     if (length(txa)==1 && trg ~ /./) {
       r=0
     } else {
