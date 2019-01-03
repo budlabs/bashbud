@@ -23,8 +23,10 @@ function expandbody(body,r,lastif,toreplace,toexpand) {
     }      
 
     else if (lapa[2] ~ /^else$/) { 
-      if (lastif==1)
+      if (lastif==1) {
         doprint=1
+        lastif=0
+      }
       else
         doprint=0
     }

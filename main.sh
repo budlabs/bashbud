@@ -22,8 +22,8 @@ main(){
   elif [[ ${__o[bump]:-} = 1 ]]; then
     bumpproject "${1:-$PWD}"
     
-  elif [[ ${__o[version]:-} = 1 ]]; then
-    ___printversion
+  elif [[ ${__o[link]:-} = 1 ]]; then
+    linkproject "${1:-$PWD}"
   else
     ___printhelp
   fi

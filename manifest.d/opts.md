@@ -22,6 +22,11 @@ After all files are copied and linked,
 the project is *bumped*
 (*same as:* `bashbud --bump TARGET_DIR`).
 
+# options-link-description
+
+Add any missing links from the generators `__link` directory,
+to `PROJECT_DIR`.
+
 # options-help-description
 
 Show help and exit.

@@ -4,6 +4,7 @@ help
 getopt
 envs
 init
+manpage
 man
 readme
 

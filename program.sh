@@ -3,8 +3,8 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-bashbud - version: 1.284
-updated: 2019-01-02 by budRich
+bashbud - version: 1.287
+updated: 2019-01-03 by budRich
 EOB
 }
 
@@ -35,8 +35,8 @@ main(){
   elif [[ ${__o[bump]:-} = 1 ]]; then
     bumpproject "${1:-$PWD}"
     
-  elif [[ ${__o[version]:-} = 1 ]]; then
-    ___printversion
+  elif [[ ${__o[link]:-} = 1 ]]; then
+    linkproject "${1:-$PWD}"
   else
     ___printhelp
   fi
@@ -50,8 +50,9 @@ bashbud - Generate documents and manage projects
 
 SYNOPSIS
 --------
-bashbud --new|-n   [GENERATOR] TARGET_DIR
-bashbud --bump|-b  [PROJECT_DIR]
+bashbud --new|-n    [GENERATOR] TARGET_DIR
+bashbud --bump|-b   [PROJECT_DIR]
+bashbud --link|-l [PROJECT_DIR]
 bashbud --help|-h
 bashbud --version|-v
 
@@ -80,6 +81,11 @@ content of the manifest.md file and the manifest.d
 directory (if it exists). If a directory named
 bashbud exists within PROJECT_DIR, that directory
 will be used as a generator.
+
+
+--link|-l  
+Add any missing links from the generators __link
+directory, to PROJECT_DIR.
 
 
 --help|-h  
@@ -228,6 +234,45 @@ generate() {
   ' < /dev/stdin
 }
 
+linkproject(){
+  local generatortype genpath linkdir
+  local projectdir="${1/'~'/$HOME}"
+
+  [[ -f "$projectdir/manifest.md" ]] \
+    || ERX "$projectdir doesn't contain manifest.md"
+
+  # prepend full path if dirname is relative
+  [[ $projectdir =~ ^[^/] ]] \
+    && projectdir="$PWD/$projectdir"
+
+  # get generator type from manifest
+  eval "$(awk '
+    /^generator:/ {print "generatortype=" $2}
+    /^[.]{3}$/ {exit}
+    ' "$projectdir/manifest.md"
+  )"
+
+  # Find __link dir
+  genpath="generators/${generatortype:=default}/__link"
+  
+  if [[ -d "$BASHBUD_DIR/$genpath" ]]; then
+    linkdir="$BASHBUD_DIR/$genpath"
+  elif [[ -d "/usr/share/bashbud/$genpath" ]]; then
+    linkdir="/usr/share/bashbud/$genpath"
+  else
+    ERX "could not locate __link dir for generator: $generatortype"
+  fi
+
+  # link files and create
+  # directories if needed
+  for f in $(find "$linkdir" -type f); do
+    dn="${f%/*}"
+    dn="${dn/$linkdir/$projectdir}"
+    [[ -d $dn ]] || mkdir -p "$dn"
+    [[ -f "$dn/${f##*/}" ]] || ln -f "$f" "$dn"
+  done
+}
+
 # --new|-n  [GENERATOR]  **TARGET_DIR**
 newproject(){
 
@@ -323,8 +368,8 @@ setstream() {
 }
 declare -A __o
 eval set -- "$(getopt --name "bashbud" \
-  --options "nbhv" \
-  --longoptions "new,bump,help,version," \
+  --options "nblhv" \
+  --longoptions "new,bump,link,help,version," \
   -- "$@"
 )"
 
@@ -332,6 +377,7 @@ while true; do
   case "$1" in
     --new        | -n ) __o[new]=1 ;; 
     --bump       | -b ) __o[bump]=1 ;; 
+    --link       | -l ) __o[link]=1 ;; 
     --help       | -h ) __o[help]=1 ;; 
     --version    | -v ) __o[version]=1 ;; 
     -- ) shift ; break ;;
@@ -339,6 +385,14 @@ while true; do
   esac
   shift
 done
+
+if [[ ${__o[help]:-} = 1 ]]; then
+  ___printhelp
+  exit
+elif [[ ${__o[version]:-} = 1 ]]; then
+  ___printversion
+  exit
+fi
 
 [[ ${__lastarg:="${!#:-}"} =~ ^--$|${0}$ ]] \
   && __lastarg="" \

@@ -26,7 +26,6 @@ sudo make install
 
 ```
 
-
 ## usage
 
 `bashbud` can be used to quickly create new scripts with
@@ -34,6 +33,14 @@ cli-option support and automatic documentation applied.
 
 
 ### commandline options
+
+```text
+bashbud --new|-n    [GENERATOR] **TARGET_DIR**
+bashbud --bump|-b   [PROJECT_DIR]
+bashbud --link|-l [PROJECT_DIR]
+bashbud --help|-h
+bashbud --version|-v
+```
 
 
 `--new`|`-n`  
@@ -55,6 +62,10 @@ content of the *manifest.md* file and the *manifest.d*
 directory (*if it exists*). If a directory named *bashbud*
 exists within *PROJECT_DIR*, that directory will be used as
 a generator.
+
+`--link`|`-l`  
+Add any missing links from the generators `__link`
+directory, to `PROJECT_DIR`.
 
 `--help`|`-h`  
 Show help and exit.

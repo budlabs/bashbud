@@ -3,8 +3,8 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-bashbud - version: 1.284
-updated: 2019-01-02 by budRich
+bashbud - version: 1.287
+updated: 2019-01-03 by budRich
 EOB
 }
 
@@ -21,8 +21,9 @@ bashbud - Generate documents and manage projects
 
 SYNOPSIS
 --------
-bashbud --new|-n   [GENERATOR] TARGET_DIR
-bashbud --bump|-b  [PROJECT_DIR]
+bashbud --new|-n    [GENERATOR] TARGET_DIR
+bashbud --bump|-b   [PROJECT_DIR]
+bashbud --link|-l [PROJECT_DIR]
 bashbud --help|-h
 bashbud --version|-v
 
@@ -53,6 +54,11 @@ bashbud exists within PROJECT_DIR, that directory
 will be used as a generator.
 
 
+--link|-l  
+Add any missing links from the generators __link
+directory, to PROJECT_DIR.
+
+
 --help|-h  
 Show help and exit.
 
@@ -69,8 +75,8 @@ done
 
 declare -A __o
 eval set -- "$(getopt --name "bashbud" \
-  --options "nbhv" \
-  --longoptions "new,bump,help,version," \
+  --options "nblhv" \
+  --longoptions "new,bump,link,help,version," \
   -- "$@"
 )"
 
@@ -78,6 +84,7 @@ while true; do
   case "$1" in
     --new        | -n ) __o[new]=1 ;; 
     --bump       | -b ) __o[bump]=1 ;; 
+    --link       | -l ) __o[link]=1 ;; 
     --help       | -h ) __o[help]=1 ;; 
     --version    | -v ) __o[version]=1 ;; 
     -- ) shift ; break ;;
@@ -85,6 +92,14 @@ while true; do
   esac
   shift
 done
+
+if [[ ${__o[help]:-} = 1 ]]; then
+  ___printhelp
+  exit
+elif [[ ${__o[version]:-} = 1 ]]; then
+  ___printversion
+  exit
+fi
 
 [[ ${__lastarg:="${!#:-}"} =~ ^--$|${0}$ ]] \
   && __lastarg="" \
