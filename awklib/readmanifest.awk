@@ -1,7 +1,17 @@
-function readmanifest(ma,ach) {
+function readmanifest(ma,ach,thisline) {
 
-  if (match($0,/[[:space:]]*[#] (.*)[[:space:]]*$/,ma)) {
+  thisline=""
+  # toggle code block
+  if ($0 ~ /^[`]{3}.*/) {
+    incode = !incode
+    thisline="tilde"
+  }
 
+  if (incode && thisline != "tilde") {
+    thisline="code"
+  } 
+
+  else if (match($0,/[[:space:]]*[#] (.*)[[:space:]]*$/,ma)) {
 
     # chain is if multiple variables are defined after
     # each other, then they will contain the same content.

@@ -1,8 +1,8 @@
 ---
 description: >
   Generate documents and manage projects
-updated:       2019-01-03
-version:       1.287
+updated:       2019-01-04
+version:       1.288
 author:        budRich
 repo:          https://github.com/budlabs
 created:       2018-09-20

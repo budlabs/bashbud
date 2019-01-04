@@ -26,13 +26,8 @@ sudo make install
 
 ```
 
-## usage
 
-`bashbud` can be used to quickly create new scripts with
-cli-option support and automatic documentation applied.
-
-
-### commandline options
+### usage
 
 ```text
 bashbud --new|-n    [GENERATOR] **TARGET_DIR**
@@ -42,6 +37,12 @@ bashbud --help|-h
 bashbud --version|-v
 ```
 
+`bashbud` can be used to quickly create new scripts with
+cli-option support and automatic documentation applied.
+
+
+OPTIONS
+-------
 
 `--new`|`-n`  
 Creates a new project at TARGET_DIR (*if TARGET_DIR doesnt
