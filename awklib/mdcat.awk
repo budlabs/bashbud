@@ -26,6 +26,11 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
       thisline="dspace"
     }
 
+    # link definition [link]: url
+    else if (mdline ~ /^[[].+[]]:.*/) {
+      thisline="linkdef"
+    }
+
     # HR
     else if (mdline ~ /^[-].*/) {
       thisline="hr"
@@ -60,7 +65,11 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
     } 
     
 
-    if (r=="") {r=mdline}
+    if (r=="") {
+      r=mdline
+      if (thisline == "linkdef")
+        r=r "\n"
+    }
     else {
 
       if (thisline == "table") {
@@ -75,7 +84,7 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
         }
       }
 
-      if (thisline == "code") {
+      if (thisline ~ /code|linkdef/) {
         r=r mdline "\n"
       }
 
