@@ -33,6 +33,8 @@ sudo make install
 bashbud --new|-n    [GENERATOR] **TARGET_DIR**
 bashbud --bump|-b   [PROJECT_DIR]
 bashbud --link|-l [PROJECT_DIR]
+bashbud --get|-g KEY [PROJECT_DIR]
+bashbud --set|-s KEY VALUE [PROJECT_DIR]
 bashbud --help|-h
 bashbud --version|-v
 ```
@@ -67,6 +69,18 @@ a generator.
 `--link`|`-l`  
 Add any missing links from the generators `__link`
 directory, to `PROJECT_DIR`.
+
+`--get`|`-g` KEY  
+Get the value from a key in the YAML frontmatter of the
+manifest.md. If last argument is a directory, the manifest
+in that directory will be used, otherwise the current
+directory is assumed.
+
+`--set`|`-s` VALUE  
+Set the value of KEY in the YAML frontmatter of the
+manifest.md to VALUE. If last argument is a directory, the
+manifest in that directory will be used, otherwise the
+current directory is assumed.
 
 `--help`|`-h`  
 Show help and exit.

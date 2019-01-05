@@ -3,8 +3,8 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-bashbud - version: 1.288
-updated: 2019-01-04 by budRich
+bashbud - version: 1.29
+updated: 2019-01-05 by budRich
 EOB
 }
 
@@ -19,6 +19,7 @@ set -o nounset
 
 main(){
 
+  local setval
   IFS=$'\n\t'
 
   # --new|-n  [GENERATOR]  **TARGET_DIR**
@@ -35,8 +36,31 @@ main(){
   elif [[ ${__o[bump]:-} = 1 ]]; then
     bumpproject "${1:-$PWD}"
     
+  # --link|-l [PROJECT_DIR]
   elif [[ ${__o[link]:-} = 1 ]]; then
     linkproject "${1:-$PWD}"
+
+  # --set|-s KEY VALUE [PROJECT_DIR]
+  elif [[ -n ${__o[set]:-} ]]; then
+
+    [[ -z ${1:-} ]] \
+      && ERX "no value to ${__o[set]:-} given."
+
+    setval="$1"
+    shift
+
+    __lastarg="${!#:-}"
+
+    [[ ${__lastarg} =~ ^--$|${0}$ ]] \
+      && __lastarg="" \
+      || true
+
+    setkey "${__o[set]:-}" "$setval" "${__lastarg:-$PWD}"
+
+  # --get|-g KEY [PROJECT_DIR]
+  elif [[ -n ${__o[get]:-} ]]; then
+    getkey "${__o[get]:-}" "${__lastarg:-$PWD}"
+
   else
     ___printhelp
   fi
@@ -53,6 +77,8 @@ SYNOPSIS
 bashbud --new|-n    [GENERATOR] TARGET_DIR
 bashbud --bump|-b   [PROJECT_DIR]
 bashbud --link|-l [PROJECT_DIR]
+bashbud --get|-g KEY [PROJECT_DIR]
+bashbud --set|-s KEY VALUE [PROJECT_DIR]
 bashbud --help|-h
 bashbud --version|-v
 
@@ -86,6 +112,20 @@ will be used as a generator.
 --link|-l  
 Add any missing links from the generators __link
 directory, to PROJECT_DIR.
+
+
+--get|-g KEY  
+Get the value from a key in the YAML frontmatter
+of the manifest.md. If last argument is a
+directory, the manifest in that directory will be
+used, otherwise the current directory is assumed.
+
+
+--set|-s VALUE  
+Set the value of KEY in the YAML frontmatter of
+the manifest.md to VALUE. If last argument is a
+directory, the manifest in that directory will be
+used, otherwise the current directory is assumed.
 
 
 --help|-h  
@@ -234,6 +274,27 @@ generate() {
   ' < /dev/stdin
 }
 
+# --get|-g KEY [PROJECT_DIR]
+getkey(){
+
+  local found
+  local key="$1"
+  local projectdir="${2/'~'/$HOME}"
+
+  [[ -f "$projectdir/manifest.md" ]] \
+    || ERX "$projectdir doesn't contain manifest.md"
+
+  found="$(awk -v key="$key" '
+    $1 ~ key ":" {print gensub($1 "\\s*","","g",$0)}
+    /^[.]{3}$/ {exit}
+    ' "$projectdir/manifest.md"
+  )"
+
+  [[ -n $found ]] \
+    && echo "$found" \
+    || return 1
+}
+
 linkproject(){
   local generatortype genpath linkdir
   local projectdir="${1/'~'/$HOME}"
@@ -323,6 +384,26 @@ newproject(){
   bumpproject "$targetdir"
 }
 
+# --set|-s KEY VALUE [PROJECT_DIR]
+setkey(){
+
+  local found
+  local key="$1"
+  local value="$2"
+  local projectdir="${3/'~'/$HOME}"
+
+  [[ -f "$projectdir/manifest.md" ]] \
+    || ERX "$projectdir doesn't contain manifest.md"
+
+
+  awk -i inplace -v key="$key" -v val="$value" '
+    $1 ~ key ":" {
+      $0=gensub(/(.+:\s*)(.+)/,"\\1" val,"g",$0)
+    }
+    {print}
+    ' "$projectdir/manifest.md"
+}
+
 setstream() {
   local projectdir="$1"
   local templatedir="$2"
@@ -368,8 +449,8 @@ setstream() {
 }
 declare -A __o
 eval set -- "$(getopt --name "bashbud" \
-  --options "nblhv" \
-  --longoptions "new,bump,link,help,version," \
+  --options "nblg:s:hv" \
+  --longoptions "new,bump,link,get:,set:,help,version," \
   -- "$@"
 )"
 
@@ -378,6 +459,8 @@ while true; do
     --new        | -n ) __o[new]=1 ;; 
     --bump       | -b ) __o[bump]=1 ;; 
     --link       | -l ) __o[link]=1 ;; 
+    --get        | -g ) __o[get]="${2:-}" ; shift ;;
+    --set        | -s ) __o[set]="${2:-}" ; shift ;;
     --help       | -h ) __o[help]=1 ;; 
     --version    | -v ) __o[version]=1 ;; 
     -- ) shift ; break ;;

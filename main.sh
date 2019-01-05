@@ -6,6 +6,7 @@ set -o nounset
 
 main(){
 
+  local setval
   IFS=$'\n\t'
 
   # --new|-n  [GENERATOR]  **TARGET_DIR**
@@ -22,8 +23,31 @@ main(){
   elif [[ ${__o[bump]:-} = 1 ]]; then
     bumpproject "${1:-$PWD}"
     
+  # --link|-l [PROJECT_DIR]
   elif [[ ${__o[link]:-} = 1 ]]; then
     linkproject "${1:-$PWD}"
+
+  # --set|-s KEY VALUE [PROJECT_DIR]
+  elif [[ -n ${__o[set]:-} ]]; then
+
+    [[ -z ${1:-} ]] \
+      && ERX "no value to ${__o[set]:-} given."
+
+    setval="$1"
+    shift
+
+    __lastarg="${!#:-}"
+
+    [[ ${__lastarg} =~ ^--$|${0}$ ]] \
+      && __lastarg="" \
+      || true
+
+    setkey "${__o[set]:-}" "$setval" "${__lastarg:-$PWD}"
+
+  # --get|-g KEY [PROJECT_DIR]
+  elif [[ -n ${__o[get]:-} ]]; then
+    getkey "${__o[get]:-}" "${__lastarg:-$PWD}"
+
   else
     ___printhelp
   fi

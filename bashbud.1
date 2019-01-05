@@ -1,4 +1,4 @@
-.TH BASHBUD 1 2019\-01\-04 Linx "User Manuals"
+.TH BASHBUD 1 2019\-01\-05 Linx "User Manuals"
 .SH NAME
 .PP
 \fB\fCbashbud\fR \- Generate documents and manage
@@ -12,6 +12,8 @@ projects
 bashbud \-\-new|\-n    [GENERATOR] **TARGET\_DIR**
 bashbud \-\-bump|\-b   [PROJECT\_DIR]
 bashbud \-\-link|\-l [PROJECT\_DIR]
+bashbud \-\-get|\-g KEY [PROJECT\_DIR]
+bashbud \-\-set|\-s KEY VALUE [PROJECT\_DIR]
 bashbud \-\-help|\-h
 bashbud \-\-version|\-v
 
@@ -58,12 +60,29 @@ Add any missing links from the generators
 \fB\fC\_\_link\fR directory, to \fB\fCPROJECT\_DIR\fR\&.
 
 .PP
+\fB\fC\-\-get\fR|\fB\fC\-g\fR KEY
+Get the value from a key in the YAML frontmatter
+of the manifest.md. If last argument is a
+directory, the manifest in that directory will be
+used, otherwise the current directory is assumed.
+
+.PP
+\fB\fC\-\-set\fR|\fB\fC\-s\fR VALUE
+Set the value of KEY in the YAML frontmatter of
+the manifest.md to VALUE. If last argument is a
+directory, the manifest in that directory will be
+used, otherwise the current directory is assumed.
+
+.PP
 \fB\fC\-\-help\fR|\fB\fC\-h\fR
 Show help and exit.
 
 .PP
 \fB\fC\-\-version\fR|\fB\fC\-v\fR
 Show version and exit.
+
+.PP
+arbe
 
 
 .SH bashbud project

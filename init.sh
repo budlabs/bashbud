@@ -3,8 +3,8 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-bashbud - version: 1.288
-updated: 2019-01-04 by budRich
+bashbud - version: 1.29
+updated: 2019-01-05 by budRich
 EOB
 }
 
@@ -24,6 +24,8 @@ SYNOPSIS
 bashbud --new|-n    [GENERATOR] TARGET_DIR
 bashbud --bump|-b   [PROJECT_DIR]
 bashbud --link|-l [PROJECT_DIR]
+bashbud --get|-g KEY [PROJECT_DIR]
+bashbud --set|-s KEY VALUE [PROJECT_DIR]
 bashbud --help|-h
 bashbud --version|-v
 
@@ -59,6 +61,20 @@ Add any missing links from the generators __link
 directory, to PROJECT_DIR.
 
 
+--get|-g KEY  
+Get the value from a key in the YAML frontmatter
+of the manifest.md. If last argument is a
+directory, the manifest in that directory will be
+used, otherwise the current directory is assumed.
+
+
+--set|-s VALUE  
+Set the value of KEY in the YAML frontmatter of
+the manifest.md to VALUE. If last argument is a
+directory, the manifest in that directory will be
+used, otherwise the current directory is assumed.
+
+
 --help|-h  
 Show help and exit.
 
@@ -75,8 +91,8 @@ done
 
 declare -A __o
 eval set -- "$(getopt --name "bashbud" \
-  --options "nblhv" \
-  --longoptions "new,bump,link,help,version," \
+  --options "nblg:s:hv" \
+  --longoptions "new,bump,link,get:,set:,help,version," \
   -- "$@"
 )"
 
@@ -85,6 +101,8 @@ while true; do
     --new        | -n ) __o[new]=1 ;; 
     --bump       | -b ) __o[bump]=1 ;; 
     --link       | -l ) __o[link]=1 ;; 
+    --get        | -g ) __o[get]="${2:-}" ; shift ;;
+    --set        | -s ) __o[set]="${2:-}" ; shift ;;
     --help       | -h ) __o[help]=1 ;; 
     --version    | -v ) __o[version]=1 ;; 
     -- ) shift ; break ;;

@@ -1,8 +1,8 @@
 ---
 description: >
   Generate documents and manage projects
-updated:       2019-01-04
-version:       1.288
+updated:       2019-01-05
+version:       1.29
 author:        budRich
 repo:          https://github.com/budlabs
 created:       2018-09-20
@@ -15,6 +15,8 @@ synopsis: |
     --new|-n    [GENERATOR] **TARGET_DIR**
     --bump|-b   [PROJECT_DIR]
     --link|-l [PROJECT_DIR]
+    --get|-g KEY [PROJECT_DIR]
+    --set|-s KEY VALUE [PROJECT_DIR]
     --help|-h
     --version|-v
 ...

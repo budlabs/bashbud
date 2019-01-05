@@ -27,6 +27,18 @@ the project is *bumped*
 Add any missing links from the generators `__link` directory,
 to `PROJECT_DIR`.
 
+# options-get-description
+
+Get the value from a key in the YAML frontmatter of the manifest.md.
+If last argument is a directory, the manifest in that directory will be used,
+otherwise the current directory is assumed.
+
+# options-set-description
+
+Set the value of KEY in the YAML frontmatter of the manifest.md to VALUE.
+If last argument is a directory, the manifest in that directory will be used,
+otherwise the current directory is assumed.
+
 # options-help-description
 
 Show help and exit.
