@@ -3,8 +3,8 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-bashbud - version: 1.291
-updated: 2019-01-05 by budRich
+bashbud - version: 1.292
+updated: 2019-01-06 by budRich
 EOB
 }
 
@@ -284,14 +284,6 @@ getkey(){
   [[ -f "$projectdir/manifest.md" ]] \
     || ERX "$projectdir doesn't contain manifest.md"
 
-  # found="$(awk -v key="$key" '
-  #   BEGIN {r=""}
-  #   $1 ~ key ":" {r=gensub($1 "\\s*","","g",$0)}
-  #   r == ">" {block="fold";r=""}
-  #   /^[.]{3}$/ {print r; exit}
-  #   ' "$projectdir/manifest.md"
-  # )"
-
   found="$(AWKPATH="${___dir:-}/awklib:/usr/share/bashbud/awklib:$(gawk 'BEGIN {print ENVIRON["AWKPATH"]}')" \
     awk -v key="$key" '
     @include "readyaml"
@@ -356,20 +348,6 @@ getkey(){
     && echo "$found" \
     || return 1
 }
-
-# if      (rol==">" && iskey=1) {block="fold";binx=0}
-# else if (rol=="|" && iskey=1) {block="block";binx=0}
-# else if (block=="fold" && (curind>0 || $0 ~ /^[[:space:]]*$/)) {
-#   iskey=0
-#   if   (binx==0) {
-#     amani[parkey]=gensub(/^[[:space:]]*/,"","g",$0)
-#     binx++
-#   }
-
-#   else {
-#     amani[parkey]=amani[parkey] gensub(/^[[:space:]]*/," ","g",$0)
-#   }
-# }
 
 linkproject(){
   local generatortype genpath linkdir

@@ -11,7 +11,7 @@ function readmanifest(ma,ach,thisline) {
     thisline="code"
   } 
 
-  else if (match($0,/[[:space:]]*[#] (.*)[[:space:]]*$/,ma)) {
+  else if (match($0,/\s*[#]\s(.*)\s*$/,ma)) {
 
     # chain is if multiple variables are defined after
     # each other, then they will contain the same content.
@@ -27,7 +27,7 @@ function readmanifest(ma,ach,thisline) {
   }
 
   # start on first non blank line after definition
-  else if (start==1 && $0 !~ /^[[:space:]]*$/) {
+  else if (start==1 && $0 !~ /^\s*$/) {
     start=2
   }
 
