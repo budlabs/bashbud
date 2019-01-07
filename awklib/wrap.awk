@@ -8,5 +8,6 @@ function wrap(text,num,   q, y, z) {
     z = z substr(text, 1, q - 1)
     text = substr(text, q + 1)
   }
-  return z
+  # don't trim trailing double space
+  return gensub(/\s+$/,"  ","g",z)
 }

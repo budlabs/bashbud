@@ -29,6 +29,7 @@ documentation applied.
 .SH OPTIONS
 .PP
 \fB\fC\-\-new\fR|\fB\fC\-n\fR
+.br
 Creates a new project at TARGET\_DIR (\fIif
 TARGET\_DIR doesnt exist, if it does script will
 exit\fP), based on GENERATOR. If GENERATOR is
@@ -39,6 +40,7 @@ TARGET\_DIR\fR).
 
 .PP
 \fB\fC\-\-bump\fR|\fB\fC\-b\fR
+.br
 The current working direcory will be set as
 PROJECT\_DIR if none is specified. When a project
 is \fIbumped\fP,  \fB\fCbashbud\fR will read the
@@ -55,11 +57,13 @@ be used as a generator.
 
 .PP
 \fB\fC\-\-link\fR|\fB\fC\-l\fR
+.br
 Add any missing links from the generators
 \fB\fC\_\_link\fR directory, to \fB\fCPROJECT\_DIR\fR\&.
 
 .PP
 \fB\fC\-\-get\fR|\fB\fC\-g\fR KEY
+.br
 Get the value from a key in the YAML frontmatter
 of the manifest.md. If last argument is a
 directory, the manifest in that directory will be
@@ -67,6 +71,7 @@ used, otherwise the current directory is assumed.
 
 .PP
 \fB\fC\-\-set\fR|\fB\fC\-s\fR VALUE
+.br
 Set the value of KEY in the YAML frontmatter of
 the manifest.md to VALUE. If last argument is a
 directory, the manifest in that directory will be
@@ -74,10 +79,12 @@ used, otherwise the current directory is assumed.
 
 .PP
 \fB\fC\-\-help\fR|\fB\fC\-h\fR
+.br
 Show help and exit.
 
 .PP
 \fB\fC\-\-version\fR|\fB\fC\-v\fR
+.br
 Show version and exit.
 
 .PP
@@ -1072,6 +1079,7 @@ this was written by %%author%%
 
 .PP
 this will result in the following file:
+.br
 \fBif\_statements1.txt\fP
 
 .PP
@@ -1209,6 +1217,7 @@ Environment variables:
 
 .PP
 this will result in the following file:
+.br
 \fBarray\_output.txt\fP
 
 .PP
@@ -1252,6 +1261,7 @@ defaults to: %%e[default]%%
 
 .PP
 this will result in the following file:
+.br
 \fBarray\_output.txt\fP
 
 .PP
@@ -1366,7 +1376,9 @@ function:
 
 .PP
 The syntax for the \fBcat function\fP is as
-follows:  \fB\fC%%cat [OPTIONS] FILE|DIR/*%%\fR
+follows:
+.br
+\fB\fC%%cat [OPTIONS] FILE|DIR/*%%\fR
 
 .PP
 The following options are available:
@@ -1873,6 +1885,7 @@ have been processed and the file:
 \fB\fCPROJECT\_DIR/manual.md\fR have been generated.
 \fB\fCPROJECT\_DIR/bashbud/manual/\_\_script\fR will get
 executed and the result will be:
+.br
 \fB\fCPROJECT\_DIR/manual.md is generated\fR
 
 .PP
@@ -1992,13 +2005,16 @@ The command above would first create a new
 project at \fB\fC\~/projects/newproject\fR and then
 execute:
 \fB\fCBASHBUD\_DIR/generators/default/\_\_post\-generate
-\~/projects/newproject\fR  Notice that the path to
-the new project is passed to the script, (\fIin bash
-that argument can be accessed with:\fP \fB\fC$1\fR)
+\~/projects/newproject\fR
+.br
+Notice that the path to the new project is passed
+to the script, (\fIin bash that argument can be
+accessed with:\fP \fB\fC$1\fR)
 
 .SH ENVIRONMENT
 .PP
 \fB\fCBASHBUD\_DIR\fR
+.br
 bashbud config dir location. defaults to:
 $XDG\_CONFIG\_HOME/bashbud
 

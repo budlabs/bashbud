@@ -53,7 +53,10 @@ function tempexpand(stuff,premd,txa,astf,nsub,expanderz,tmpfile) {
   }
 
   
+  
   if (expanderz !~ /./) {expanderz=stuff}
-  expanderz = wrapcheck(expanderz)
+  else {
+    expanderz = wrapcheck(expanderz)
+  }
   return gensub("\n$","","g",expanderz)
 }

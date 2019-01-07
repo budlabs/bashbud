@@ -2,7 +2,7 @@
 
 **bashbud** works like a static site generator
 (*hugo*,*jekyll*,*etc.*), generating documents based on
-templates with content written in markdown. 
+templates with content written in markdown.  
 
 **bashbud** was created to organize and structure bash
 script projects, but it can be used to generate any type of
@@ -15,9 +15,9 @@ is used to generate the documentation.
 ## installation
 
 If you are using **Arch linux**, you can install the
-bashbud package from [AUR]. 
+bashbud package from [AUR].  
 
-Or follow the instructions below to install from source: 
+Or follow the instructions below to install from source:  
 
 ```text
 git clone https://github.com/budlabs/bashbud.git
@@ -98,7 +98,7 @@ can do.
 
 ## BUD IS BACK
 
-**2019-01-01** 
+**2019-01-01**  
 First public release, read the wiki,  report the issues, 
 stay calm and keep kyle.
 

@@ -88,9 +88,9 @@ manifest consist of three parts:
 
 
 Below is an example of how a manifest can look
-like: 
+like:  
 
-**PROJECT_DIR/manifest.md** 
+**PROJECT_DIR/manifest.md**  
 ```text
 this is just an example
 any text before the start of the front matter
@@ -133,7 +133,7 @@ The manifest front matter is the only mandatory
 part of the manifest.  It needs to be defined
 before the manifest body in the `manifest.md`
 file, in [YAML] format (starting with three dashes
-(`---`) and ending with thre dots (`...`). 
+(`---`) and ending with thre dots (`...`).  
 
 The front matter can contain any number of user
 defined, variables, lists and arrays, but some
@@ -157,7 +157,7 @@ called *options* when parsed by `bashbud`. If used
 properly this will be the only place needed to
 declare command-line options in a *project*. Let's
 take a closer look at the `synopsis` key from the
-example manifest above. 
+example manifest above.  
 
 ```text
 synopsis: |
@@ -173,10 +173,10 @@ definition, is [YAML] syntax meaning that the
 content of the key should be interpreted literal.
 Which in turn means it will preserve linebreaks as
 they are written. The indentation specifies the
-scope. 
+scope.  
 
 Translated to a `bash` variable, it would look
-like this: 
+like this:  
 
 ```text
 synopsis'--help|-h [COMMAND]
@@ -232,7 +232,7 @@ possible to create new arrays in the manifest
 body.
 
 
-Below is a simple example: 
+Below is a simple example:  
 
 **PROJECT_DIR/manifest.md**
 
@@ -255,7 +255,7 @@ the `manifest` in a *bashbud* project.
 ```
 
 
-**PROJECT_DIR/manifest.d/options.md** 
+**PROJECT_DIR/manifest.d/options.md**  
 
 ```
 # options-help-description
@@ -274,7 +274,7 @@ Creates a new FILE
 
 When `bashbud` processes this project, the
 following variables will be available in the
-templates: 
+templates:  
 
 ```
 version='1.100'
@@ -312,7 +312,7 @@ add a blank line after the line to break.
 A generator is a directory containing templates
 and base files used to create or update (*bump*) a
 project. When a new project is created (with the
-`--new` option) `bashbud` will do the following: 
+`--new` option) `bashbud` will do the following:  
 
 1. [determine location of generator](#determine_location_of_generator)
 2. [copy base files](#copy_base_files)
@@ -381,7 +381,7 @@ the other generator types:
 
 
 Below is an example of how the file tree would
-look like in a project using a **PSG**: 
+look like in a project using a **PSG**:  
 
 
 ```text
@@ -449,7 +449,7 @@ within the root directory of the generator
 underscores are referred to in the documentation
 as base files. The base files will get copied to
 PROJECT_DIR when the project is created with the
-`--new` command-line option. 
+`--new` command-line option.  
 
 ```text
 PROJECT_DIR/
@@ -466,7 +466,7 @@ directory will get created in PROJECT_DIR when the
 project is created with the `--new` command-line
 option. And all files found (recursively) in the
 `__link` directory will get hard linked (`ln`) to
-PROJECT_DIR. 
+PROJECT_DIR.  
 
 ```text
 PROJECT_DIR/
@@ -528,7 +528,7 @@ This is the recommended way of using bashbud.
 
 
 
-The priority of generators is as follows: 
+The priority of generators is as follows:  
 
 1. project specific generator (**PSG**)
 2. user specific generator (**USG**)
@@ -536,7 +536,7 @@ The priority of generators is as follows:
 
 
 Below are some examples to illustrate how this
-works: 
+works:  
 
 
 ```
@@ -578,7 +578,7 @@ PROJECT_DIR/
 ```
 
 
-**project 1 manifest.md** 
+**project 1 manifest.md**  
 ```
 ---
 generator: default
@@ -594,17 +594,17 @@ in *BASHBUD_DIR*.
 If we would change the value of the *generator*
 key in the manifest to `testgen`. The templates in
 **SWG**: `testgen` in `/usr/share/bashbud` would
-be used to update the project. 
+be used to update the project.  
 
 If no generator is specified in the manifest, it
 will have the default value: `default`. Which
 would result in the `default` **USG** would be
-used. 
+used.  
 
 If we would add a directory containing templates,
 named `bashbud` to *PROJECT_DIR*, that would would
 be seen as a **PSG** and have priority over any
-other generator. 
+other generator.  
 
 **project 2 directory**
 ```
@@ -618,7 +618,7 @@ PROJECT_DIR/
 ```
 
 
-**project 2 manifest.md** 
+**project 2 manifest.md**  
 ```
 ---
 generator: mygen
@@ -640,14 +640,14 @@ the `--new` command-line option is used or as the
 sole action when the `--bump` command-line option
 is used.
 
-A template consist of three parts: 
+A template consist of three parts:  
 
 1. Comment area
 2. YAML front matter
 3. Template body
 
 
-below is a simple template example: 
+below is a simple template example:  
 
 ```text
 function that prints script name and version
@@ -681,7 +681,7 @@ line. The front matter needs to be defined
 **before** the **template body**. Any text before
 the start of the front matter will be ignored by
 `bashbud` and can be used to write comments about
-the template it self. 
+the template it self.  
 
 ### template front matter keys
 
@@ -698,7 +698,7 @@ the template it self.
 
 `bashbud` will parse the **template body** and
 evaluate and expand the expressions defined within
-double percentage symbols (`%%`). 
+double percentage symbols (`%%`).  
 
 # variable expansion
 
@@ -713,7 +713,7 @@ EXAMPLE
 -------
 
 
-**~/scripts/hello/manifest.md** 
+**~/scripts/hello/manifest.md**  
 ```text
 ---
 updated:       2018-12-14
@@ -729,8 +729,7 @@ simple **test program** that will print hello world to `stdout`.
 
 
 
-**BASHBUD_DIR/generators/default/__templates/created/__template**
-
+**BASHBUD_DIR/generators/default/__templates/created/__template**  
 ```text
 ---
 target:   created.txt
@@ -742,7 +741,7 @@ wrap:     50
 
 
 
-If we would execute the command: 
+If we would execute the command:  
 
 ```shell
 $ bashbud --bump ~/scripts/hello
@@ -750,7 +749,7 @@ $ bashbud --bump ~/scripts/hello
 
 
 The following would happen (*assuming no other
-files exists*): 
+files exists*):  
 
 1. Since no **generator type** is defined in the **manifest** default will be assumed and found in `BASHBUD_DIR` (which defaults to `~/.config/bashbud`).
 2. 5 variables will get defined (updated, version, author, created and long_description) that can be used in the templates.
@@ -758,7 +757,7 @@ files exists*):
 4. The result of the evaluated template will be the content of the file defined as **target** in the **templates** front matter.
 
 
-**~/scripts/hello/created.txt** 
+**~/scripts/hello/created.txt**  
 ```text
 hello was created 2001-11-09.
 ```
@@ -766,10 +765,10 @@ hello was created 2001-11-09.
 
 `%%name%%` is a special variable that contains
 the name of the directory that holds
-*manifest.md*, in this case: *hello* 
+*manifest.md*, in this case: *hello*  
 
 One more example, with the same `manifest.md` but
-with a `__template` looking like this: 
+with a `__template` looking like this:  
 
 ```text
 ---
@@ -784,7 +783,7 @@ wrap:     50
 
 the value of markdown is changed to *true* and
 the variable *long_description* is added. The
-processed result will look like this: 
+processed result will look like this:  
 
 ```text
 hello was created 2001-11-09.
@@ -801,7 +800,7 @@ wrapped at the first space before column 50.
 
 
 If statements are defined like this in the
-templates: 
+templates:  
 ```text
 %%if EXPRESSION%%
 ...
@@ -810,9 +809,9 @@ templates:
 
 
 *EXPRESSION* can be just the name of a variable
-or array. Or a comparison (`=` or `!=`): 
+or array. Or a comparison (`=` or `!=`):  
 
-**~/scripts/hello/manifest.md** 
+**~/scripts/hello/manifest.md**  
 ```text
 ---
 updated:       2018-12-14
@@ -835,7 +834,7 @@ bashbud config dir location.
 
 
 
-**__template** 
+**__template**  
 ```text
 ---
 target:   if_statements1.txt
@@ -866,8 +865,8 @@ this was written by %%author%%
 ```
 
 
-this will result in the following file: 
-**if_statements1.txt** 
+this will result in the following file:  
+**if_statements1.txt**  
 ```text
 Environment variables info:
 
@@ -892,7 +891,7 @@ EXAMPLE
 -------
 
 
-**manifest.md** 
+**manifest.md**  
 ```text
 ---
 author:        budRich
@@ -923,7 +922,7 @@ See `date(1)` for available formats.
 
 
 This will yield the following variables and
-arrays available for templates: 
+arrays available for templates:  
 
 ```text
 author='budRich'
@@ -945,7 +944,7 @@ see_also[sed(1)][index]=2
 
 Notice how the dashes are used to specify the
 array keys in the manifest.
-(*environ-BASHBUD_DATEFORMAT-description*) 
+(*environ-BASHBUD_DATEFORMAT-description*)  
 
 ## accessing arrays in templates with loops
 
@@ -961,9 +960,9 @@ LOOP BODY
 ```
 
 
-Lets use the **manifest** above in a template: 
+Lets use the **manifest** above in a template:  
 
-**__template** 
+**__template**  
 ```text
 ---
 target:   array_output.txt
@@ -978,8 +977,8 @@ Environment variables:
 ```
 
 
-this will result in the following file: 
-**array_output.txt** 
+this will result in the following file:  
+**array_output.txt**  
 ```text
 Environment variables:
 
@@ -990,7 +989,7 @@ BASHBUD_DATEFORMAT
 
 one more example,  using the same **manifest**
 
-**__template** 
+**__template**  
 ```text
 ---
 target:   array_output.txt
@@ -1008,8 +1007,8 @@ defaults to: %%e[default]%%
 ```
 
 
-this will result in the following file: 
-**array_output.txt** 
+this will result in the following file:  
+**array_output.txt**  
 ```text
 Environment variables:
 
@@ -1033,7 +1032,7 @@ defaults to: %Y-%m-%d
 
 
 `printf` functionality is available and is
-defined like this: 
+defined like this:  
 
 ```text
 %%printf 'STRINGFORMAT' 'S1' 'S2' ...%%
@@ -1050,7 +1049,7 @@ EXAMPLE
 
 
 
-**~/scripts/hello/manifest.md** 
+**~/scripts/hello/manifest.md**  
 ```text
 ---
 updated:       2018-12-14
@@ -1063,7 +1062,7 @@ dependencies:  [bash, gawk, sed]
 
 
 
-**__template** 
+**__template**  
 ```text
 ---
 target:   printformat1.txt
@@ -1082,7 +1081,7 @@ with printformat
 ```
 
 
-**printformat1.txt** 
+**printformat1.txt**  
 ```text
 normal loop
 bash
@@ -1099,13 +1098,13 @@ bash,gawk,sed,
 
 Sometimes it can be desired to import files in a
 template. This can be done by using the **cat**
-function: 
+function:  
 
 The syntax for the **cat function** is as
-follows: 
-`%%cat [OPTIONS] FILE|DIR/*%%` 
+follows:  
+`%%cat [OPTIONS] FILE|DIR/*%%`  
 
-The following options are available: 
+The following options are available:  
 ```
 -v 'REGEX'  - grep -v 'REGEX'
 -t          - sort by time (defaults to name)
@@ -1115,7 +1114,7 @@ The following options are available:
 ```
 
 
-EXAMPLE 
+EXAMPLE  
 -------
 
 
@@ -1144,7 +1143,7 @@ paragraphs according to the wrap key in the
 templates front matter.
 
 Lets add two directories and some files to our
-example project: 
+example project:  
 
 ```text
 PROJECT_DIR/
@@ -1159,7 +1158,7 @@ PROJECT_DIR/
 ```
 
 
-**doc/test1.md** 
+**doc/test1.md**  
 ```text
 # test1 file
 
@@ -1167,7 +1166,7 @@ this is just a test file made to demonstrate how the `cat` function in **bashbud
 ```
 
 
-**doc/test2.md** 
+**doc/test2.md**  
 ```text
 test2 file
 
@@ -1177,7 +1176,7 @@ last line ended with two spaces
 ```
 
 
-**doc/test3.md** 
+**doc/test3.md**  
 ```text
 
 
@@ -1189,7 +1188,7 @@ this file have two leading and trailing blank lines
 ```
 
 
-**functions/hello.sh** 
+**functions/hello.sh**  
 ```text
 #!/bin/bash
 
@@ -1201,7 +1200,7 @@ hello() { echo "hello $1" ;}
 ```
 
 
-**functions/cleanup.sh** 
+**functions/cleanup.sh**  
 ```text
 #!/bin/bash
 
@@ -1213,9 +1212,9 @@ DEATH() {
 
 
 Now lets try the different ways the **cat
-function** can be used. 
+function** can be used.  
 
-**__template** 
+**__template**  
 ```text
 ---
 target: cat-example1.txt
@@ -1227,7 +1226,7 @@ example 1. import single file import:
 ```
 
 
-**PROJECT_DIR/cat-example1.txt** 
+**PROJECT_DIR/cat-example1.txt**  
 ```
 example 1. import single file import:
 # test1 file
@@ -1246,9 +1245,9 @@ file content and that the paragraph is wrapped at
 column 20. Also notice that the first line from
 the template is not wrapped, this is because the
 line is part of the template and not considered a
-markdown paragraph by `bashbud`. 
+markdown paragraph by `bashbud`.  
 
-**__template** 
+**__template**  
 ```text
 ---
 target: cat-example2.txt
@@ -1260,7 +1259,7 @@ example 2. import all files in a directory:
 ```
 
 
-**PROJECT_DIR/cat-example2.txt** 
+**PROJECT_DIR/cat-example2.txt**  
 ```
 example 2. import all files in a directory:
 # test1 file
@@ -1292,13 +1291,13 @@ lines
 
 A blank line is automatically added after each
 file is imported. Take notice how wrapping and
-linebreaks are applied. 
+linebreaks are applied.  
 
 For this next example, let's assume `test3.md` is
 the last modified file and `test1.md` was the
-first modified file. 
+first modified file.  
 
-**__template** 
+**__template**  
 ```text
 ---
 target: cat-example3.txt
@@ -1310,7 +1309,7 @@ example 3. import the n last modified files in a directory:
 ```
 
 
-**PROJECT_DIR/cat-example3.txt** 
+**PROJECT_DIR/cat-example3.txt**  
 ```
 example 3. import the n last modified files in a directory:
 test2 file
@@ -1326,7 +1325,7 @@ this file have two leading and trailing blank lines
 
 
 
-**__template** 
+**__template**  
 ```text
 ---
 target: cat-example5.txt
@@ -1338,7 +1337,7 @@ example 5. import all files in a directory, exclude lines matching PATTERN , (li
 ```
 
 
-**PROJECT_DIR/cat-example5.txt** 
+**PROJECT_DIR/cat-example5.txt**  
 ```
 example 5. import all files in a directory, exclude lines matching PATTERN , (lines with a leading hash):
 
@@ -1387,7 +1386,7 @@ directory) with four templates: version, about,
 contact and manual.
 
 
-**PROJECT_DIR/bashbud/__order** 
+**PROJECT_DIR/bashbud/__order**  
 ```
 # order of templates:
 
@@ -1408,7 +1407,7 @@ file will be appended in pseudorandom order to the
 list.
 
 The order of the templates in the example project
-will look like this: 
+will look like this:  
 ```
 manual
 about
@@ -1465,7 +1464,7 @@ Above is an example project with a **Project
 Specific Generator** (*the bashbud/ directory*),
 containing two templates (*manual and info*).
 
-**PROJECT_DIR/bashbud/manual/__template** 
+**PROJECT_DIR/bashbud/manual/__template**  
 ```
 ---
 target: manual.md
@@ -1476,7 +1475,7 @@ some content
 
 
 
-**PROJECT_DIR/bashbud/manual/__script** 
+**PROJECT_DIR/bashbud/manual/__script**  
 ```
 #!/usr/bin/env bash
 
@@ -1490,7 +1489,7 @@ command line option,  after the manual template
 have been processed and the file:
 `PROJECT_DIR/manual.md` have been generated.
 `PROJECT_DIR/bashbud/manual/__script` will get
-executed and the result will be: 
+executed and the result will be:  
 `PROJECT_DIR/manual.md is generated`
 
 The scripts doesn't have to be written in bash,
@@ -1515,7 +1514,7 @@ EXAMPLE
 -------
 
 
-**PROJECT_DIR/bashbud/__pre-apply** 
+**PROJECT_DIR/bashbud/__pre-apply**  
 ```
 #!/usr/bin/env bash
 
@@ -1600,7 +1599,7 @@ The command above would first create a new
 project at `~/projects/newproject` and then
 execute:
 `BASHBUD_DIR/generators/default/__post-generate
-~/projects/newproject` 
+~/projects/newproject`  
 Notice that the path to the new project is passed
 to the script, (*in bash that argument can be
 accessed with:* `$1`)
