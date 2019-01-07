@@ -1,8 +1,8 @@
 ---
 description: >
   Generate documents and manage projects
-updated:       2019-01-06
-version:       1.292
+updated:       2019-01-07
+version:       1.293
 author:        budRich
 repo:          https://github.com/budlabs
 created:       2018-09-20
@@ -24,3 +24,4 @@ synopsis: |
 # long_description
 
 `bashbud` can be used to quickly create new scripts with cli-option support and automatic documentation applied.
+
