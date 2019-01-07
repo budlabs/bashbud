@@ -48,7 +48,7 @@ function readyaml() {
       split(synline,asl," ")
       
       curlink=0
-      curarg=curshrt=curlng=""
+      lastopt=curarg=curshrt=curlng=""
 
       for (i in asl) {
         field=asl[i]
@@ -80,10 +80,19 @@ function readyaml() {
           curlink=0
         }
 
-        # arguments
-        else if (match(field,/^([^[][a-zA-Z_-]+)[]]?$/,ma)) {
-          amani["options"][optnum[lastkey]][lastkey]["arg"]=ma[1]
+        # ignore arguments that doesn't "belong to options"
+        else if (lastopt != "") {
+          # arguments
+          if (match(field,/^([^[][a-zA-Z_-]+)[]]?$/,ma)) {
+            amani["options"][optnum[lastkey]][lastkey]["arg"]=ma[1]
+          }
+
+          # optional argument
+          else if (match(field,/^[[]([a-zA-Z_-]+)[]]$/,ma)) {
+            amani["options"][optnum[lastkey]][lastkey]["optarg"]=ma[1]
+          }
         }
+        
       }
     }
   }
