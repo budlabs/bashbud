@@ -17,7 +17,6 @@ bashbud \-\-set|\-s KEY VALUE [PROJECT\_DIR]
 bashbud \-\-help|\-h
 bashbud \-\-version|\-v
 
-
 .fi
 .RE
 
@@ -151,8 +150,6 @@ Creates a file with the string "hello world" to FILE
 # options\-version\-description
 Print version info to `stderr` and exit.
 
-
-
 .fi
 .RE
 
@@ -197,8 +194,6 @@ synopsis: |
     \-\-version|\-v
     \-\-new FILE **DIRECTORY**
 
-
-
 .fi
 .RE
 
@@ -222,8 +217,6 @@ synopsis'\-\-help|\-h [COMMAND]
 \-\-version|\-v
 \-\-new FILE **DIRECTORY**'
 
-
-
 .fi
 .RE
 
@@ -246,8 +239,6 @@ options[version][long]=version
 options[version][short]=v
 options[new][long]=new
 options[new][arg]=FILE
-
-
 
 .fi
 .RE
@@ -305,8 +296,6 @@ synopsis: |
 This is just an **example** of how use
 the `manifest` in a *bashbud* project.
 
-
-
 .fi
 .RE
 
@@ -328,8 +317,6 @@ Print version information to stderr and exit
 # options\-new\-description
 
 Creates a new FILE
-
-
 
 .fi
 .RE
@@ -360,8 +347,6 @@ options[version][description]='Print version information to stderr and exit'
 options[new][long]=new
 options[new][arg]=FILE
 options[new][description]='Creates a new FILE'
-
-
 
 .fi
 .RE
@@ -488,8 +473,6 @@ PROJECT\_DIR/
     manifest.md
     ...
 
-
-
 .fi
 .RE
 
@@ -539,8 +522,6 @@ BASHBUD\_DIR/
         ...
       manifest.md
 
-
-
 .fi
 .RE
 
@@ -565,8 +546,6 @@ PROJECT\_DIR/
     main.sh
     manifest.md
 
-
-
 .fi
 .RE
 
@@ -590,8 +569,6 @@ PROJECT\_DIR/
         envs.md
     main.sh
     manifest.md
-
-
 
 .fi
 .RE
@@ -680,8 +657,6 @@ works:
     ...
   ...
 
-
-
 .fi
 .RE
 
@@ -701,8 +676,6 @@ BASHBUD\_DIR/
       ...
 ...
 
-
-
 .fi
 .RE
 
@@ -715,8 +688,6 @@ BASHBUD\_DIR/
 .nf
 PROJECT\_DIR/
   manifest.md
-
-
 
 .fi
 .RE
@@ -731,8 +702,6 @@ PROJECT\_DIR/
 \-\-\-
 generator: default
 ...
-
-
 
 .fi
 .RE
@@ -775,8 +744,6 @@ PROJECT\_DIR/
       ...
   manifest.md
 
-
-
 .fi
 .RE
 
@@ -790,8 +757,6 @@ PROJECT\_DIR/
 \-\-\-
 generator: mygen
 ...
-
-
 
 .fi
 .RE
@@ -845,8 +810,6 @@ cat << 'EOB' >\&2
 updated: %%updated%% by %%author%%
 EOB
 }
-
-
 
 .fi
 .RE
@@ -917,8 +880,6 @@ created:       2001\-11\-09
 
 simple **test program** that will print hello world to `stdout`.
 
-
-
 .fi
 .RE
 
@@ -936,8 +897,6 @@ wrap:     50
 ...
 %%name%% was created %%created%%.
 
-
-
 .fi
 .RE
 
@@ -949,8 +908,6 @@ If we would execute the command:
 
 .nf
 $ bashbud \-\-bump \~/scripts/hello
-
-
 
 .fi
 .RE
@@ -980,8 +937,6 @@ The result of the evaluated template will be the content of the file defined as 
 .nf
 hello was created 2001\-11\-09.
 
-
-
 .fi
 .RE
 
@@ -1006,8 +961,6 @@ wrap:     50
 %%name%% was created %%created%%.
 %%long\_description%%
 
-
-
 .fi
 .RE
 
@@ -1023,8 +976,6 @@ processed result will look like this:
 hello was created 2001\-11\-09.
 simple **test program** that will print hello 
 world to `stdout`.
-
-
 
 .fi
 .RE
@@ -1047,8 +998,6 @@ templates:
 %%if EXPRESSION%%
 ...
 %%%fi%%
-
-
 
 .fi
 .RE
@@ -1080,8 +1029,6 @@ simple **test program** that will print hello world to `stdout`.
 # environ\-BASHBUD\_DIR\-info
 
 bashbud config dir location.
-
-
 
 .fi
 .RE
@@ -1120,8 +1067,6 @@ budrich wrote this
 this was written by %%author%%
 %%fi%%
 
-
-
 .fi
 .RE
 
@@ -1141,8 +1086,6 @@ bashbud config dir location.
 no info about BASHBUD\_TIMEFORMAT
 
 budrich wrote this
-
-
 
 .fi
 .RE
@@ -1187,8 +1130,6 @@ manifest front matter.
 
 See `date(1)` for available formats.
 
-
-
 .fi
 .RE
 
@@ -1215,8 +1156,6 @@ see\_also[bash(1)][index]=0
 see\_also[awk(1)][index]=1
 see\_also[sed(1)][index]=2
 
-
-
 .fi
 .RE
 
@@ -1240,8 +1179,6 @@ Loops are defined like this:
 %%for ELEMENT\_ALIAS in ARRAY%%
 LOOP BODY
 %%done%%
-
-
 
 .fi
 .RE
@@ -1267,8 +1204,6 @@ Environment variables:
 %%e%%
 %%done%%
 
-
-
 .fi
 .RE
 
@@ -1284,8 +1219,6 @@ Environment variables:
 
 BASHBUD\_DIR
 BASHBUD\_DATEFORMAT
-
-
 
 .fi
 .RE
@@ -1314,8 +1247,6 @@ Environment variables:
 defaults to: %%e[default]%%
 %%done%%
 
-
-
 .fi
 .RE
 
@@ -1342,8 +1273,6 @@ manifest front matter.
 See date(1) for available formats.
 defaults to: %Y\-%m\-%d
 
-
-
 .fi
 .RE
 
@@ -1359,8 +1288,6 @@ defined like this:
 %%printf 'STRINGFORMAT' 'S1' 'S2' ...%%
 OR
 %%printf "STRINGFORMAT" "S1" "S2" ...%%
-
-
 
 .fi
 .RE
@@ -1384,8 +1311,6 @@ author:        budRich
 created:       2001\-11\-09
 dependencies:  [bash, gawk, sed]
 ...
-
-
 
 .fi
 .RE
@@ -1412,8 +1337,6 @@ with printformat
 %%printf '%s,' 'd'%%
 %%done%%
 
-
-
 .fi
 .RE
 
@@ -1431,8 +1354,6 @@ sed
 
 with printformat
 bash,gawk,sed,
-
-
 
 .fi
 .RE
@@ -1460,8 +1381,6 @@ The following options are available:
 \-n INT      \- print the INT first results (defaults to all)
 \-p          \- print the full path to the file before printing the content
 
-
-
 .fi
 .RE
 
@@ -1485,8 +1404,6 @@ example 4. import single file, exclude lines matching PATTERN:
 example 5. import the three first files in alphabetic order from DIR
 and exclude lines matching PATTERN:
 %%cat \-n 3 \-v 'PATTERN' DIR/*%%
-
-
 
 .fi
 .RE
@@ -1515,8 +1432,6 @@ PROJECT\_DIR/
       hello.sh
       cleanup.sh
 
-
-
 .fi
 .RE
 
@@ -1530,8 +1445,6 @@ PROJECT\_DIR/
 # test1 file
 
 this is just a test file made to demonstrate how the `cat` function in **bashbud** templates work.
-
-
 
 .fi
 .RE
@@ -1549,8 +1462,6 @@ more stupid
 test files  
 last line ended with two spaces
 
-
-
 .fi
 .RE
 
@@ -1566,8 +1477,6 @@ last line ended with two spaces
 test3 file
 
 this file have two leading and trailing blank lines
-
-
 
 
 
@@ -1589,8 +1498,6 @@ this file have two leading and trailing blank lines
 # prints 'hello NAME' to stdout
 hello() { echo "hello $1" ;}
 
-
-
 .fi
 .RE
 
@@ -1607,8 +1514,6 @@ hello() { echo "hello $1" ;}
 DEATH() {
     exit
 }
-
-
 
 .fi
 .RE
@@ -1632,8 +1537,6 @@ wrap: 20
 example 1. import single file import:
 %%cat doc/test1.md%%
 
-
-
 .fi
 .RE
 
@@ -1653,8 +1556,6 @@ demonstrate how the
 cat function in
 bashbud templates
 work.
-
-
 
 .fi
 .RE
@@ -1681,8 +1582,6 @@ wrap: 20
 ...
 example 2. import all files in a directory:
 %%cat doc/*%%
-
-
 
 .fi
 .RE
@@ -1720,8 +1619,6 @@ lines
 
 
 
-
-
 .fi
 .RE
 
@@ -1750,8 +1647,6 @@ wrap: 0
 example 3. import the n last modified files in a directory:
 %%cat \-tn 2 doc/*%%
 
-
-
 .fi
 .RE
 
@@ -1773,8 +1668,6 @@ test3 file
 this file have two leading and trailing blank lines
 
 
-
-
 .fi
 .RE
 
@@ -1792,8 +1685,6 @@ wrap: 20
 ...
 example 5. import all files in a directory, exclude lines matching PATTERN , (lines with a leading hash):
 %%cat \-v '^#' functions/*%%
-
-
 
 .fi
 .RE
@@ -1813,8 +1704,6 @@ hello() { echo "hello $1" ;}
 DEATH() {
     exit
 }
-
-
 
 .fi
 .RE
@@ -1848,8 +1737,6 @@ PROJECT\_DIR/
     \_\_order
   manifest.md
 
-
-
 .fi
 .RE
 
@@ -1872,8 +1759,6 @@ apple
 
 about
 contact
-
-
 
 .fi
 .RE
@@ -1900,8 +1785,6 @@ manual
 about
 contact
 version
-
-
 
 .fi
 .RE
@@ -1944,8 +1827,6 @@ PROJECT\_DIR/
     \_\_pre\-apply
   manifest.md
 
-
-
 .fi
 .RE
 
@@ -1967,8 +1848,6 @@ markdown: true
 ...
 some content
 
-
-
 .fi
 .RE
 
@@ -1983,8 +1862,6 @@ some content
 
 targetfile="$1"
 echo "$targetfile is generated"
-
-
 
 .fi
 .RE
@@ -2045,8 +1922,6 @@ awk \-i inplace \-v today="$today" '
     {print}
 ' "$manifest"
 
-
-
 .fi
 .RE
 
@@ -2083,8 +1958,6 @@ BASHBUD\_DIR/
             manifest.md
 
 
-
-
 .fi
 .RE
 
@@ -2107,8 +1980,6 @@ awk \-i inplace \-v today="$today" '
     }
     {print}
 ' "$manifest"
-
-
 
 .fi
 .RE

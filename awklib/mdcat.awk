@@ -88,6 +88,10 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
         r=r mdline "\n"
       }
 
+      else if (thisline == "tilde" && lastline == "code") {
+        r=r mdline "\n"
+      }
+
       else if (thisline ~ /^(heading|hr|tilde)$/) {
         r=r "\n" mdline "\n"
       }

@@ -23,7 +23,6 @@ Or follow the instructions below to install from source:
 git clone https://github.com/budlabs/bashbud.git
 cd bashbud
 sudo make install
-
 ```
 
 

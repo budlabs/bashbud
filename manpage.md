@@ -123,7 +123,6 @@ Creates a file with the string "hello world" to FILE
 
 # options-version-description
 Print version info to `stderr` and exit.
-
 ```
 
 
@@ -165,7 +164,6 @@ synopsis: |
     --help|-h [COMMAND]
     --version|-v
     --new FILE **DIRECTORY**
-
 ```
 
 
@@ -184,7 +182,6 @@ like this:
 synopsis'--help|-h [COMMAND]
 --version|-v
 --new FILE **DIRECTORY**'
-
 ```
 
 
@@ -204,7 +201,6 @@ options[version][long]=version
 options[version][short]=v
 options[new][long]=new
 options[new][arg]=FILE
-
 ```
 
 
@@ -256,7 +252,6 @@ synopsis: |
 
 This is just an **example** of how use
 the `manifest` in a *bashbud* project.
-
 ```
 
 
@@ -274,7 +269,6 @@ Print version information to stderr and exit
 # options-new-description
 
 Creates a new FILE
-
 ```
 
 
@@ -300,7 +294,6 @@ options[version][description]='Print version information to stderr and exit'
 options[new][long]=new
 options[new][arg]=FILE
 options[new][description]='Creates a new FILE'
-
 ```
 
 
@@ -403,7 +396,6 @@ PROJECT_DIR/
         ...
     manifest.md
     ...
-
 ```
 
 
@@ -447,7 +439,6 @@ BASHBUD_DIR/
       __templates/
         ...
       manifest.md
-
 ```
 
 
@@ -467,7 +458,6 @@ PROJECT_DIR/
         envs.md
     main.sh
     manifest.md
-
 ```
 
 
@@ -487,7 +477,6 @@ PROJECT_DIR/
         envs.md
     main.sh
     manifest.md
-
 ```
 
 
@@ -562,7 +551,6 @@ works:
   awklib/
     ...
   ...
-
 ```
 
 
@@ -579,7 +567,6 @@ BASHBUD_DIR/
     awklib/
       ...
 ...
-
 ```
 
 
@@ -588,7 +575,6 @@ BASHBUD_DIR/
 ```
 PROJECT_DIR/
   manifest.md
-
 ```
 
 
@@ -597,7 +583,6 @@ PROJECT_DIR/
 ---
 generator: default
 ...
-
 ```
 
 
@@ -630,7 +615,6 @@ PROJECT_DIR/
     template2/
       ...
   manifest.md
-
 ```
 
 
@@ -639,7 +623,6 @@ PROJECT_DIR/
 ---
 generator: mygen
 ...
-
 ```
 
 
@@ -681,7 +664,6 @@ cat << 'EOB' >&2
 updated: %%updated%% by %%author%%
 EOB
 }
-
 ```
 
 
@@ -742,7 +724,6 @@ created:       2001-11-09
 # long_description
 
 simple **test program** that will print hello world to `stdout`.
-
 ```
 
 
@@ -757,7 +738,6 @@ markdown: false
 wrap:     50
 ...
 %%name%% was created %%created%%.
-
 ```
 
 
@@ -766,7 +746,6 @@ If we would execute the command:
 
 ```shell
 $ bashbud --bump ~/scripts/hello
-
 ```
 
 
@@ -782,7 +761,6 @@ files exists*):
 **~/scripts/hello/created.txt** 
 ```text
 hello was created 2001-11-09.
-
 ```
 
 
@@ -801,7 +779,6 @@ wrap:     50
 ...
 %%name%% was created %%created%%.
 %%long_description%%
-
 ```
 
 
@@ -813,7 +790,6 @@ processed result will look like this:
 hello was created 2001-11-09.
 simple **test program** that will print hello 
 world to `stdout`.
-
 ```
 
 
@@ -830,7 +806,6 @@ templates:
 %%if EXPRESSION%%
 ...
 %%%fi%%
-
 ```
 
 
@@ -855,7 +830,6 @@ simple **test program** that will print hello world to `stdout`.
 # environ-BASHBUD_DIR-info
 
 bashbud config dir location.
-
 ```
 
 
@@ -889,7 +863,6 @@ budrich wrote this
 %%else%%
 this was written by %%author%%
 %%fi%%
-
 ```
 
 
@@ -904,7 +877,6 @@ bashbud config dir location.
 no info about BASHBUD_TIMEFORMAT
 
 budrich wrote this
-
 ```
 
 
@@ -947,7 +919,6 @@ Date format to use in created/updated keys in the
 manifest front matter.  
 
 See `date(1)` for available formats.
-
 ```
 
 
@@ -969,7 +940,6 @@ dependencies[sed][index]=2
 see_also[bash(1)][index]=0
 see_also[awk(1)][index]=1
 see_also[sed(1)][index]=2
-
 ```
 
 
@@ -988,7 +958,6 @@ Loops are defined like this:
 %%for ELEMENT_ALIAS in ARRAY%%
 LOOP BODY
 %%done%%
-
 ```
 
 
@@ -1006,7 +975,6 @@ Environment variables:
 %%for e in environ%%
 %%e%%
 %%done%%
-
 ```
 
 
@@ -1017,7 +985,6 @@ Environment variables:
 
 BASHBUD_DIR
 BASHBUD_DATEFORMAT
-
 ```
 
 
@@ -1038,7 +1005,6 @@ Environment variables:
 %%e[description]%%
 defaults to: %%e[default]%%
 %%done%%
-
 ```
 
 
@@ -1059,7 +1025,6 @@ manifest front matter.
 
 See date(1) for available formats.
 defaults to: %Y-%m-%d
-
 ```
 
 
@@ -1074,7 +1039,6 @@ defined like this:
 %%printf 'STRINGFORMAT' 'S1' 'S2' ...%%
 OR
 %%printf "STRINGFORMAT" "S1" "S2" ...%%
-
 ```
 
 
@@ -1095,7 +1059,6 @@ author:        budRich
 created:       2001-11-09
 dependencies:  [bash, gawk, sed]
 ...
-
 ```
 
 
@@ -1116,7 +1079,6 @@ with printformat
 %%for d in dependencies%%
 %%printf '%s,' 'd'%%
 %%done%%
-
 ```
 
 
@@ -1129,7 +1091,6 @@ sed
 
 with printformat
 bash,gawk,sed,
-
 ```
 
 
@@ -1151,7 +1112,6 @@ The following options are available:
 -r          - reverse sort order
 -n INT      - print the INT first results (defaults to all)
 -p          - print the full path to the file before printing the content
-
 ```
 
 
@@ -1175,7 +1135,6 @@ example 4. import single file, exclude lines matching PATTERN:
 example 5. import the three first files in alphabetic order from DIR
 and exclude lines matching PATTERN:
 %%cat -n 3 -v 'PATTERN' DIR/*%%
-
 ```
 
 
@@ -1197,7 +1156,6 @@ PROJECT_DIR/
     functions/
       hello.sh
       cleanup.sh
-
 ```
 
 
@@ -1206,7 +1164,6 @@ PROJECT_DIR/
 # test1 file
 
 this is just a test file made to demonstrate how the `cat` function in **bashbud** templates work.
-
 ```
 
 
@@ -1217,7 +1174,6 @@ test2 file
 more stupid
 test files  
 last line ended with two spaces
-
 ```
 
 
@@ -1228,7 +1184,6 @@ last line ended with two spaces
 test3 file
 
 this file have two leading and trailing blank lines
-
 
 
 ```
@@ -1243,7 +1198,6 @@ this file have two leading and trailing blank lines
 #
 # prints 'hello NAME' to stdout
 hello() { echo "hello $1" ;}
-
 ```
 
 
@@ -1255,7 +1209,6 @@ hello() { echo "hello $1" ;}
 DEATH() {
     exit
 }
-
 ```
 
 
@@ -1271,7 +1224,6 @@ wrap: 20
 ...
 example 1. import single file import:
 %%cat doc/test1.md%%
-
 ```
 
 
@@ -1286,7 +1238,6 @@ demonstrate how the
 cat function in
 bashbud templates
 work.
-
 ```
 
 
@@ -1306,7 +1257,6 @@ wrap: 20
 ...
 example 2. import all files in a directory:
 %%cat doc/*%%
-
 ```
 
 
@@ -1337,7 +1287,6 @@ trailing blank
 lines
 
 
-
 ```
 
 
@@ -1358,7 +1307,6 @@ wrap: 0
 ...
 example 3. import the n last modified files in a directory:
 %%cat -tn 2 doc/*%%
-
 ```
 
 
@@ -1374,7 +1322,6 @@ last line ended with two spaces
 test3 file
 this file have two leading and trailing blank lines
 
-
 ```
 
 
@@ -1388,7 +1335,6 @@ wrap: 20
 ...
 example 5. import all files in a directory, exclude lines matching PATTERN , (lines with a leading hash):
 %%cat -v '^#' functions/*%%
-
 ```
 
 
@@ -1402,7 +1348,6 @@ hello() { echo "hello $1" ;}
 DEATH() {
     exit
 }
-
 ```
 
 
@@ -1434,7 +1379,6 @@ PROJECT_DIR/
       __template
     __order
   manifest.md
-
 ```
 
 
@@ -1452,7 +1396,6 @@ apple
 
 about
 contact
-
 ```
 
 
@@ -1471,7 +1414,6 @@ manual
 about
 contact
 version
-
 ```
 
 
@@ -1516,7 +1458,6 @@ PROJECT_DIR/
     __post-apply
     __pre-apply
   manifest.md
-
 ```
 
 
@@ -1531,7 +1472,6 @@ target: manual.md
 markdown: true
 ...
 some content
-
 ```
 
 
@@ -1542,7 +1482,6 @@ some content
 
 targetfile="$1"
 echo "$targetfile is generated"
-
 ```
 
 
@@ -1598,7 +1537,6 @@ awk -i inplace -v today="$today" '
     }
     {print}
 ' "$manifest"
-
 ```
 
 
@@ -1634,7 +1572,6 @@ BASHBUD_DIR/
             ...
             manifest.md
 
-
 ```
 
 
@@ -1653,7 +1590,6 @@ awk -i inplace -v today="$today" '
     }
     {print}
 ' "$manifest"
-
 ```
 
 
