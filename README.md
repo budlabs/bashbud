@@ -96,7 +96,14 @@ can do.
 [bashbud wiki]: https://github.com/budRich/bashbud/wiki  %%%WRAPTHIS%%%[AUR]: https://aur.archlinux.org/packages/bashbud
 ## updates
 
+**2019-01-01**  
+Lots of improvements bug fixes.  Two new command line
+options (`--get` and `--set`)  to get/set values from the
+YAML of a projects **manifest.md**.
+
+
 ## BUD IS BACK
+
 
 **2019-01-01**  
 First public release, read the wiki,  report the issues, 

@@ -1428,10 +1428,6 @@ performed **bashbud** looks for files named and
 located in certain places, if these files exist
 and is executable, they will be executed.
 
-
-
-
-
 ## template scripts
 
 
