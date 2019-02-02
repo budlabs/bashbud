@@ -1428,10 +1428,6 @@ performed **bashbud** looks for files named and
 located in certain places, if these files exist
 and is executable, they will be executed.
 
-
-
-
-
 ## template scripts
 
 
@@ -1542,6 +1538,50 @@ awk -i inplace -v today="$today" '
 This will increment the version number in the
 manifest front matter +0.001 and update the
 updated date, before any templates are processed.
+
+It is also possible to execute more scripts by
+adding them to directories named: `__pre-apply.d`
+and/or `__post-apply.d` , an optional `__order`
+file can also be created in these directories to
+specify a desired execution order.
+
+EXAMPLE
+-------
+
+
+```text
+PROJECT_DIR/bashbud
+  ...
+  __pre-apply.d
+    notify
+    __order
+  __pre-apply
+  ...
+```
+
+
+**PROJECT_DIR/bashbud/__pre-apply.d/notify**  
+```
+#!/usr/bin/env bash
+notify-send "Let's generate!"
+```
+
+
+
+**PROJECT_DIR/bashbud/__pre-apply.d/__order**  
+```
+# order to execute pre-apply scripts
+notify
+banana
+```
+
+
+With this setup, the `__pre-apply` script will
+first get executed. The the order will get
+determined. In the example `__order` file above to
+files are listed **notify** and **banana**, since
+**banana** doesn't exist, only **notify** will get
+executed.
 
 ## generator scripts
 

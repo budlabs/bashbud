@@ -21,14 +21,14 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
       thisline="table"
     }
 
-    # line ending with doublespace
-    else if (mdline ~ /.*[ ]{2,}$/) {
-      thisline="dspace"
-    }
-
     # link definition [link]: url
     else if (mdline ~ /^[[].+[]]:.*/) {
       thisline="linkdef"
+    }
+
+    # line ending with doublespace
+    else if (mdline ~ /.*[ ]{2,}$/) {
+      thisline="dspace"
     }
 
     # HR
@@ -72,8 +72,18 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
     }
     else {
 
+      if (lastline == "linkdef" && thisline != "linkdef") {
+         r = r "\n"
+      }
+
       if (thisline == "table") {
         if (lastline != "table")
+          r = r "\n"
+        r = r mdline "\n"
+      }
+
+      if (thisline == "linkdef") {
+        if (lastline != "linkdef")
           r = r "\n"
         r = r mdline "\n"
       }
@@ -84,7 +94,7 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
         }
       }
 
-      if (thisline ~ /code|linkdef/) {
+      if (thisline ~ /code/) {
         r=r mdline "\n"
       }
 
