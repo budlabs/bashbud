@@ -1,4 +1,4 @@
-.TH BASHBUD 1 2019\-01\-12 Linx "User Manuals"
+.TH BASHBUD 1 2019\-02\-02 Linx "User Manuals"
 .SH NAME
 .PP
 \fB\fCbashbud\fR \- Generate documents and manage
@@ -1942,6 +1942,64 @@ awk \-i inplace \-v today="$today" '
 This will increment the version number in the
 manifest front matter +0.001 and update the
 updated date, before any templates are processed.
+
+.PP
+It is also possible to execute more scripts by
+adding them to directories named: \fB\fC\_\_pre\-apply.d\fR
+and/or \fB\fC\_\_post\-apply.d\fR , an optional \fB\fC\_\_order\fR
+file can also be created in these directories to
+specify a desired execution order.
+
+.SH EXAMPLE
+.PP
+.RS
+
+.nf
+PROJECT\_DIR/bashbud
+  ...
+  \_\_pre\-apply.d
+    notify
+    \_\_order
+  \_\_pre\-apply
+  ...
+
+.fi
+.RE
+
+.PP
+\fBPROJECT\_DIR/bashbud/\_\_pre\-apply.d/notify\fP
+
+.PP
+.RS
+
+.nf
+#!/usr/bin/env bash
+notify\-send "Let's generate!"
+
+.fi
+.RE
+
+.PP
+\fBPROJECT\_DIR/bashbud/\fBpre\-apply.d/\fPorder\fP
+
+.PP
+.RS
+
+.nf
+# order to execute pre\-apply scripts
+notify
+banana
+
+.fi
+.RE
+
+.PP
+With this setup, the \fB\fC\_\_pre\-apply\fR script will
+first get executed. The the order will get
+determined. In the example \fB\fC\_\_order\fR file above to
+files are listed \fBnotify\fP and \fBbanana\fP, since
+\fBbanana\fP doesn't exist, only \fBnotify\fP will get
+executed.
 
 .SH generator scripts
 .PP

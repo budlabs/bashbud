@@ -21,14 +21,14 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
       thisline="table"
     }
 
-    # line ending with doublespace
-    else if (mdline ~ /.*[ ]{2,}$/) {
-      thisline="dspace"
-    }
-
     # link definition [link]: url
     else if (mdline ~ /^[[].+[]]:.*/) {
       thisline="linkdef"
+    }
+
+    # line ending with doublespace
+    else if (mdline ~ /.*[ ]{2,}$/) {
+      thisline="dspace"
     }
 
     # HR

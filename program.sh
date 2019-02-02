@@ -3,8 +3,8 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-bashbud - version: 2019.01.12.1
-updated: 2019-01-12 by budRich
+bashbud - version: 2019.02.02.5
+updated: 2019-02-02 by budRich
 EOB
 }
 
@@ -176,9 +176,18 @@ bumpproject(){
     fi
   fi
 
+
   # execute any pre-apply script
   [[ -x "$templatedir/__pre-apply" ]] \
     && "$templatedir/__pre-apply" "$projectdir"
+
+  # if __pre-apply.d dir exist, execute scripts
+  if [[ -d "$templatedir/__pre-apply.d" ]]; then
+    for f in $(getorder "$templatedir/__pre-apply.d"); do
+      [[ -x "$f" ]] || continue
+      "$f" "$projectdir"
+    done
+  fi
 
   # process manifest and templates
   setstream "$projectdir" "$templatedir" "${licensetemplate:-}" \
@@ -187,6 +196,14 @@ bumpproject(){
   # execute any post-apply script
   [[ -x "$templatedir/__post-apply" ]] \
     && "$templatedir/__post-apply" "$projectdir"
+
+  # if __post-apply.d dir exist, execute scripts
+  if [[ -d "$templatedir/__post-apply.d" ]]; then
+    for f in $(getorder "$templatedir/__pre-apply.d"); do
+      [[ -x "$f" ]] || continue
+      "$f" "$projectdir"
+    done
+  fi
 }
 
 ERM(){ >&2 echo "$*"; }
@@ -349,6 +366,23 @@ getkey(){
     || return 1
 }
 
+getorder() {
+  local trgdir="$1"
+
+  [[ -d $trgdir ]] || return 1
+
+  if [[ -f "$trgdir/__order" ]]; then
+    awk '
+      /^[^#]/ && $0 !~ /^\s*$/ {print}
+    ' "$trgdir/__order"
+    ls "$trgdir" | grep -v '^__'
+  else
+    ls "$trgdir" | grep -v '^__'
+  fi | awk -v d="$trgdir" '
+    !a[$0]++ {print d "/" $0}
+  '
+}
+
 linkproject(){
   local generatortype genpath linkdir
   local projectdir="${1/'~'/$HOME}"
@@ -462,8 +496,6 @@ setstream() {
   local templatedir="$2"
   local licensetemplate="${3:-}"
 
-  local templatelist
-
   cat "$projectdir/manifest.md"
   [[ -d $projectdir/manifest.d ]] && {
     for f in "$projectdir/manifest.d/"*; do
@@ -472,21 +504,7 @@ setstream() {
   }
   echo "___START___"
   
-  # make a list of all templates, 
-  # with __order in mind.
-  templatelist="$(
-  if [[ -f "$templatedir/__order" ]]; then
-    awk '
-      /^[^#]/ && $0 !~ /^\s*$/ {print}
-    ' "$templatedir/__order"
-    ls "$templatedir" | grep -v '^__'
-  else
-    ls "$templatedir" | grep -v '^__'
-  fi | awk -v d="$templatedir" '
-    !a[$0]++ {print d "/" $0}
-  ')"
-
-  for d in ${templatelist}; do
+  for d in $(getorder "$templatedir"); do
     [[ -d $d ]] || continue
 
     [[ -f $d/__template ]] && {

@@ -38,9 +38,18 @@ bumpproject(){
     fi
   fi
 
+
   # execute any pre-apply script
   [[ -x "$templatedir/__pre-apply" ]] \
     && "$templatedir/__pre-apply" "$projectdir"
+
+  # if __pre-apply.d dir exist, execute scripts
+  if [[ -d "$templatedir/__pre-apply.d" ]]; then
+    for f in $(getorder "$templatedir/__pre-apply.d"); do
+      [[ -x "$f" ]] || continue
+      "$f" "$projectdir"
+    done
+  fi
 
   # process manifest and templates
   setstream "$projectdir" "$templatedir" "${licensetemplate:-}" \
@@ -49,4 +58,12 @@ bumpproject(){
   # execute any post-apply script
   [[ -x "$templatedir/__post-apply" ]] \
     && "$templatedir/__post-apply" "$projectdir"
+
+  # if __post-apply.d dir exist, execute scripts
+  if [[ -d "$templatedir/__post-apply.d" ]]; then
+    for f in $(getorder "$templatedir/__pre-apply.d"); do
+      [[ -x "$f" ]] || continue
+      "$f" "$projectdir"
+    done
+  fi
 }
