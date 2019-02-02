@@ -72,8 +72,18 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
     }
     else {
 
+      if (lastline == "linkdef" && thisline != "linkdef") {
+         r = r "\n"
+      }
+
       if (thisline == "table") {
         if (lastline != "table")
+          r = r "\n"
+        r = r mdline "\n"
+      }
+
+      if (thisline == "linkdef") {
+        if (lastline != "linkdef")
           r = r "\n"
         r = r mdline "\n"
       }
@@ -84,7 +94,7 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
         }
       }
 
-      if (thisline ~ /code|linkdef/) {
+      if (thisline ~ /code/) {
         r=r mdline "\n"
       }
 

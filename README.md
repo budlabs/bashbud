@@ -92,9 +92,23 @@ Show version and exit.
 See the [bashbud wiki] or the manpage `bashbud(1)` for a
 detailed description on how **bashbud** works and what it
 can do.
+
 [bashbud wiki]: https://github.com/budRich/bashbud/wiki  
 [AUR]: https://aur.archlinux.org/packages/bashbud
+
+
 ## updates
+
+**2019-02-02**  
+New feature, bump script directories, read more in the
+wiki:
+https://github.com/budlabs/bashbud/wiki/05CA_bump_scripts  
+
+
+Fixed an issue where link definitions in markdown got
+interpreted as paragraphs resulting in an embarrassing
+parsing error in the main readme of this repo.
+
 
 **2019-01-01**  
 Lots of improvements bug fixes.  Two new command line
