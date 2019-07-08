@@ -50,6 +50,7 @@ bumpproject(){
       "$f" "$projectdir"
     done
   fi
+      ERM "pass"
 
   # process manifest and templates
   setstream "$projectdir" "$templatedir" "${licensetemplate:-}" \
