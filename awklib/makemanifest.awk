@@ -27,8 +27,9 @@ function makemanifest(oname,ssplit,okey,sr,oarr,obj,ii,kk,kkk,k) {
     if (length(oarr)>1) {
       ii="X"
       obj=oarr[1]
-      oname=oarr[2]
-      okey=oarr[3]
+      okey=oarr[length(oarr)]
+      oname=gensub("^"obj"-","",1,k)
+      sub("-"okey"$","",oname)
 
       for (i=0;i<length(amani[obj]);i++) {
         for (kk in amani[obj][i]) {

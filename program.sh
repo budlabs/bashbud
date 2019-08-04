@@ -3,8 +3,8 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-bashbud - version: 2019.02.02.18
-updated: 2019-02-02 by budRich
+bashbud - version: 2019.08.04.2
+updated: 2019-08-04 by budRich
 EOB
 }
 
@@ -188,6 +188,7 @@ bumpproject(){
       "$f" "$projectdir"
     done
   fi
+      ERM "pass"
 
   # process manifest and templates
   setstream "$projectdir" "$templatedir" "${licensetemplate:-}" \

@@ -57,7 +57,7 @@ function readyaml() {
 
 
         # longoptions:
-        else if (match(field,/^[[]?--(\w+)/,ma)) {
+        else if (match(field,/^[[]?--(\S+)/,ma)) {
           curlng=ma[1]
           if (optnum[curlng] !~ /./) {optnum[curlng] = curopt++}
           gsub(/[][]/,"",field)
