@@ -50,7 +50,6 @@ bumpproject(){
       "$f" "$projectdir"
     done
   fi
-      ERM "pass"
 
   # process manifest and templates
   setstream "$projectdir" "$templatedir" "${licensetemplate:-}" \
@@ -62,7 +61,7 @@ bumpproject(){
 
   # if __post-apply.d dir exist, execute scripts
   if [[ -d "$templatedir/__post-apply.d" ]]; then
-    for f in $(getorder "$templatedir/__pre-apply.d"); do
+    for f in $(getorder "$templatedir/__post-apply.d"); do
       [[ -x "$f" ]] || continue
       "$f" "$projectdir"
     done
