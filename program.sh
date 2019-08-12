@@ -3,8 +3,8 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-bashbud - version: 2019.08.04.2
-updated: 2019-08-04 by budRich
+bashbud - version: 2019.08.13.0
+updated: 2019-08-13 by budRich
 EOB
 }
 
@@ -188,7 +188,6 @@ bumpproject(){
       "$f" "$projectdir"
     done
   fi
-      ERM "pass"
 
   # process manifest and templates
   setstream "$projectdir" "$templatedir" "${licensetemplate:-}" \
@@ -200,7 +199,7 @@ bumpproject(){
 
   # if __post-apply.d dir exist, execute scripts
   if [[ -d "$templatedir/__post-apply.d" ]]; then
-    for f in $(getorder "$templatedir/__pre-apply.d"); do
+    for f in $(getorder "$templatedir/__post-apply.d"); do
       [[ -x "$f" ]] || continue
       "$f" "$projectdir"
     done

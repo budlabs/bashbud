@@ -3,8 +3,8 @@
 ___printversion(){
   
 cat << 'EOB' >&2
-bashbud - version: 2019.08.04.2
-updated: 2019-08-04 by budRich
+bashbud - version: 2019.08.13.0
+updated: 2019-08-13 by budRich
 EOB
 }
 

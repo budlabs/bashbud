@@ -1,7 +1,9 @@
-function readyaml() {
+function readyaml(rol) {
   iskey=islist=0
   curind=length(ma[1])
   rol=ma[5]
+
+
 
   if (curind > lastind) {parkey=lastkey;asindx=0;isindx=0}
   if (curind < lastind && $0 !~ /^[[:space:]]*$/) {
@@ -107,6 +109,7 @@ function readyaml() {
     # gsub(/[$]/,"\\$",rol)
 
     amani[gensub("-","_","g",parkey)][asindx++][gensub("-","_","g",curkey)]["default"]=rol
+    
   } 
 
   # indexed array list
@@ -132,7 +135,6 @@ function readyaml() {
   else if (rol !~ /^[[>|{]/ && rol ~ /./ && iskey==1) {
     amani[curkey]=rol
   }
-
 
   if (iskey==1) {lastkey=curkey;curkey=""}
   if (lastind!=curind) {lastind=curind}

@@ -54,7 +54,7 @@ function tempexpand(stuff,premd,txa,astf,nsub,expanderz,tmpfile) {
 
   
   
-  if (expanderz !~ /./) {expanderz=stuff}
+  if (expanderz !~ /./) {expanderz=""}
   else {
     expanderz = wrapcheck(expanderz)
   }

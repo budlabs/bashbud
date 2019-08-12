@@ -11,6 +11,7 @@ function makemanifest(oname,ssplit,okey,sr,oarr,obj,ii,kk,kkk,k) {
     }
     amani["synopsis"]=sr
   }
+
   # concatenate markdown
   for (k in amantemp) {
     amantemp[k]=mdcat(amantemp[k])
