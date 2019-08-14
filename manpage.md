@@ -72,15 +72,15 @@ Show version and exit.
 ENVIRONMENT
 -----------
 
-``  
+`BASHBUD_DIR`  
 bashbud config dir location.
 defaults to: $XDG_CONFIG_HOME/bashbud
 
 DEPENDENCIES
 ------------
-``
-``
-``
+`bash`
+`gawk`
+`sed`
 
 
 
