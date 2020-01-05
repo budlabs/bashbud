@@ -35,6 +35,7 @@ function getif(expression,trg,txa,r) {
       if (length(txa)==1 && trg ~ /./) {
         r=0
       } else {
+
         switch (txa[2]) {
           case "=":
             if (trg == txa[3]) {r=0}
@@ -42,6 +43,14 @@ function getif(expression,trg,txa,r) {
 
           case "!=":
             if (trg != txa[3]) {r=0}
+          break
+
+          case "~":
+            if (trg ~ txa[3]) {r=0}
+          break
+
+          case "!~":
+            if (trg !~ txa[3]) {r=0}
           break
         }
       }

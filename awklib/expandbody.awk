@@ -55,12 +55,12 @@ function expandbody(body,r,lastif,toreplace,toexpand) {
             toexpand=lapa[l]
             toreplace=gensub("[*]","[*]","g",lapa[l])
             toreplace=gensub(/\^/,"\\\\^","g",toreplace)
-            toreplace=gensub(/\&/,"\\\\&","g",toreplace)
+            toreplace=gensub(/&/,"\\\\&","g",toreplace)
             toreplace=gensub("[[]","@@@@","g",toreplace)
             toreplace=gensub("[]]","[]]","g",toreplace)
             toreplace=gensub("@@@@","[[]","g",toreplace)
             toexpand=tempexpand(toexpand)
-            gsub(/\&/,"\\\\&",toexpand)
+            gsub(/&/,"\\\\&",toexpand)
             sub("%%"toreplace"%%",toexpand,bodylines[lbline])
           }
         }

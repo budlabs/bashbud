@@ -29,7 +29,7 @@ sudo make install
 ### usage
 
 ```text
-bashbud --new|-n    [GENERATOR] **TARGET_DIR**
+bashbud --new|-n    [GENERATOR] TARGET_DIR
 bashbud --bump|-b   [PROJECT_DIR]
 bashbud --link|-l [PROJECT_DIR]
 bashbud --get|-g KEY [PROJECT_DIR]

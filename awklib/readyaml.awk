@@ -59,7 +59,7 @@ function readyaml(rol) {
 
 
         # longoptions:
-        else if (match(field,/^[[]?--(\S+)/,ma)) {
+        else if (match(field,/^[[]?--([^][:space:]]+)/,ma)) {
           curlng=ma[1]
           if (optnum[curlng] !~ /./) {optnum[curlng] = curopt++}
           gsub(/[][]/,"",field)
@@ -67,6 +67,7 @@ function readyaml(rol) {
           if (curlink!=0) var=curlink; else var=""
           lastopt=curlng
           amani["options"][optnum[curlng]][curlng]["short"]=var
+          amani["options"][optnum[curlng]][curlng]["long"]=curlng
           # amani["options"][curlng]["long"]=curlng
           lastkey=curlng
           curlink=0

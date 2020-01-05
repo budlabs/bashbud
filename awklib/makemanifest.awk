@@ -9,7 +9,7 @@ function makemanifest(oname,ssplit,okey,sr,oarr,obj,ii,kk,kkk,k) {
       if (sr=="") {sr=amani["name"] " " ssplit[l]}
       else {sr=sr "\n" amani["name"] " " ssplit[l]}
     }
-    amani["synopsis"]=sr
+    amani["synopsis"]=gensub(/[*]/,"","g",sr)
   }
 
   # concatenate markdown
