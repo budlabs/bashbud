@@ -79,7 +79,7 @@ function mdcat(e,k,r,incode,mdbody,mdline,thisline,lastline) {
       if (thisline == "table") {
         if (lastline != "table")
           r = r "\n"
-        r = r mdline "\n"
+        r = r "\n" mdline
       }
 
       if (thisline == "linkdef") {
