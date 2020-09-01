@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 bumpproject(){
+
   local generatortype licensetype genpath
   local projectdir="${1/'~'/$HOME}"
   local templatedir="$projectdir/bashbud"
@@ -39,6 +40,7 @@ bumpproject(){
   fi
 
 
+
   # execute any pre-apply script
   [[ -x "$templatedir/__pre-apply" ]] \
     && "$templatedir/__pre-apply" "$projectdir"
@@ -50,6 +52,7 @@ bumpproject(){
       "$f" "$projectdir"
     done
   fi
+
 
   # process manifest and templates
   setstream "$projectdir" "$templatedir" "${licensetemplate:-}" \
@@ -66,4 +69,5 @@ bumpproject(){
       "$f" "$projectdir"
     done
   fi
+
 }

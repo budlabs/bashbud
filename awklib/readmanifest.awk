@@ -11,7 +11,7 @@ function readmanifest(ma,ach,thisline) {
     thisline="code"
   } 
 
-  else if (match($0,/\s*[#]\s(.*)\s*$/,ma)) {
+  else if (match($0,/^\s*[#]{1}\s(.+)\s*$/,ma)) {
 
     # chain is if multiple variables are defined after
     # each other, then they will contain the same content.

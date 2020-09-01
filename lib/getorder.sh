@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 
 getorder() {
-  local trgdir="$1"
+  local trgdir="$1" 
+  local orderfile=$trgdir/__order
 
   [[ -d $trgdir ]] || return 1
 
-  if [[ -f "$trgdir/__order" ]]; then
+  if [[ -f "$orderfile" ]]; then
     awk '
       /^[^#]/ && $0 !~ /^\s*$/ {print}
-    ' "$trgdir/__order"
+    ' "$orderfile"
     ls "$trgdir" | grep -v '^__'
   else
     ls "$trgdir" | grep -v '^__'
