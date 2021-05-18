@@ -10,6 +10,7 @@ EOB
 
 
 # environment variables
+: "${XDG_CONFIG_HOME:=$HOME/.config}"
 : "${BASHBUD_DIR:=$XDG_CONFIG_HOME/bashbud}"
 
 

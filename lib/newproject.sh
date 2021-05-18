@@ -9,20 +9,21 @@ newproject(){
   local generatordir="$BASHBUD_DIR/generators/$generator"
   local targetdir="${__lastarg/'~'/$HOME}"
 
+  : "${targetdir:=$PWD}"
+
   # test if targetdir exist
-  [[ -d $targetdir ]] \
+  [[ -d $targetdir && $targetdir != $PWD ]] \
     && ERX "$targetdir already exist."
 
   # test if generator exist
   [[ -d $generatordir ]] \
     || ERX "generator DIR $generatordir doesn't exist"
   
+  [[ $targetdir = $PWD ]] || mkdir -p "$targetdir"
+
   # execute any pre-generate script
   [[ -x "$generatordir/__pre-generate" ]] \
     && "$generatordir/__pre-generate" "$targetdir"
-
-  # create targetdir
-  mkdir -p "$targetdir"
 
   # copy all files and directories from generatordir
   # not starting with "__"
