@@ -102,7 +102,7 @@ $(shell echo 0 > $(CACHE_DIR)/got_func)
 endif
 endif
 endif
-all: $(MONOLITH) $(MANPAGE_OUT) $(README) $(BASE) $(CUSTOM_TARGETS)
+all: $(CUSTOM_TARGETS) $(MONOLITH) $(MANPAGE_OUT) $(README) $(BASE)
 
 clean:
 	rm -rf \
