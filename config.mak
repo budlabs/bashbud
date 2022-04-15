@@ -1,6 +1,6 @@
 NAME           := bashbud
 CREATED        := 2022-04-05
-VERSION        := 1.99
+VERSION        := 2.0
 AUTHOR         := budRich
 ORGANISATION   := budlabs
 CONTACT        := https://github.com/budlabs/bashbud
