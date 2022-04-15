@@ -1,5 +1,6 @@
 conf/default/Makefile
 **/_*
 .cache/
+wiki/
 !.gitignore
 notes
