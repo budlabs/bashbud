@@ -1,0 +1,12 @@
+$(MANPAGE_OUT): $(CACHE_DIR)/manpage.md
+	@$(info generating $@ from $^)
+	lowdown -sTman                   \
+		-M title=$(NAME)               \
+		-M date=$(UPDATED)             \
+		-M source=$(ORGANISATION)      \
+		-M section=$(manpage_section)  \
+		$^ > $@
+
+$(CACHE_DIR)/manpage.md: $(MANPAGE_LAYOUT)
+	@cat $^ > $@
+

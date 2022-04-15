@@ -1,0 +1,8 @@
+Overwrite already existing files imported from template
+
+`config.mak` or the *main* script file will not be
+overwritten, even if this option is set.
+Whithout this option, files will get overwritten
+if the template file is newer.
+Or, this option decides if `--force` or `--update`
+will be used with `cp(1)`.

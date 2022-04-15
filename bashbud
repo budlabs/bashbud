@@ -1,0 +1,79 @@
+#!/bin/bash
+
+: "${XDG_CONFIG_HOME:=$HOME/.config}"
+: "${BASHBUD_CONFIG_DIR:=$XDG_CONFIG_HOME/bashbud}"
+
+main(){
+
+  declare -g _template_dir _target_dir _cp_flag
+
+  config_dir=${_o[config-dir]:-$BASHBUD_CONFIG_DIR}
+
+  [[ -d $config_dir ]] || _createconf "$config_dir"
+
+  _target_dir=$(realpath "${1:-.}")
+  target_name=$(basename "$_target_dir")
+
+  ((_o[new] && _o[add] != 1)) && _o[template]=default
+
+  _template_dir="$config_dir/${_o[template]}"
+
+  ((_o[force])) \
+    && _cp_flag=--force \
+    || _cp_flag=--update
+
+  [[ ${_o[add]} && ${_o[template]} ]] && {
+    add_files "$@"
+    exit
+  }
+
+  [[ ${_o[template]} && -d "$_template_dir" ]] || {
+    available_templates=("$config_dir"/*)
+    ERX "$(printf '%s\n' "--template '${_o[template]}' not found."     \
+             'usage: bashbud [--new|--template TEMPLATE] [TARGET_DIR]' \
+             ''                                                        \
+             "available templates in ${config_dir/~/'~'}:"             \
+             "${available_templates[@]/*\//  }"                        \
+             ''                                                        \
+             '(bashbud --new == bashbud --template default)'
+          )"
+  }
+
+  mapfile -td '' _template_dirs < <(find "$_template_dir" -type d -print0)
+  mapfile -td '' template_files < <(find -L "$_template_dir" -type f -print0)
+
+  [[ ${_o[update]} ]] \
+    || mkdir -p "${_template_dirs[@]/$_template_dir/$_target_dir/}"
+
+  for template_file in "${template_files[@]}"; do
+
+    target_file=${template_file/$_template_dir/$_target_dir}
+
+    if [[ ${_o[update]} ]]; then
+      [[ -f $target_file ]] \
+        && cp "$_cp_flag" "$target_file" "$template_file"
+
+    elif [[ $template_file = "$_template_dir"/config.mak ]]; then
+      [[ -f "${_target_dir}/config.mak" ]] || {
+        echo "NAME        := $target_name"
+        echo "CREATED     := $(date +'%Y-%m-%d')"
+        cat "$template_file"
+      } > "${_target_dir}/config.mak"
+
+    elif [[ $template_file = "$_template_dir"/main.sh ]]; then
+      [[ -f "${_target_dir}/$target_name" ]] \
+        || cp "$(readlink -f "$template_file")" "${_target_dir}/$target_name"
+
+    else
+
+      cp "$_cp_flag" "$(readlink -f "$template_file")" "$target_file"
+    fi
+
+  done
+
+  [[ -f "$_target_dir"/Makefile && ! "${_o[update]}" ]] \
+    && make -C "$_target_dir"
+}
+
+__dir=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")") #bashbud
+source "$__dir/_init.sh"                              #bashbud

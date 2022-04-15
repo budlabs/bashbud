@@ -1,0 +1,55 @@
+$(CACHE_DIR)/help_table.md : $(CACHE_DIR)/long_help.md
+	@$(info generating help table)
+	{
+		echo
+		printf '%s\n' '| option | description |' \
+									'|:-------|:------------|'
+		for option in $$(cat $(CACHE_DIR)/options_in_use); do
+			[[ -f $(CACHE_DIR)/options/$$option ]]  \
+				&& frag=$$(cat $(CACHE_DIR)/options/$$option) \
+				|| frag="$$option | "
+
+			[[ -f $(DOCS_DIR)/options/$$option ]]  \
+				&& desc=$$(head -qn1 $(DOCS_DIR)/options/$$option) \
+				|| desc='short description  '
+
+			paste <(echo $$frag) <(echo $$desc)
+		done
+
+		# head -qn1 $(addprefix $(DOCS_DIR)/options/,$(file < $(CACHE_DIR)/options_in_use))
+		echo
+	} > $@ 
+
+
+$(CACHE_DIR)/help_table.txt: $(CACHE_DIR)/help_table.md
+	lowdown --term-no-ansi -Tterm $< | tail -qn +3 > $@
+
+
+$(CACHE_DIR)/short_help.md: $(CACHE_DIR)/help_table.txt
+	@$(info making $@)
+	{
+		if [[ options = "$(USAGE)" ]]
+			then
+				echo '# SYNOPSIS'
+				echo
+				sed 's/^/    $(NAME) /g;s/$$/  /g' $(OPTIONS_FILE)
+			else printf '%s\n' '# USAGE' '' 'usage: $(USAGE)'
+		fi
+		echo
+		cat $(CACHE_DIR)/help_table.txt
+	} > $@
+	
+
+$(CACHE_DIR)/print_help.sh: $(CACHE_DIR)/help_table.txt
+	@$(info making $@)
+	{
+		printf '%s\n' \
+			'$(SHBANG)' '' "__print_help()" "{" "$(INDENT)cat << 'EOB' >&3  "
+		if [[ options = "$(USAGE)" ]]
+			then sed 's/^/    $(NAME) /g;s/$$/  /g' $(OPTIONS_FILE)
+			else printf '%s\n' '$(INDENT)usage: $(USAGE)' ''
+		fi
+		cat $<
+		printf '%s\n' 'EOB' '}'
+	} > $@
+

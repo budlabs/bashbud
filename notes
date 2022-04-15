@@ -1,0 +1,8 @@
+timer in template
+err template
+main.sh template
+
+
+template apply two steps
+  1. create dirs
+  2. copy files (don overwrite)

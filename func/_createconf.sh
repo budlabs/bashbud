@@ -1,3 +1,41 @@
+#!/bin/bash
+
+### _createconf() function is automatically generated
+### from makefile based on the content of the conf/ directory
+
+_createconf() {
+local trgdir="$1"
+mkdir -p "$trgdir" "$trgdir"/default "$trgdir"/default/docs "$trgdir"/default/docs/options "$trgdir"/ERR "$trgdir"/ERR/func "$trgdir"/TIMER "$trgdir"/TIMER/func "$trgdir"/LOG "$trgdir"/LOG/func "$trgdir"/install.mak "$trgdir"/watch "$trgdir"/manpage-docs "$trgdir"/manpage-docs/docs
+
+if [[ -d $__dir ]]; then #bashbud
+cat "$__dir/conf/default/docs/options/help" > "$trgdir/default/docs/options/help" #bashbud
+else #bashbud
+cat << 'EOCONF' > "$trgdir/default/docs/options/help"
+print help and exit  
+EOCONF
+fi #bashbud
+
+if [[ -d $__dir ]]; then #bashbud
+cat "$__dir/conf/default/docs/options/version" > "$trgdir/default/docs/options/version" #bashbud
+else #bashbud
+cat << 'EOCONF' > "$trgdir/default/docs/options/version"
+print version info and exit  
+EOCONF
+fi #bashbud
+
+if [[ -d $__dir ]]; then #bashbud
+cat "$__dir/conf/default/options" > "$trgdir/default/options" #bashbud
+else #bashbud
+cat << 'EOCONF' > "$trgdir/default/options"
+--help|-h
+--version|-v
+EOCONF
+fi #bashbud
+
+if [[ -d $__dir ]]; then #bashbud
+cat "$__dir/conf/default/Makefile" > "$trgdir/default/Makefile" #bashbud
+else #bashbud
+cat << 'EOCONF' > "$trgdir/default/Makefile"
 .PHONY: clean check all install uninstall \
 				install-dev uninstall-dev
 
@@ -19,11 +57,11 @@ CREATED         ?= $(UPDATED)
 AUTHOR          ?= anon
 CONTACT         ?= address
 ORGANISATION    ?=
-CACHE_DIR       ?= .cache
-DOCS_DIR        ?= docs
-CONF_DIR        ?= conf
-AWK_DIR         ?= awklib
-FUNCS_DIR       ?= func
+CACHE_DIR       ?= ./.cache
+DOCS_DIR        ?= ./docs
+CONF_DIR        ?= ./conf
+AWK_DIR         ?= ./awklib
+FUNCS_DIR       ?= ./func
 INDENT          ?= $(shell echo -e "  ")
 USAGE           ?= $(NAME) [OPTIONS]
 OPTIONS_FILE    ?= options
@@ -35,12 +73,12 @@ MANPAGE         ?=
 LICENSE         ?= LICENSE
 README          ?=
 
-MANPAGE_LAYOUT  ?=                \
-	$(DOCS_DIR)/readme_banner.md    \
-	$(CACHE_DIR)/short_help.md      \
-	$(DOCS_DIR)/description.md      \
-	$(CACHE_DIR)/long_help.md       \
-	$(DOCS_DIR)/manpage_footer.md
+ifneq ($(MANPAGE),)
+MANPAGE_OUT = _$(MANPAGE)
+endif
+
+MANPAGE_LAYOUT  ?=             \
+ $(CACHE_DIR)/help_table.txt
 
 README_LAYOUT  ?=              \
 	$(DOCS_DIR)/readme_banner.md \
@@ -84,7 +122,25 @@ function_files := \
 	$(generated_functions) \
 	$(filter-out $(generated_functions),$(wildcard $(FUNCS_DIR)/*))
 
-all: $(MONOLITH) $(MANPAGE) $(README) $(BASE)
+# this hack writes 1 or 0 to the file .cache/got_func
+# depending on existence of files in FUNC_DIR
+# but it also makes sure to only update the file
+# if the value has changed.
+# this is needed for _init.sh (BASE) to know it needs
+# to be rebuilt on this event.
+
+ifneq ($(wildcard $(CACHE_DIR)/got_func),)
+ifneq ($(wildcard $(FUNCS_DIR)/*),)
+ifneq ($(file < $(CACHE_DIR)/got_func), 1)
+$(shell echo 1 > $(CACHE_DIR)/got_func)
+endif
+else
+ifneq ($(file < $(CACHE_DIR)/got_func), 0)
+$(shell echo 0 > $(CACHE_DIR)/got_func)
+endif
+endif
+endif
+all: $(MONOLITH) $(MANPAGE_OUT) $(README) $(BASE) $(CUSTOM_TARGETS)
 
 clean:
 	rm -rf \
@@ -92,22 +148,21 @@ clean:
 		$(BASE)                 \
 		$(CACHE_DIR)            \
 		$(generated_functions)  \
-		$(MANPAGE)              \
+		$(MANPAGE_OUT)          \
 		$(README)               
 
 install-dev: $(BASE) $(NAME)
-	mkdir -p $@
 	ln -s $(realpath $(NAME)) $(PREFIX)/bin/$(NAME)
 	
 uninstall-dev: $(PREFIX)/bin/$(NAME)
 	rm $^
 
-install: $(MONOLITH) $(MANPAGE)
-	@[[ -f $(MANPAGE) ]] && {
-		echo "install -Dm644 $(MANPAGE) $(installed_manpage)"
-		install -Dm644 $(MANPAGE) $(installed_manpage)
+install: $(MONOLITH) $(MANPAGE_OUT)
+	@[[ -n $${manpage:=$(MANPAGE_OUT)} && -f $$manpage ]] && {
+		echo "install -Dm644 $(MANPAGE_OUT) $(installed_manpage)"
+		install -Dm644 $(MANPAGE_OUT) $(installed_manpage)
 	}
-	[[ -f $(LICENSE) ]] && {
+	[[ -n $${license:=$(LICENSE)} && -f $$license ]] && {
 		echo "install -Dm644 $(LICENSE) $(installed_license)"
 		install -Dm644 $(LICENSE) $(installed_license)
 	}
@@ -125,7 +180,7 @@ uninstall:
 check: all
 	shellcheck $(MONOLITH)
 
-$(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help.sh
+$(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help.sh $(CACHE_DIR)/got_func
 	@$(info making $@)
 	printf '%s\n' '$(SHBANG)' '' 'exec 3>&2' '' > $@
 	$(print_version)
@@ -152,7 +207,7 @@ $(MONOLITH): $(NAME) $(CACHE_DIR)/print_help.sh $(function_files) $(CACHE_DIR)/g
 	
 	chmod +x $@
 
-$(MANPAGE): $(CACHE_DIR)/manpage.md
+$(MANPAGE_OUT): $(CACHE_DIR)/manpage.md
 	@$(info generating $@ from $^)
 	lowdown -sTman                   \
 		-M title=$(NAME)               \
@@ -283,6 +338,9 @@ $(function_createconf): $(conf_files) | $(FUNCS_DIR)/
 $(CACHE_DIR)/:
 	@$(info creating $(CACHE_DIR)/ dir)
 	mkdir -p $(CACHE_DIR) $(DOCS_DIR)/options
+	[[ -d $(FUNCS_DIR) ]] \
+		&& echo 1 > $(CACHE_DIR)/got_func \
+		|| echo 0 > $(CACHE_DIR)/got_func
 
 $(FUNCS_DIR)/:
 	@$(info creating $(FUNCS_DIR)/ dir)
@@ -409,7 +467,7 @@ END {
 	print ") || exit 98"
 	print ""
 	print "eval set -- \"$$options\""
-	print "unset options"
+	print "unset -v options"
 	print ""
 	print "while true; do"
 	print "  case \"$$1\" in"
@@ -456,3 +514,257 @@ endef
 other_maks := $(filter-out config.mak,$(wildcard *.mak))
 -include $(other_maks)
 
+EOCONF
+fi #bashbud
+
+if [[ -d $__dir ]]; then #bashbud
+cat "$__dir/conf/default/.gitignore" > "$trgdir/default/.gitignore" #bashbud
+else #bashbud
+cat << 'EOCONF' > "$trgdir/default/.gitignore"
+.cache/
+**/_*
+EOCONF
+fi #bashbud
+
+if [[ -d $__dir ]]; then #bashbud
+cat "$__dir/conf/default/main.sh" > "$trgdir/default/main.sh" #bashbud
+else #bashbud
+cat << 'EOCONF' > "$trgdir/default/main.sh"
+#!/bin/bash
+
+main(){
+  
+  :
+  # add main logic here
+}
+
+__dir=$(dirname "$(readlink -f "${BASH_SOURCE[0]}")") #bashbud
+source "$__dir/_init.sh"                              #bashbud
+EOCONF
+fi #bashbud
+chmod +x "$trgdir/default/main.sh"
+
+if [[ -d $__dir ]]; then #bashbud
+cat "$__dir/conf/default/config.mak" > "$trgdir/default/config.mak" #bashbud
+else #bashbud
+cat << 'EOCONF' > "$trgdir/default/config.mak"
+VERSION     := 0
+AUTHOR      := anon
+CONTACT     := address
+USAGE       := $(NAME) [OPTIONS]
+
+
+# if USAGE is set to the string options the content of OPTIONS_FILE
+# will be used.
+# USAGE       := options
+# ---
+# man page and readme will only be created if they are set
+# MANPAGE     := $(NAME).1
+# README      := README.md
+# ---
+# LICENSE is path to a file containg the license
+# not the name of the license.
+# if the file exist when target install: is invoked
+# it will also install LICENSE
+#
+# LICENSE        := LICENSE
+# ---
+# SHBANG will be used in all generated scripts
+#
+# SHBANG         := \#!/bin/bash
+# ---
+# MONOLITH is the name of the "combined" script
+# it will be installed (as NAME)
+#
+# MONOLITH        := _$(NAME).sh
+# ---
+# BASE holds automatically generated stuff like
+# while getopts ... and __print_help() is must
+# be sourced by NAME
+#
+# BASE            := _init.sh
+# ---
+# INDENT defines the indentation used in generated
+# files. it defaults to two spaces ("  ").
+# To use two tabs instead, set the variable to:
+#   INDENT := $(shell echo -e "\t\t")
+#
+# INDENT          := $(shell echo -e "  ")
+# ---
+# the conent of man page and readme can be configured
+# by setting the MANPAGE_LAYOUT and README_LAYOUT
+#
+# MANPAGE_LAYOUT =            \
+#  $(CACHE_DIR)/help_table.md       \
+#  $(DOCS_DIR)/description.md \
+#  $(CACHE_DIR)/long_help.md
+# ---
+# README_LAYOUT  =              \
+# 	$(DOCS_DIR)/readme_banner.md \
+# 	$(MANPAGE_LAYOUT)
+# ---
+# leave UPDATED unset to auto set to current day
+#
+# UPDATED        := $(shell date +%Y-%m-%d)
+# ---
+# ORGANISATION is visible in the man page.
+# ORGANISATION   :=
+# ---
+# FUNCS_DIR      != func
+# ---
+# if AWK_DIR or CONF_DIR are not empty
+# special functions will get created in func/
+# --- 
+# AWK_DIR        := awklib
+# CONF_DIR       := conf
+# ---
+# CACHE_DIR      := .cache
+# DOCS_DIR       := docs
+# OPTIONS_FILE   := options
+# ---
+#
+# include custom targets in this file.
+# be sure to add them to CUSTOM_TARGETS list
+# to have them be part of the DEFAULT_GOAL (all)
+# 
+# custom_target.txt: options
+# 	cat $< > $@
+#
+# CUSTOM_TARGETS :=
+
+EOCONF
+fi #bashbud
+
+if [[ -d $__dir ]]; then #bashbud
+cat "$__dir/conf/ERR/func/ERR.sh" > "$trgdir/ERR/func/ERR.sh" #bashbud
+else #bashbud
+cat << 'EOCONF' > "$trgdir/ERR/func/ERR.sh"
+#!/bin/bash
+
+set -E
+trap '(($? == 98)) && exit 98' ERR
+
+ERX() { >&2 echo  "[ERROR] $*" ; exit 98 ;}
+ERR() { >&2 echo  "[WARNING] $*"  ;}
+ERM() { >&2 echo  "$*"  ;}
+ERT() { >&3 echo  "$*"  ;}
+
+EOCONF
+fi #bashbud
+
+if [[ -d $__dir ]]; then #bashbud
+cat "$__dir/conf/TIMER/func/TIMER.sh" > "$trgdir/TIMER/func/TIMER.sh" #bashbud
+else #bashbud
+cat << 'EOCONF' > "$trgdir/TIMER/func/TIMER.sh"
+#!/bin/bash
+
+trap 'CLEANUP' EXIT INT HUP
+
+start_timer=0
+[[ $* =~ --verbose || $BASHBUD_VERBOSE -eq 1 ]] && start_timer=1
+[[ $* =~ --dryrun ]] && start_timer=0
+
+((start_timer)) && {
+  ___t=$(( 10#${EPOCHREALTIME//[!0-9]} ))
+
+  for ((___arg=0; ___arg<${#@}+1;___arg++)); do
+    [[ ${!___arg} = --verbose ]] && break
+  done
+
+  printf -v ___cmd "%s " "${0##*/}" "${@:1:___arg}"
+  unset -v ___arg
+  >&2 echo ">>> $___cmd"
+}
+
+CLEANUP() {
+  ((start_timer)) \
+    && >&2 echo "<<< $___cmd" \
+      "$(( (10#${EPOCHREALTIME//[!0-9]} - ___t) / 1000 ))ms"
+}
+
+EOCONF
+fi #bashbud
+
+if [[ -d $__dir ]]; then #bashbud
+cat "$__dir/conf/LOG/func/LOG.sh" > "$trgdir/LOG/func/LOG.sh" #bashbud
+else #bashbud
+cat << 'EOCONF' > "$trgdir/LOG/func/LOG.sh"
+#!/bin/bash
+
+[[ $BASHBUD_LOG ]] && {
+  [[ -f $BASHBUD_LOG ]] || mkdir -p "${BASHBUD_LOG%/*}"
+  exec 2>> "$BASHBUD_LOG"
+}
+EOCONF
+fi #bashbud
+
+if [[ -d $__dir ]]; then #bashbud
+cat "$__dir/conf/install.mak/install.mak" > "$trgdir/install.mak/install.mak" #bashbud
+else #bashbud
+cat << 'EOCONF' > "$trgdir/install.mak/install.mak"
+.PHONE: install-a
+install-a:
+	$(info install A)
+EOCONF
+fi #bashbud
+
+if [[ -d $__dir ]]; then #bashbud
+cat "$__dir/conf/watch/watch" > "$trgdir/watch/watch" #bashbud
+else #bashbud
+cat << 'EOCONF' > "$trgdir/watch/watch"
+#!/bin/bash
+_src=$(realpath ${BASH_SOURCE[0]})
+_dir=${_src%/*}
+_name=${_dir##*/}
+
+[[ -d "$_dir"/func/ ]]      && to_watch+=("$_dir"/func/)
+[[ -d "$_dir"/conf/ ]]      && to_watch+=("$_dir"/conf/)
+[[ -d "$_dir"/docs/ ]]      && to_watch+=("$_dir"/docs/)
+[[ -f "$_dir"/$_name ]]     && to_watch+=("$_dir"/$_name)
+[[ -f "$_dir"/config.mak ]] && to_watch+=("$_dir"/config.mak)
+
+echo "$_name"
+while read -r ; do
+  clear
+  make check
+done < <(
+  inotifywait --event close_write          \
+              --recursive --monitor        \
+              --exclude '/_[^.]+[.]sh$'    \
+              "${to_watch[@]}"
+)
+EOCONF
+fi #bashbud
+chmod +x "$trgdir/watch/watch"
+
+if [[ -d $__dir ]]; then #bashbud
+cat "$__dir/conf/manpage-docs/docs/manpage_banner.md" > "$trgdir/manpage-docs/docs/manpage_banner.md" #bashbud
+else #bashbud
+cat << 'EOCONF' > "$trgdir/manpage-docs/docs/manpage_banner.md"
+# NAME
+
+MyScript - just a simple demo script
+
+## this is h2 header
+
+this is h2 body in motion HELLLLO
+
+# SYNOPSIS
+EOCONF
+fi #bashbud
+
+if [[ -d $__dir ]]; then #bashbud
+cat "$__dir/conf/manpage-docs/docs/manpage_description.md" > "$trgdir/manpage-docs/docs/manpage_description.md" #bashbud
+else #bashbud
+cat << 'EOCONF' > "$trgdir/manpage-docs/docs/manpage_description.md"
+# DESCRIPTION
+
+Just to showcase **markdown** to *troff* works.  
+(*notice this and above line ends with two spaces*)  
+<https://github.com/budlabs>
+
+    indent with four spaces to make
+    a "codeblock"
+EOCONF
+fi #bashbud
+}
