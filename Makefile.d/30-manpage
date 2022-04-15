@@ -7,6 +7,7 @@ $(MANPAGE_OUT): $(CACHE_DIR)/manpage.md
 		-M section=$(manpage_section)  \
 		$^ > $@
 
-$(CACHE_DIR)/manpage.md: $(MANPAGE_LAYOUT)
-	@cat $^ > $@
+$(CACHE_DIR)/manpage.md: $(MANPAGE_LAYOUT) config.mak
+	@$(info creating $@)
+	cat $(MANPAGE_LAYOUT) > $@
 

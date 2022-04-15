@@ -161,8 +161,8 @@ $(MANPAGE): $(CACHE_DIR)/manpage.md
 		-M section=$(manpage_section)  \
 		$^ > $@
 
-$(CACHE_DIR)/manpage.md: $(MANPAGE_LAYOUT)
-	@cat $^ > $@
+$(CACHE_DIR)/manpage.md: $(MANPAGE_LAYOUT) config.mak
+	@cat $(MANPAGE_LAYOUT) > $@
 
 # if a file in docs/options contains more than
 # 2 lines, it will get added to the file .cache/longhelp.md
@@ -237,8 +237,8 @@ $(CACHE_DIR)/print_help.sh: $(CACHE_DIR)/help_table.txt
 		printf '%s\n' 'EOB' '}'
 	} > $@
 
-$(README): $(README_LAYOUT)
-	@cat $^ > $@
+$(README): $(README_LAYOUT) config.mak
+	@cat $(README_LAYOUT) > $@
 
 $(function_awklib): $(awk_files) | $(FUNCS_DIR)/
 	@printf '%s\n' \

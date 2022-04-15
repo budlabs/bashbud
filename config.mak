@@ -18,16 +18,19 @@ wiki/Home.md: docs/tutorial.md
 	git -C wiki commit -m 'updated wiki'
 	git -C wiki push
 
+# LICENSE     := LICENSE
 
 # MANPAGE     := bashbud.1
-# README      := README.md
-# LICENSE     := LICENSE
+README      := README.md
+
+README_LAYOUT  =                \
+	$(DOCS_DIR)/readme_banner.md  \
+	$(DOCS_DIR)/readme_install.md \
+	$(CACHE_DIR)/help_table.txt
 
 # MANPAGE_LAYOUT =            \
 #  $(CACHE_DIR)/help_table.md \
 #  $(DOCS_DIR)/description.md \
 #  $(CACHE_DIR)/long_help.md
 
-# README_LAYOUT  =              \
-# 	$(DOCS_DIR)/readme_banner.md \
-# 	$(MANPAGE_LAYOUT)
+
