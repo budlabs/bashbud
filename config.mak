@@ -22,18 +22,21 @@ wiki/Home.md: docs/tutorial.md
 
 LICENSE     := LICENSE
 
-# MANPAGE     := bashbud.1
+MANPAGE     := bashbud.1
 README      := README.md
 
 README_LAYOUT  =                \
 	$(DOCS_DIR)/readme_banner.md  \
 	$(DOCS_DIR)/readme_install.md \
 	$(DOCS_DIR)/readme_usage.md   \
-	$(CACHE_DIR)/help_table.txt
+	$(CACHE_DIR)/help_table.txt   \
+	$(DOCS_DIR)/readme_footer.md
 
-# MANPAGE_LAYOUT =            \
-#  $(CACHE_DIR)/help_table.md \
-#  $(DOCS_DIR)/description.md \
-#  $(CACHE_DIR)/long_help.md
+MANPAGE_LAYOUT =               \
+ $(DOCS_DIR)/manpage_banner.md \
+ $(DOCS_DIR)/manpage_usage.md  \
+ $(CACHE_DIR)/help_table.txt   \
+ $(CACHE_DIR)/long_help.md     \
+ $(DOCS_DIR)/manpage_footer.md
 
 

@@ -57,3 +57,7 @@ working directory.
     -a, --add                  | add FILE to (mandatory --template) TEMPLATE            
     -f, --force DIRECTORY      | Overwrite already existing files imported from template
     -u, --update               | update TEMPLATE based on current directory             
+## license
+bashbud is licensed under the **[MIT license]**
+
+[MIT license]: LICENSE
