@@ -2,7 +2,7 @@
 
 `bashbud [OPTIONS] [TARGET_DIRECTORY]`  
 
-**TARGET_DIRECTOY** will default to current
+**TARGET_DIRECTOY** defaults to current
 working directory.  
 
 ### options

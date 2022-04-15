@@ -5,8 +5,8 @@ The **bashbud** script/command is a very simple
 from `~/.config/bashbud/` into a target
 directory. The directories in `~/.config/bashbud`
 are called *templates*, and the default template
-is called *default*. The default templates have a
-carefully created **Makefile**, that makes(no pun
+is called *default*. The default template have a
+carefully created **Makefile**, that makes (no pun
 intended) bash script maintenance pleasant.
 Especially in regards to managing commandline
 options and documentation.  
