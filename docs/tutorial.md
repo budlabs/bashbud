@@ -1,15 +1,3 @@
-
-- [options file and \_init.sh](#options-file-and-_initsh)
-- [autoinclude functions](#autoinclude-functions)
-- [why is there two versions of MyScript](#why-is-there-two-versions-of-myscript)
-- [installing scripts](#installing-scripts)
-- [generate manpage and documentation](#generate-manpage-and-documentation)
-- [whatabout git?](#whatabout-git)
-- [extending the Makefile](#extending-the-makefile)
-- [the bash and the AWK](#the-bash-and-the-awk)
-- [embedded config files](#embedded-config-files)
-- [customizing templates](#customizing-templates)
-
 If the command `bashbud` is executed without any arguments,
 the following error message will get printed:  
 
