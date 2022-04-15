@@ -31,6 +31,3 @@ wiki/Home.md: docs/tutorial.md
 # README_LAYOUT  =              \
 # 	$(DOCS_DIR)/readme_banner.md \
 # 	$(MANPAGE_LAYOUT)
-
-
-
