@@ -6,7 +6,11 @@ ORGANISATION   := budlabs
 CONTACT        := https://github.com/budlabs/bashbud
 USAGE          := bashbud [OPTIONS] [DIRECTORY]
 
-CUSTOM_TARGETS := conf/default/Makefile wiki/Home.md
+CUSTOM_TARGETS := conf/default/Makefile
+
+ifneq ($(DESTDIR),)
+CUSTOM_TARGETS += wiki/Home.md
+endif
 
 conf/default/Makefile: $(wildcard Makefile.d/*)
 	@$(info genearating Makefile from Makefile.d)
