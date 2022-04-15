@@ -6,10 +6,11 @@ ORGANISATION   := budlabs
 CONTACT        := https://github.com/budlabs/bashbud
 USAGE          := bashbud [OPTIONS] [DIRECTORY]
 
-CUSTOM_TARGETS := conf/default/Makefile
 
-ifneq ($(DESTDIR),)
-CUSTOM_TARGETS += wiki/Home.md
+ifdef DESTDIR
+CUSTOM_TARGETS := conf/default/Makefile
+else
+CUSTOM_TARGETS := conf/default/Makefile wiki/Home.md
 endif
 
 conf/default/Makefile: $(wildcard Makefile.d/*)
@@ -18,7 +19,7 @@ conf/default/Makefile: $(wildcard Makefile.d/*)
 	cp -f $@ Makefile
 
 wiki/Home.md: docs/tutorial.md
-	[[ -d wiki ]] && git clone $(CONTACT).wiki.git wiki
+	[[ -d wiki ]] || git clone $(CONTACT).wiki.git wiki
 	cp -f $< $@
 	git -C wiki add .
 	git -C wiki commit -m 'updated wiki'

@@ -119,7 +119,7 @@ install-dev: $(BASE) $(NAME)
 uninstall-dev: $(PREFIX)/bin/$(NAME)
 	rm $^
 
-install: $(MONOLITH) $(MANPAGE_OUT)
+install: all
 	@[[ -n $${manpage:=$(MANPAGE_OUT)} && -f $$manpage ]] && {
 		echo "install -Dm644 $(MANPAGE_OUT) $(installed_manpage)"
 		install -Dm644 $(MANPAGE_OUT) $(installed_manpage)
