@@ -19,4 +19,4 @@ updated: 2022-04-14 by budRich
 
 [AUR]: https://aur.archlinux.org/packages/bashbud
 
-## usage
+

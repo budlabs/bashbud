@@ -39,7 +39,16 @@ updated: 2022-04-14 by budRich
 
 [AUR]: https://aur.archlinux.org/packages/bashbud
 
+
 ## usage
+
+`bashbud [OPTIONS] [TARGET_DIRECTORY]`  
+
+**TARGET_DIRECTOY** will default to current
+working directory.  
+
+### options
+
     -c, --config-dir DIRECTORY | override the default (~/.config/bashbud)               
     -t, --template TEMPLATE    | TEMPLATE is the name of a directory in BASHBUD_DIR     
     -n, --new DIRECTORY        | same as: --template default                            

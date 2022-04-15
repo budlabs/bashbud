@@ -35,12 +35,12 @@ MANPAGE         ?=
 LICENSE         ?= LICENSE
 README          ?=
 
-MANPAGE_LAYOUT  ?=                \
-	$(DOCS_DIR)/readme_banner.md    \
-	$(CACHE_DIR)/short_help.md      \
-	$(DOCS_DIR)/description.md      \
-	$(CACHE_DIR)/long_help.md       \
-	$(DOCS_DIR)/manpage_footer.md
+ifneq ($(MANPAGE),)
+MANPAGE_OUT = _$(MANPAGE)
+endif
+
+MANPAGE_LAYOUT  ?=             \
+ $(CACHE_DIR)/help_table.txt
 
 README_LAYOUT  ?=              \
 	$(DOCS_DIR)/readme_banner.md \
@@ -84,7 +84,25 @@ function_files := \
 	$(generated_functions) \
 	$(filter-out $(generated_functions),$(wildcard $(FUNCS_DIR)/*))
 
-all: $(MONOLITH) $(MANPAGE) $(README) $(BASE) $(CUSTOM_TARGETS)
+# this hack writes 1 or 0 to the file .cache/got_func
+# depending on existence of files in FUNC_DIR
+# but it also makes sure to only update the file
+# if the value has changed.
+# this is needed for _init.sh (BASE) to know it needs
+# to be rebuilt on this event.
+
+ifneq ($(wildcard $(CACHE_DIR)/got_func),)
+ifneq ($(wildcard $(FUNCS_DIR)/*),)
+ifneq ($(file < $(CACHE_DIR)/got_func), 1)
+$(shell echo 1 > $(CACHE_DIR)/got_func)
+endif
+else
+ifneq ($(file < $(CACHE_DIR)/got_func), 0)
+$(shell echo 0 > $(CACHE_DIR)/got_func)
+endif
+endif
+endif
+all: $(MONOLITH) $(MANPAGE_OUT) $(README) $(BASE) $(CUSTOM_TARGETS)
 
 clean:
 	rm -rf \
@@ -92,22 +110,21 @@ clean:
 		$(BASE)                 \
 		$(CACHE_DIR)            \
 		$(generated_functions)  \
-		$(MANPAGE)              \
+		$(MANPAGE_OUT)          \
 		$(README)               
 
 install-dev: $(BASE) $(NAME)
-	mkdir -p $@
 	ln -s $(realpath $(NAME)) $(PREFIX)/bin/$(NAME)
 	
 uninstall-dev: $(PREFIX)/bin/$(NAME)
 	rm $^
 
-install: $(MONOLITH) $(MANPAGE)
-	@[[ -f $(MANPAGE) ]] && {
-		echo "install -Dm644 $(MANPAGE) $(installed_manpage)"
-		install -Dm644 $(MANPAGE) $(installed_manpage)
+install: $(MONOLITH) $(MANPAGE_OUT)
+	@[[ -n $${manpage:=$(MANPAGE_OUT)} && -f $$manpage ]] && {
+		echo "install -Dm644 $(MANPAGE_OUT) $(installed_manpage)"
+		install -Dm644 $(MANPAGE_OUT) $(installed_manpage)
 	}
-	[[ -f $(LICENSE) ]] && {
+	[[ -n $${license:=$(LICENSE)} && -f $$license ]] && {
 		echo "install -Dm644 $(LICENSE) $(installed_license)"
 		install -Dm644 $(LICENSE) $(installed_license)
 	}
@@ -125,7 +142,7 @@ uninstall:
 check: all
 	shellcheck $(MONOLITH)
 
-$(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help.sh
+$(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help.sh $(CACHE_DIR)/got_func
 	@$(info making $@)
 	printf '%s\n' '$(SHBANG)' '' 'exec 3>&2' '' > $@
 	$(print_version)
@@ -152,7 +169,7 @@ $(MONOLITH): $(NAME) $(CACHE_DIR)/print_help.sh $(function_files) $(CACHE_DIR)/g
 	
 	chmod +x $@
 
-$(MANPAGE): $(CACHE_DIR)/manpage.md
+$(MANPAGE_OUT): $(CACHE_DIR)/manpage.md
 	@$(info generating $@ from $^)
 	lowdown -sTman                   \
 		-M title=$(NAME)               \
@@ -162,7 +179,8 @@ $(MANPAGE): $(CACHE_DIR)/manpage.md
 		$^ > $@
 
 $(CACHE_DIR)/manpage.md: $(MANPAGE_LAYOUT) config.mak
-	@cat $(MANPAGE_LAYOUT) > $@
+	@$(info creating $@)
+	cat $(MANPAGE_LAYOUT) > $@
 
 # if a file in docs/options contains more than
 # 2 lines, it will get added to the file .cache/longhelp.md
@@ -238,7 +256,8 @@ $(CACHE_DIR)/print_help.sh: $(CACHE_DIR)/help_table.txt
 	} > $@
 
 $(README): $(README_LAYOUT) config.mak
-	@cat $(README_LAYOUT) > $@
+	@$(info creating $@)
+	cat $(README_LAYOUT) > $@
 
 $(function_awklib): $(awk_files) | $(FUNCS_DIR)/
 	@printf '%s\n' \
@@ -283,6 +302,9 @@ $(function_createconf): $(conf_files) | $(FUNCS_DIR)/
 $(CACHE_DIR)/:
 	@$(info creating $(CACHE_DIR)/ dir)
 	mkdir -p $(CACHE_DIR) $(DOCS_DIR)/options
+	[[ -d $(FUNCS_DIR) ]] \
+		&& echo 1 > $(CACHE_DIR)/got_func \
+		|| echo 0 > $(CACHE_DIR)/got_func
 
 $(FUNCS_DIR)/:
 	@$(info creating $(FUNCS_DIR)/ dir)
@@ -409,7 +431,7 @@ END {
 	print ") || exit 98"
 	print ""
 	print "eval set -- \"$$options\""
-	print "unset options"
+	print "unset -v options"
 	print ""
 	print "while true; do"
 	print "  case \"$$1\" in"
