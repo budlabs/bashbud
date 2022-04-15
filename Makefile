@@ -84,7 +84,7 @@ function_files := \
 	$(generated_functions) \
 	$(filter-out $(generated_functions),$(wildcard $(FUNCS_DIR)/*))
 
-all: $(MONOLITH) $(MANPAGE) $(README) $(BASE)
+all: $(MONOLITH) $(MANPAGE) $(README) $(BASE) $(CUSTOM_TARGETS)
 
 clean:
 	rm -rf \

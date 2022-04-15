@@ -1,3 +1,5 @@
+## tutorial
+
 If the command `bashbud` is executed without any arguments,
 the following error message will get printed:  
 

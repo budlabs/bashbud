@@ -6,10 +6,18 @@ ORGANISATION   := budlabs
 CONTACT        := https://github.com/budlabs/bashbud
 USAGE          := bashbud [OPTIONS] [DIRECTORY]
 
-CUSTOM_TARGETS := conf/default/Makefile
+CUSTOM_TARGETS := conf/default/Makefile wiki/Home.md
 
 conf/default/Makefile: $(wildcard Makefile.d/*)
 	cat $^ > $@
+
+wiki/Home.md: docs/tutorial.md
+	[[ -d wiki ]] && git clone $(CONTACT).wiki.git wiki
+	cp -f $< $@
+	git -C wiki add .
+	git -C wiki commit -m 'updated wiki'
+	git -C wiki push
+
 
 # MANPAGE     := bashbud.1
 # README      := README.md
