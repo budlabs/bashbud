@@ -1,4 +1,3 @@
-all: $(CUSTOM_TARGETS) $(MONOLITH) $(MANPAGE_OUT) $(README) $(BASE)
 
 clean:
 	rm -rf \
