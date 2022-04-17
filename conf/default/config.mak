@@ -1,3 +1,4 @@
+DESCRIPTION := short description for the script
 VERSION     := 0
 AUTHOR      := anon
 CONTACT     := address
@@ -80,5 +81,5 @@ USAGE       := $(NAME) [OPTIONS]
 # custom_target.txt: options
 # 	cat $< > $@
 #
-# CUSTOM_TARGETS :=
+# CUSTOM_TARGETS =
 
