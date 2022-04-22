@@ -406,6 +406,12 @@ task, that I added it as the **check** target in the
 **Makefile**. The check target also has `_MyScript`
 as a prerequisite, so you will always check an up to date version.
 
+> All lines ending with '#bashbud' will be ignored
+> and not included in the concatenated version
+> (`_MyScript`). If the first line of a file
+> ends with '#bashbud' that whole file
+> will be ignored and not included.
+
 We can test this by changing the the following line
 in `func/not_cool.sh`  
 
