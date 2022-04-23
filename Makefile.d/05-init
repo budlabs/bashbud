@@ -40,17 +40,7 @@ README_LAYOUT  ?=              \
 function_createconf := $(FUNCS_DIR)/_createconf.sh
 function_awklib     := $(FUNCS_DIR)/_awklib.sh
 
-manpage_section     := $(subst .,,$(suffix $(MANPAGE)))
-installed_script    := $(DESTDIR)$(PREFIX)/bin/$(NAME)
-installed_manpage   := \
-	$(DESTDIR)$(PREFIX)/share/man/man$(manpage_section)/$(MANPAGE)
-installed_license   := \
-	$(DESTDIR)$(PREFIX)/share/licenses/$(NAME)/$(LICENSE)
 
-installed_all       := \
-	$(installed_script)  \
-	$(installed_manpage) \
-	$(installed_license)
 
 ifneq ($(wildcard $(CONF_DIR)/*),)
 include_createconf = $(function_createconf)
