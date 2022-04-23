@@ -8,7 +8,7 @@ for option in $$(cat $(CACHE_DIR)/options_in_use); do
 		&& desc=$$(head -qn1 $(DOCS_DIR)/options/$$option) \
 		|| desc='short description  '
 
-	paste <(echo $$frag) <(echo $$desc)
+	paste <(echo "$$frag") <(echo "$$desc")
 done
 endef
 

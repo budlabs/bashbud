@@ -70,7 +70,7 @@ END {
 				out = out sprintf ("--%s", options[o]["long_name"])
 			
 			if ("arg" in options[o])
-				out = out sprintf ("%s", gensub (/\|/,"\\\\|","g",options[o]["arg"]))
+				out = out sprintf (" %s", gensub (/\|/,"\\\\|","g",options[o]["arg"]))
 
 			# 6 = -s, --
 			# longest = longest long option name
