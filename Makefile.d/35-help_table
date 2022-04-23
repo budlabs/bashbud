@@ -1,28 +1,32 @@
+define paste_fragment_description =
+for option in $$(cat $(CACHE_DIR)/options_in_use); do
+	[[ -f $(CACHE_DIR)/options/$$option ]]  \
+		&& frag=$$(cat $(CACHE_DIR)/options/$$option) \
+		|| frag="$$option | "
+
+	[[ -f $(DOCS_DIR)/options/$$option ]]  \
+		&& desc=$$(head -qn1 $(DOCS_DIR)/options/$$option) \
+		|| desc='short description  '
+
+	paste <(echo $$frag) <(echo $$desc)
+done
+endef
+
 $(CACHE_DIR)/help_table.md : $(CACHE_DIR)/long_help.md
 	@$(info generating help table)
 	{
 		echo
 		printf '%s\n' '| option | description |' \
 									'|:-------|:------------|'
-		for option in $$(cat $(CACHE_DIR)/options_in_use); do
-			[[ -f $(CACHE_DIR)/options/$$option ]]  \
-				&& frag=$$(cat $(CACHE_DIR)/options/$$option) \
-				|| frag="$$option | "
-
-			[[ -f $(DOCS_DIR)/options/$$option ]]  \
-				&& desc=$$(head -qn1 $(DOCS_DIR)/options/$$option) \
-				|| desc='short description  '
-
-			paste <(echo $$frag) <(echo $$desc)
-		done
-
-		# head -qn1 $(addprefix $(DOCS_DIR)/options/,$(file < $(CACHE_DIR)/options_in_use))
+		
+		$(paste_fragment_description)
 		echo
 	} > $@ 
 
 
 $(CACHE_DIR)/help_table.txt: $(CACHE_DIR)/help_table.md
-	lowdown --term-no-ansi -Tterm $< | tail -qn +3 > $@
+	$(paste_fragment_description) > $@
+	# lowdown --term-no-ansi -Tterm $< | tail -qn +3 > $@
 
 
 $(CACHE_DIR)/short_help.md: $(CACHE_DIR)/help_table.txt

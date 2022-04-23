@@ -44,6 +44,8 @@ BEGIN { RS=" |\\n" }
 			options[opt_name]["suffix"] = ":"
 
 		gsub(/[][]/,"",$$0)
+		if (length($$0) > longest_arg)
+			longest_arg = length($$0)
 		options[opt_name]["arg"] = $$0
 	}
 }
@@ -59,21 +61,23 @@ END {
 
 		if(o ~ /./)
 		{
-			out = ""
-
 			if ("short_name" in options[o])
-				out = "`-" options[o]["short_name"] "`" ("long_name" in options[o] ? ", " : "")
+				out = "-" options[o]["short_name"] ("long_name" in options[o] ? ", " : "")
 			else
 				out = ""
 
 			if ("long_name" in options[o])
-				out = out sprintf ("`--%-" longest+2 "s", options[o]["long_name"]"`")
+				out = out sprintf ("--%s", options[o]["long_name"])
 			
 			if ("arg" in options[o])
-				out = out sprintf ("%s | ", gensub (/\|/,"\\\\|","g",options[o]["arg"]))
-			else
-				out = out " | "
+				out = out sprintf ("%s", gensub (/\|/,"\\\\|","g",options[o]["arg"]))
 
+			# 6 = -s, --
+			# longest = longest long option name
+			# 1 space after longoption
+			# longest_arg + space
+			fragment_length = 6+longest+1+longest_arg
+			out = sprintf ("%-" fragment_length "s | ", out)
 			print out > docfile_fragment
 
 			if (system("[ ! -f " docfile " ]") == 0)
