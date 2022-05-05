@@ -1,59 +1,34 @@
-define paste_fragment_description =
-for option in $$(cat $(CACHE_DIR)/options_in_use); do
-	[[ -f $(CACHE_DIR)/options/$$option ]]  \
-		&& frag=$$(cat $(CACHE_DIR)/options/$$option) \
-		|| frag="$$option | "
-
-	[[ -f $(DOCS_DIR)/options/$$option ]]  \
-		&& desc=$$(head -qn1 $(DOCS_DIR)/options/$$option) \
-		|| desc='short description  '
-
-	paste <(echo "$$frag") <(echo "$$desc")
-done
-endef
-
-$(CACHE_DIR)/help_table.md : $(CACHE_DIR)/long_help.md
-	@$(info generating help table)
-	{
-		echo
-		printf '%s\n' '| option | description |' \
-									'|:-------|:------------|'
-		
-		$(paste_fragment_description)
-		echo
-	} > $@ 
-
-
-$(CACHE_DIR)/help_table.txt: $(CACHE_DIR)/help_table.md
-	$(paste_fragment_description) > $@
-	# lowdown --term-no-ansi -Tterm $< | tail -qn +3 > $@
-
-
-$(CACHE_DIR)/short_help.md: $(CACHE_DIR)/help_table.txt
+$(CACHE_DIR)/help_table.txt: $(CACHE_DIR)/long_help.md
 	@$(info making $@)
-	{
-		if [[ options = "$(USAGE)" ]]
-			then
-				echo '# SYNOPSIS'
-				echo
-				sed 's/^/    $(NAME) /g;s/$$/  /g' $(OPTIONS_FILE)
-			else printf '%s\n' '# USAGE' '' 'usage: $(USAGE)'
-		fi
-		echo
-		cat $(CACHE_DIR)/help_table.txt
-	} > $@
-	
+	for option in $$(cat $(CACHE_DIR)/options_in_use); do
+		[[ -f $(CACHE_DIR)/options/$$option ]]  \
+			&& frag=$$(cat $(CACHE_DIR)/options/$$option) \
+			|| frag="$$option | "
 
-$(CACHE_DIR)/print_help.sh: $(CACHE_DIR)/help_table.txt
+		[[ -f $(DOCS_DIR)/options/$$option ]]  \
+			&& desc=$$(head -qn1 $(DOCS_DIR)/options/$$option) \
+			|| desc='short description  '
+
+		paste <(echo "$$frag") <(echo "$$desc") | tr -d '\t'
+	done > $@
+
+$(CACHE_DIR)/synopsis.txt: $(OPTIONS_FILE)
+	@$(info making $@)
+	sed 's/^/    $(NAME) /g;s/$$/  /g' $< > $@
+	
+$(CACHE_DIR)/print_help.sh: $(CACHE_DIR)/help_table.txt $(CACHE_DIR)/synopsis.txt 
 	@$(info making $@)
 	{
 		printf '%s\n' \
 			'$(SHBANG)' '' "__print_help()" "{" "$(INDENT)cat << 'EOB' >&3  "
-		if [[ options = "$(USAGE)" ]]
-			then sed 's/^/    $(NAME) /g;s/$$/  /g' $(OPTIONS_FILE)
-			else printf '%s\n' '$(INDENT)usage: $(USAGE)' ''
+		if [[ options = "$(USAGE)" ]]; then
+			cat $(CACHE_DIR)/synopsis.txt
+			echo
+		else 
+			printf '%s\n' '    usage: $(USAGE)' ''
+			echo
 		fi
-		cat $<
+		cat $(CACHE_DIR)/help_table.txt
 		printf '%s\n' 'EOB' '}'
 	} > $@
 

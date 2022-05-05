@@ -16,14 +16,16 @@ endif
 conf/default/Makefile: $(wildcard Makefile.d/*)
 	@$(info genearating Makefile from Makefile.d)
 	cat $^ > $@
+	[[ -d /home/bud/.config/bashbud ]] \
+		&& cp -f $@ ~/.config/bashbud/default/Makefile
 	cp -f $@ Makefile
 
-wiki/Home.md: docs/tutorial.md
-	[[ -d wiki ]] || git clone $(CONTACT).wiki.git wiki
-	cp -f $< $@
-	git -C wiki add .
-	git -C wiki commit -m 'updated wiki'
-	git -C wiki push
+# wiki/Home.md: docs/tutorial.md
+# 	[[ -d wiki ]] || git clone $(CONTACT).wiki.git wiki
+# 	cp -f $< $@
+# 	git -C wiki add .
+# 	git -C wiki commit -m 'updated wiki'
+# 	git -C wiki push
 
 LICENSE     := LICENSE
 

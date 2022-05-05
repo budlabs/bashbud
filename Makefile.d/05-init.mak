@@ -26,10 +26,6 @@ MANPAGE         ?=
 LICENSE         ?= LICENSE
 README          ?=
 
-ifneq ($(MANPAGE),)
-MANPAGE_OUT = _$(MANPAGE)
-endif
-
 MANPAGE_LAYOUT  ?=             \
  $(CACHE_DIR)/help_table.txt
 

@@ -35,10 +35,6 @@ MANPAGE         ?=
 LICENSE         ?= LICENSE
 README          ?=
 
-ifneq ($(MANPAGE),)
-MANPAGE_OUT = _$(MANPAGE)
-endif
-
 MANPAGE_LAYOUT  ?=             \
  $(CACHE_DIR)/help_table.txt
 
@@ -127,13 +123,14 @@ $(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help.sh $(CACHE_DIR)/
 		'$(INDENT). "$$___f" ; done ; unset -v ___f' >> $@
 	}
 
+	echo "" >> $@
 	cat $(CACHE_DIR)/getopt >> $@
 
 	echo 'main "$$@"' >> $@
 
 $(MONOLITH): $(NAME) $(CACHE_DIR)/print_help.sh $(function_files) $(CACHE_DIR)/getopt
 	@$(info making $@)
-	printf '%s\n' '$(SHBANG)' '' 'exec 3>&2' '' > $@
+	printf '%s\n' '$(SHBANG)' '' > $@
 	$(print_version)
 	re='#bashbud$$'
 	for f in $^; do
@@ -142,93 +139,91 @@ $(MONOLITH): $(NAME) $(CACHE_DIR)/print_help.sh $(function_files) $(CACHE_DIR)/g
 		# ignore lines that ends with '#bashbud' (and shbangs)
 		grep -vhE -e '^#!/' -e '#bashbud$$' $$f >> $@
 	done
-	echo 'main "@$$"' >> $@
+
+	printf '%s\n' '' 'main "@$$"' >> $@
 	
 	chmod +x $@
 
-$(MANPAGE_OUT): $(CACHE_DIR)/manpage.md
+ifneq ($(MANPAGE),)
+MANPAGE_OUT ?= _$(MANPAGE)
+MANPAGE_GENERATE := $(MANPAGE_OUT)
+else ifneq ($(MANPAGE_OUT),)
+ifeq ($(findstring _,$(MANPAGE_OUT)),)
+MANPAGE = $(MANPAGE_OUT)
+endif
+endif
+
+ifdef MANPAGE_OUT
+manpage_section := $(subst .,,$(suffix $(MANPAGE_OUT)))
+endif
+
+$(MANPAGE_GENERATE): $(CACHE_DIR)/manpage.md
 	@$(info generating $@ from $^)
-	lowdown -sTman                   \
-		-M title=$(NAME)               \
-		-M date=$(UPDATED)             \
-		-M source=$(ORGANISATION)      \
-		-M section=$(manpage_section)  \
-		$^ > $@
+	uppercase_name=$(NAME)
+	uppercase_name=$${uppercase_name^^}
+	{
+		printf '%s\n' \
+			"$$uppercase_name $(manpage_section) $(UPDATED) $(ORGANISATION) \"User Manuals\"" \
+		  ======================================= \
+		  ''   \
+		  NAME \
+		  ---- \
+		  ''
+
+		  cat $<
+	} | go-md2man > $@
 
 $(CACHE_DIR)/manpage.md: $(MANPAGE_LAYOUT) config.mak
 	@$(info creating $@)
 	cat $(MANPAGE_LAYOUT) > $@
 
 # if a file in docs/options contains more than
-# 2 lines, it will get added to the file .cache/longhelp.md
+# 2 lines, it will get added to the file .cache/long_help.md
 # like this:
-#   # `-s`, `--long-option`
+#   ### -s, --long-option ARG
 #   text in docs/options/long-option after the first 2 lines
 $(CACHE_DIR)/long_help.md: $(CACHE_DIR)/options_in_use $(option_docs)
 	@$(info making $@)
-	printf '%s\n' '' '# OPTIONS' '' > $@
 	for option in $(file < $(CACHE_DIR)/options_in_use); do
 		[[ $$(wc -l < $(DOCS_DIR)/options/$$option) -lt 2 ]] \
 			&& continue
-		printf '## '
-		sed -r 's/([^|]+).*/\1/' $(CACHE_DIR)/options/$$option
+		printf '### '
+		sed -r 's/\|\s*$$//g;s/^\s*//g' $(CACHE_DIR)/options/$$option
 		echo
 		tail -qn +3 "$(DOCS_DIR)/options/$$option"
-	done >> $@
-
-# syntax:ssHash
-$(CACHE_DIR)/help_table.md : $(CACHE_DIR)/long_help.md
-	@$(info generating help table)
-	{
 		echo
-		printf '%s\n' '| option | description |' \
-									'|:-------|:------------|'
-		for option in $$(cat $(CACHE_DIR)/options_in_use); do
-			[[ -f $(CACHE_DIR)/options/$$option ]]  \
-				&& frag=$$(cat $(CACHE_DIR)/options/$$option) \
-				|| frag="$$option | "
-
-			[[ -f $(DOCS_DIR)/options/$$option ]]  \
-				&& desc=$$(head -qn1 $(DOCS_DIR)/options/$$option) \
-				|| desc='short description  '
-
-			paste <(echo $$frag) <(echo $$desc)
-		done
-
-		# head -qn1 $(addprefix $(DOCS_DIR)/options/,$(file < $(CACHE_DIR)/options_in_use))
-		echo
-	} > $@ 
-
-
-$(CACHE_DIR)/help_table.txt: $(CACHE_DIR)/help_table.md
-	lowdown --term-no-ansi -Tterm $< | tail -qn +3 > $@
-
-
-$(CACHE_DIR)/short_help.md: $(CACHE_DIR)/help_table.txt
+	done > $@
+$(CACHE_DIR)/help_table.txt: $(CACHE_DIR)/long_help.md
 	@$(info making $@)
-	{
-		if [[ options = "$(USAGE)" ]]
-			then
-				echo '# SYNOPSIS'
-				echo
-				sed 's/^/    $(NAME) /g;s/$$/  /g' $(OPTIONS_FILE)
-			else printf '%s\n' '# USAGE' '' 'usage: $(USAGE)'
-		fi
-		echo
-		cat $(CACHE_DIR)/help_table.txt
-	} > $@
-	
+	for option in $$(cat $(CACHE_DIR)/options_in_use); do
+		[[ -f $(CACHE_DIR)/options/$$option ]]  \
+			&& frag=$$(cat $(CACHE_DIR)/options/$$option) \
+			|| frag="$$option | "
 
-$(CACHE_DIR)/print_help.sh: $(CACHE_DIR)/help_table.txt
+		[[ -f $(DOCS_DIR)/options/$$option ]]  \
+			&& desc=$$(head -qn1 $(DOCS_DIR)/options/$$option) \
+			|| desc='short description  '
+
+		paste <(echo "$$frag") <(echo "$$desc") | tr -d '\t'
+	done > $@
+
+$(CACHE_DIR)/synopsis.txt: $(OPTIONS_FILE)
+	@$(info making $@)
+	sed 's/^/    $(NAME) /g;s/$$/  /g' $< > $@
+	
+$(CACHE_DIR)/print_help.sh: $(CACHE_DIR)/help_table.txt $(CACHE_DIR)/synopsis.txt 
 	@$(info making $@)
 	{
 		printf '%s\n' \
 			'$(SHBANG)' '' "__print_help()" "{" "$(INDENT)cat << 'EOB' >&3  "
-		if [[ options = "$(USAGE)" ]]
-			then sed 's/^/    $(NAME) /g;s/$$/  /g' $(OPTIONS_FILE)
-			else printf '%s\n' '$(INDENT)usage: $(USAGE)' ''
+		if [[ options = "$(USAGE)" ]]; then
+			cat $(CACHE_DIR)/synopsis.txt
+			echo
+		else 
+			printf '%s\n' '    usage: $(USAGE)' ''
+			echo
 		fi
-		cat $<
+		cat $(CACHE_DIR)/help_table.txt
 		printf '%s\n' 'EOB' '}'
 	} > $@
 
@@ -344,11 +339,17 @@ BEGIN { RS=" |\\n" }
 			options[opt_name]["suffix"] = ":"
 
 		gsub(/[][]/,"",$$0)
+		if (length($$0) > longest_arg)
+			longest_arg = length($$0)
 		options[opt_name]["arg"] = $$0
 	}
 }
 
 END {
+
+	# sort array in alphabetical order
+	# https://www.gnu.org/software/gawk/manual/html_node/Controlling-Scanning.html
+	PROCINFO["sorted_in"] = "@ind_num_asc"
 
 	for (o in options)
 	{
@@ -359,21 +360,31 @@ END {
 
 		if(o ~ /./)
 		{
-			out = ""
-
 			if ("short_name" in options[o])
-				out = "`-" options[o]["short_name"] "`" ("long_name" in options[o] ? ", " : "")
+			{
+				out = "-" options[o]["short_name"]
+				if ("long_name" in options[o])
+					out = out ", "
+				else
+					out = out sprintf("%-" longest "s", " ")
+			}
 			else
 				out = ""
 
-			if ("long_name" in options[o])
-				out = out sprintf ("`--%-" longest+2 "s", options[o]["long_name"]"`")
+			if ("long_name" in options[o]) {
+				string_lenght = longest + ("short_name" in options[o] ? 0 : 4)
+				out = out sprintf ("--%-" string_lenght "s", options[o]["long_name"])
+			}
 			
 			if ("arg" in options[o])
-				out = out sprintf ("%s | ", gensub (/\|/,"\\\\|","g",options[o]["arg"]))
-			else
-				out = out " | "
+				out = out sprintf (" %-" longest_arg "s", gensub (/\|/,"\\\\|","g",options[o]["arg"]))
 
+			# 6 = -s, --
+			# longest = longest long option name
+			# 1 space after longoption
+			# longest_arg + space
+			fragment_length = 6+longest+1+longest_arg
+			out = "    " sprintf ("%-" fragment_length "s | ", out)
 			print out > docfile_fragment
 
 			if (system("[ ! -f " docfile " ]") == 0)
@@ -446,6 +457,8 @@ END {
 	print "  shift"
 	print "done"
 	print ""
+	print "((BASHBUD_VERBOSE)) && _o[verbose]=1 #bashbud"
+	print ""
 }
 ' $(OPTIONS_FILE)                  \
 		cache=$(CACHE_DIR)             \
@@ -456,4 +469,4 @@ other_maks := $(filter-out config.mak,$(wildcard *.mak))
 -include $(other_maks)
 # by having all:  last, it is possible to add CUSTOM_TARGETS
 # in "other_maks", and have them automatically apply
-all: $(CUSTOM_TARGETS) $(MONOLITH) $(MANPAGE_OUT) $(README) $(BASE)
+all: $(CUSTOM_TARGETS) $(MONOLITH) $(MANPAGE_GENERATE) $(README) $(BASE)

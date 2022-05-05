@@ -12,6 +12,7 @@ $(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help.sh $(CACHE_DIR)/
 		'$(INDENT). "$$___f" ; done ; unset -v ___f' >> $@
 	}
 
+	echo "" >> $@
 	cat $(CACHE_DIR)/getopt >> $@
 
 	echo 'main "$$@"' >> $@

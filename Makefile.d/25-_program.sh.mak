@@ -1,6 +1,6 @@
 $(MONOLITH): $(NAME) $(CACHE_DIR)/print_help.sh $(function_files) $(CACHE_DIR)/getopt
 	@$(info making $@)
-	printf '%s\n' '$(SHBANG)' '' 'exec 3>&2' '' > $@
+	printf '%s\n' '$(SHBANG)' '' > $@
 	$(print_version)
 	re='#bashbud$$'
 	for f in $^; do
@@ -9,7 +9,8 @@ $(MONOLITH): $(NAME) $(CACHE_DIR)/print_help.sh $(function_files) $(CACHE_DIR)/g
 		# ignore lines that ends with '#bashbud' (and shbangs)
 		grep -vhE -e '^#!/' -e '#bashbud$$' $$f >> $@
 	done
-	echo 'main "@$$"' >> $@
+
+	printf '%s\n' '' 'main "@$$"' >> $@
 	
 	chmod +x $@
 

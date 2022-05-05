@@ -13,18 +13,22 @@ USAGE       := $(NAME) [OPTIONS]
 # ---
 # the conent of man page and readme can be configured
 # by setting the MANPAGE_LAYOUT and README_LAYOUT
+# `bashbud --template readme` can be used to create
+# the default boilerplate files in docs/
 #
-# MANPAGE_LAYOUT =            \
-#  $(CACHE_DIR)/help_table.md \
-#  $(DOCS_DIR)/description.md \
-#  $(CACHE_DIR)/long_help.md
+MANPAGE_LAYOUT =                \
+	$(DOCS_DIR)/manpage_banner.md \
+	$(CACHE_DIR)/help_table.txt   \
+	$(DOCS_DIR)/manpage_footer.md \
 # ---
 # ORGANISATION is visible in the man page.
 # ORGANISATION   :=
 # ---
-# README_LAYOUT  =               \
-# 	$(DOCS_DIR)/readme_banner.md \
-# 	$(MANPAGE_LAYOUT)
+# README_LAYOUT  =                \
+# 	$(DOCS_DIR)/readme_banner.md  \
+# 	$(DOCS_DIR)/readme_install.md \
+# 	$(CACHE_DIR)/help_table.txt   \
+# 	$(DOCS_DIR)/readme_usage.md
 # ---
 # LICENSE is path to a file containg the license
 # not the name of the license.
@@ -33,19 +37,23 @@ USAGE       := $(NAME) [OPTIONS]
 # LICENSE        := LICENSE
 # ---
 
+
+# MANPAGE_OUT is automatically set to 
+# MANPAGE_OUT := _$(MANPAGE)
+# and it will get generated (with go-md2man) 
+# if it doesn't exist. MANPAGE_OUT will be installed
+# as MANPAGE.
+# but
+# If MANPAGE_OUT is set to a name NOT containing
+# an underscore (_), instead MANPAGE will be set
+# to MANPAGE = MANPAGE_OUT and the manpage will 
+# NOT be generated. But it will be installed.
+# MANPAGE_OUT := $(NAME).1
+
 # --- INSTALLATION RULES --- #
-
-manpage_section     := $(subst .,,$(suffix $(MANPAGE)))
+installed_manpage    = $(DESTDIR)$(PREFIX)/share/man/man$(manpage_section)/$(MANPAGE)
 installed_script    := $(DESTDIR)$(PREFIX)/bin/$(NAME)
-installed_manpage   := \
-	$(DESTDIR)$(PREFIX)/share/man/man$(manpage_section)/$(MANPAGE)
-installed_license   := \
-	$(DESTDIR)$(PREFIX)/share/licenses/$(NAME)/$(LICENSE)
-
-installed_all       := \
-	$(installed_script)  \
-	$(installed_manpage) \
-	$(installed_license)
+installed_license   := $(DESTDIR)$(PREFIX)/share/licenses/$(NAME)/$(LICENSE)
 
 install: all
 	@[[ -n $${manpage:=$(MANPAGE_OUT)} && -f $$manpage ]] && {
@@ -61,9 +69,9 @@ install: all
 	install -Dm755 $(MONOLITH) $(installed_script)
 
 uninstall:
-	@for f in $(installed_all); do
+	@for f in $(installed_script) $(installed_manpage) $(installed_license); do
 		[[ -f $$f ]] || continue
-		echo "rm '$$f'"
+		echo "rm $$f"
 		rm "$$f"
 	done
 
@@ -114,5 +122,5 @@ uninstall:
 # custom_target.txt: options
 # 	cat $< > $@
 #
+# CUSTOM_TARGETS += custom_target.txt
 # CUSTOM_TARGETS =
-
