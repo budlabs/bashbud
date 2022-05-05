@@ -52,6 +52,10 @@ BEGIN { RS=" |\\n" }
 
 END {
 
+	# sort array in alphabetical order
+	# https://www.gnu.org/software/gawk/manual/html_node/Controlling-Scanning.html
+	PROCINFO["sorted_in"] = "@ind_num_asc"
+
 	for (o in options)
 	{
 
@@ -62,22 +66,30 @@ END {
 		if(o ~ /./)
 		{
 			if ("short_name" in options[o])
-				out = "-" options[o]["short_name"] ("long_name" in options[o] ? ", " : "")
+			{
+				out = "-" options[o]["short_name"]
+				if ("long_name" in options[o])
+					out = out ", "
+				else
+					out = out sprintf("%-" longest "s", " ")
+			}
 			else
 				out = ""
 
-			if ("long_name" in options[o])
-				out = out sprintf ("--%s", options[o]["long_name"])
+			if ("long_name" in options[o]) {
+				string_lenght = longest + ("short_name" in options[o] ? 0 : 4)
+				out = out sprintf ("--%-" string_lenght "s", options[o]["long_name"])
+			}
 			
 			if ("arg" in options[o])
-				out = out sprintf (" %s", gensub (/\|/,"\\\\|","g",options[o]["arg"]))
+				out = out sprintf (" %-" longest_arg "s", gensub (/\|/,"\\\\|","g",options[o]["arg"]))
 
 			# 6 = -s, --
 			# longest = longest long option name
 			# 1 space after longoption
 			# longest_arg + space
 			fragment_length = 6+longest+1+longest_arg
-			out = sprintf ("%-" fragment_length "s | ", out)
+			out = "    " sprintf ("%-" fragment_length "s | ", out)
 			print out > docfile_fragment
 
 			if (system("[ ! -f " docfile " ]") == 0)
@@ -149,6 +161,8 @@ END {
 	print "  esac"
 	print "  shift"
 	print "done"
+	print ""
+	print "((BASHBUD_VERBOSE)) && _o[verbose]=1 #bashbud"
 	print ""
 }
 ' $(OPTIONS_FILE)                  \
