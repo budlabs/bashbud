@@ -22,7 +22,7 @@ install: all
 		echo "install -Dm644 $(MANPAGE_OUT) $(installed_manpage)"
 		install -Dm644 $(MANPAGE_OUT) $(installed_manpage)
 	}
-	[[ -n -f LICENSE ]] && {
+	[[ -f LICENSE ]] && {
 		echo "install -Dm644 LICENSE $(installed_license)"
 		install -Dm644 LICENSE $(installed_license)
 	}
@@ -37,11 +37,8 @@ uninstall:
 		rm "$$f"
 	done
 
-# prefix generated manpage with _
-MANPAGE_OUT     := _$(MANPAGE)
-
 # uncomment to automatically generate manpage
-CUSTOM_TARGETS += $(MANPAGE_OUT)
+# CUSTOM_TARGETS += $(MANPAGE_OUT)
 
 $(MANPAGE_OUT): config.mak
 	@$(info making $@)

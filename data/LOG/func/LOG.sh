@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash #bashbud
 
 [[ $BASHBUD_LOG ]] && {
   [[ -f $BASHBUD_LOG ]] || mkdir -p "${BASHBUD_LOG%/*}"

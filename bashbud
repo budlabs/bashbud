@@ -7,9 +7,18 @@ main(){
 
   declare -g _template_dir _target_dir _cp_flag
 
-  config_dir=${_o[config-dir]:-$BASHBUD_CONFIG_DIR}
+  data_dir="$__dir"/data #bashbud
+  [[ -d ETC_CONFIG_DIR ]] && data_dir='ETC_CONFIG_DIR'
 
-  [[ -d $config_dir ]] || _createconf "$config_dir"
+  [[ -d ${config_dir:=${_o[config-dir]:-$BASHBUD_CONFIG_DIR}} ]] || {
+    [[ -d $data_dir ]] \
+      || ERX "default configuration files not found," \
+             "consider reinstalling bashbud"
+
+    mkdir -p "$config_dir"
+    ERM "copy default config from '$data_dir' to '$config_dir'"
+    cp -r "$data_dir"/* -t "$config_dir"
+  }
 
   _target_dir=$(realpath "${1:-.}")
   target_name=$(basename "$_target_dir")

@@ -26,22 +26,6 @@ docs/readme_install.md:
 		'' \
 		'[AUR]: https://aur.archlinux.org/packages/$(NAME)' > $@
 
-docs/manpage_banner.md:
-	@$(info making $@)
-	printf '%s\n' \
-	  '`$(NAME)` - $(DESCRIPTION)' \
-	  '' \
-		SYNOPSIS \
-		======== \
-		'' > $@
-
-	if [[ options = "$(USAGE)" ]]
-		then sed 's/^/$(INDENT)$(NAME) /g;s/$$/  /g' $(OPTIONS_FILE)
-		else printf '%s\n' 'usage: $(USAGE)  '
-	fi >> $@
-
-	echo >> $@
-
 docs/readme_banner.md:
 	@$(info making $@)
 	echo '## $(NAME) - $(DESCRIPTION)' > $@
@@ -66,7 +50,7 @@ docs/readme_usage.md:
 		'' > $@
 
 .PHONY: readme_fragments
-readme_fragments: docs/readme_usage.md docs/readme_banner.md docs/manpage_banner.md docs/manpage_footer.md docs/readme_install.md
+readme_fragments: docs/readme_usage.md docs/readme_banner.md docs/manpage_footer.md docs/readme_install.md
 	rm readme_fragments.mak
 
 CUSTOM_TARGETS += readme_fragments

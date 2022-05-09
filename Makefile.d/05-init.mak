@@ -1,29 +1,30 @@
 CUSTOM_TARGETS       =
 
+PREFIX              := /usr
+NAME                := $(notdir $(realpath .))
+VERSION             := 0
+UPDATED             := $(shell date +'%Y-%m-%d')
+CREATED             := $(UPDATED)
+AUTHOR              := anon
+CONTACT             := address
+ORGANISATION        :=
+CACHE_DIR           := .cache
+DOCS_DIR            := docs
+CONF_DIR            := conf
+AWK_DIR             := awklib
+FUNCS_DIR           := func
+INDENT              := $(shell echo -e "  ")
+USAGE               := $(NAME) [OPTIONS]
+OPTIONS_FILE        := options
+MANPAGE             := $(NAME).1
+MONOLITH            := _$(NAME).sh
+BASE                := _init.sh
+SHBANG              := \#!/bin/bash
+MANPAGE_OUT          = _$(MANPAGE)
+
 ifneq ($(wildcard config.mak),)
 include config.mak
 endif
-
-PREFIX              ?= /usr
-NAME                ?= $(notdir $(realpath .))
-VERSION             ?= 0
-UPDATED             ?= $(shell date +'%Y-%m-%d')
-CREATED             ?= $(UPDATED)
-AUTHOR              ?= anon
-CONTACT             ?= address
-ORGANISATION        ?=
-CACHE_DIR           ?= .cache
-DOCS_DIR            ?= docs
-CONF_DIR            ?= conf
-AWK_DIR             ?= awklib
-FUNCS_DIR           ?= func
-INDENT              ?= $(shell echo -e "  ")
-USAGE               ?= $(NAME) [OPTIONS]
-OPTIONS_FILE        ?= options
-MANPAGE             ?= $(NAME).1
-MONOLITH            ?= _$(NAME).sh
-BASE                ?= _init.sh
-SHBANG              ?= \#!/bin/bash
 
 manpage_section      = $(subst .,,$(suffix $(MANPAGE)))
 function_createconf := $(FUNCS_DIR)/_createconf.sh
