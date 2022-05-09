@@ -1,68 +1,30 @@
-DESCRIPTION := short description for the script
-VERSION     := 0
-AUTHOR      := anon
-CONTACT     := address
-USAGE       := $(NAME) [OPTIONS]
+DESCRIPTION  := short description for the script
+VERSION      := 0
+AUTHOR       := anon
+CONTACT      := address
+USAGE        := $(NAME) [OPTIONS]
+MANPAGE      := $(NAME).1
 # if USAGE is set to the string 'options' 
 # the content of OPTIONS_FILE will be used.
-# USAGE       := options
-# ---
-# man page and readme will only be created if they are set
-# MANPAGE     := $(NAME).1
-# README      := README.md
-# ---
-# the conent of man page and readme can be configured
-# by setting the MANPAGE_LAYOUT and README_LAYOUT
-# `bashbud --template readme` can be used to create
-# the default boilerplate files in docs/
-#
-MANPAGE_LAYOUT =                \
-	$(DOCS_DIR)/manpage_banner.md \
-	$(CACHE_DIR)/help_table.txt   \
-	$(DOCS_DIR)/manpage_footer.md \
-# ---
-# ORGANISATION is visible in the man page.
-# ORGANISATION   :=
-# ---
-# README_LAYOUT  =                \
-# 	$(DOCS_DIR)/readme_banner.md  \
-# 	$(DOCS_DIR)/readme_install.md \
-# 	$(CACHE_DIR)/help_table.txt   \
-# 	$(DOCS_DIR)/readme_usage.md
-# ---
-# LICENSE is path to a file containg the license
-# not the name of the license.
-# if the file exist when target install: is invoked
-# it will also install LICENSE
-# LICENSE        := LICENSE
-# ---
+# USAGE        := options
 
-
-# MANPAGE_OUT is automatically set to 
-# MANPAGE_OUT := _$(MANPAGE)
-# and it will get generated (with go-md2man) 
-# if it doesn't exist. MANPAGE_OUT will be installed
-# as MANPAGE.
-# but
-# If MANPAGE_OUT is set to a name NOT containing
-# an underscore (_), instead MANPAGE will be set
-# to MANPAGE = MANPAGE_OUT and the manpage will 
-# NOT be generated. But it will be installed.
-# MANPAGE_OUT := $(NAME).1
+# ---
+# ORGANISATION is visible in the man page. (.cache/manpage_header.md)
+# ORGANISATION :=
 
 # --- INSTALLATION RULES --- #
 installed_manpage    = $(DESTDIR)$(PREFIX)/share/man/man$(manpage_section)/$(MANPAGE)
 installed_script    := $(DESTDIR)$(PREFIX)/bin/$(NAME)
-installed_license   := $(DESTDIR)$(PREFIX)/share/licenses/$(NAME)/$(LICENSE)
+installed_license   := $(DESTDIR)$(PREFIX)/share/licenses/$(NAME)/LICENSE
 
 install: all
 	@[[ -n $${manpage:=$(MANPAGE_OUT)} && -f $$manpage ]] && {
 		echo "install -Dm644 $(MANPAGE_OUT) $(installed_manpage)"
 		install -Dm644 $(MANPAGE_OUT) $(installed_manpage)
 	}
-	[[ -n $${license:=$(LICENSE)} && -f $$license ]] && {
-		echo "install -Dm644 $(LICENSE) $(installed_license)"
-		install -Dm644 $(LICENSE) $(installed_license)
+	[[ -n -f LICENSE ]] && {
+		echo "install -Dm644 LICENSE $(installed_license)"
+		install -Dm644 LICENSE $(installed_license)
 	}
 
 	echo "install -Dm755 $(MONOLITH) $(installed_script)"
@@ -75,7 +37,47 @@ uninstall:
 		rm "$$f"
 	done
 
-# -------------------------- #
+# prefix generated manpage with _
+MANPAGE_OUT     := _$(MANPAGE)
+
+# uncomment to automatically generate manpage
+CUSTOM_TARGETS += $(MANPAGE_OUT)
+
+$(MANPAGE_OUT): config.mak
+	@$(info making $@)
+	uppercase_name=$(NAME)
+	uppercase_name=$${uppercase_name^^}
+	{
+		# this first "<h1>" adds "corner" info to the manpage
+		echo "# $$uppercase_name "           \
+				 "$(manpage_section) $(UPDATED)" \
+				 "$(ORGANISATION) \"User Manuals\""
+
+		# main sections (NAME|OPTIONS..) should be "<h2>" (##), sub (###) ...
+	  printf '%s\n' '## NAME' \
+								  '$(NAME) - $(DESCRIPTION)' \
+	                '## OPTIONS'
+
+	  cat $(CACHE_DIR)/help_table.txt
+
+	} | go-md2man > $@
+
+# uncomment to automatically generate README.md
+# CUSTOM_TARGETS += README.md
+
+# protip: bashbud --template readme
+#         will create some boilerplate markdown in docs/
+README.md:
+	@$(making $@)
+	{
+	  # cat $(DOCS_DIR)/reame_banner.md
+	  # cat $(DOCS_DIR)/reame_install.md
+	  # cat $(DOCS_DIR)/reame_usage.md
+	  cat $(CACHE_DIR)/help_table.txt
+	} > $@
+
+
+# ---------------------------------------------- #
 # SHBANG will be used in all generated scripts
 #
 # SHBANG         := \#!/bin/bash
@@ -114,13 +116,3 @@ uninstall:
 # DOCS_DIR       := docs
 # OPTIONS_FILE   := options
 # ---
-#
-# include custom targets in this file.
-# be sure to add them to CUSTOM_TARGETS list
-# to have them be part of the DEFAULT_GOAL (all)
-# 
-# custom_target.txt: options
-# 	cat $< > $@
-#
-# CUSTOM_TARGETS += custom_target.txt
-# CUSTOM_TARGETS =

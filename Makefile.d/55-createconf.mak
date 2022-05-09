@@ -1,6 +1,6 @@
 $(function_createconf): $(conf_files) | $(FUNCS_DIR)/
-
-	@printf '%s\n' \
+	@$(info making $@)
+	printf '%s\n' \
 		'#!/bin/bash'                                                          \
 		''                                                                     \
 		'### _createconf() function is automatically generated'                \

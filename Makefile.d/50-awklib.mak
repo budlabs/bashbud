@@ -1,5 +1,6 @@
 $(function_awklib): $(awk_files) | $(FUNCS_DIR)/
-	@printf '%s\n' \
+	@$(info making $@)
+	printf '%s\n' \
 		'#!/bin/bash'                                                           \
 		''                                                                      \
 		'### _awklib() function is automatically generated'                     \

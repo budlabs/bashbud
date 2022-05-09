@@ -16,8 +16,6 @@ endif
 conf/default/Makefile: $(wildcard Makefile.d/*)
 	@$(info genearating Makefile from Makefile.d)
 	cat $^ > $@
-	[[ -d /home/bud/.config/bashbud ]] \
-		&& cp -f $@ ~/.config/bashbud/default/Makefile
 	cp -f $@ Makefile
 
 # wiki/Home.md: docs/tutorial.md
