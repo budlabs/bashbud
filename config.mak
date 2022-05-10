@@ -33,7 +33,7 @@ installed_script    := $(DESTDIR)$(PREFIX)/bin/$(NAME)
 installed_license   := $(SHARE_DIR)/licenses/$(NAME)/LICENSE
 
 $(CACHE_DIR)/$(NAME).out: $(MONOLITH)
-	m4 -DETC_CONFIG_DIR=$(ASSET_DIR) $< >$@
+	m4 -DETC_CONFIG_DIR=$(PREFIX)/share/$(NAME) $< >$@
 
 install: all $(CACHE_DIR)/$(NAME).out
 	install -Dm644 $(MANPAGE_OUT) $(installed_manpage)
