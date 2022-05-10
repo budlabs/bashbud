@@ -110,7 +110,7 @@ $(CACHE_DIR)/options_in_use $(CACHE_DIR)/getopt &: $(OPTIONS_FILE) | $(CACHE_DIR
 		print options_in_use > "$(CACHE_DIR)/options_in_use"
 
 	  print ""
-	  print "declare -A _o"
+	  print "declare -A $(OPTIONS_ARRAY_NAME)"
 	  print ""
 		print "options=$$(getopt \\"
 		print "  --name \"[ERROR]:" name "\" \\"

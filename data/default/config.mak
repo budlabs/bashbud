@@ -79,6 +79,8 @@ README.md:
 #
 # SHBANG         := \#!/bin/bash
 # ---
+# OPTIONS_ARRAY_NAME  := _o
+# ---
 # MONOLITH is the name of the "combined" script
 # it will be installed (as NAME)
 #

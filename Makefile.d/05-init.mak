@@ -20,6 +20,7 @@ MANPAGE             := $(NAME).1
 MONOLITH            := _$(NAME).sh
 BASE                := _init.sh
 SHBANG              := \#!/bin/bash
+OPTIONS_ARRAY_NAME  := _o
 MANPAGE_OUT          = _$(MANPAGE)
 
 ifneq ($(wildcard config.mak),)

@@ -28,6 +28,7 @@ MANPAGE             := $(NAME).1
 MONOLITH            := _$(NAME).sh
 BASE                := _init.sh
 SHBANG              := \#!/bin/bash
+OPTIONS_ARRAY_NAME  := _o
 MANPAGE_OUT          = _$(MANPAGE)
 
 ifneq ($(wildcard config.mak),)
@@ -358,7 +359,7 @@ $(CACHE_DIR)/options_in_use $(CACHE_DIR)/getopt &: $(OPTIONS_FILE) | $(CACHE_DIR
 		print options_in_use > "$(CACHE_DIR)/options_in_use"
 
 	  print ""
-	  print "declare -A _o"
+	  print "declare -A $(OPTIONS_ARRAY_NAME)"
 	  print ""
 		print "options=$$(getopt \\"
 		print "  --name \"[ERROR]:" name "\" \\"
