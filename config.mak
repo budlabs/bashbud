@@ -1,6 +1,6 @@
 NAME           := bashbud
 CREATED        := 2022-04-05
-VERSION        := 2.0
+VERSION        := 2.1
 AUTHOR         := budRich
 ORGANISATION   := budlabs
 CONTACT        := https://github.com/budlabs/bashbud
@@ -57,7 +57,7 @@ uninstall:
 # uncomment to automatically generate manpage
 CUSTOM_TARGETS += $(MANPAGE_OUT)
 
-$(MANPAGE_OUT): config.mak
+$(MANPAGE_OUT): config.mak $(CACHE_DIR)/help_table.txt
 	@$(info making $@)
 	uppercase_name=$(NAME)
 	uppercase_name=$${uppercase_name^^}

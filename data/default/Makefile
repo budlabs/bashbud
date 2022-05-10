@@ -92,38 +92,43 @@ uninstall-dev: $(PREFIX)/bin/$(NAME)
 check: all
 	shellcheck $(MONOLITH)
 
-$(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help.sh $(CACHE_DIR)/got_func
+$(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help.sh $(CACHE_DIR)/print_version.sh $(CACHE_DIR)/got_func
 	@$(info making $@)
-	printf '%s\n' '$(SHBANG)' '' 'exec 3>&2' '' > $@
-	$(print_version)
-	grep -vhE -e '^#!/' $(CACHE_DIR)/print_help.sh >> $@
+	{
+		printf '%s\n' '$(SHBANG)' '' 'exec 3>&2' ''
+		grep -vhE -e '^#!/' $(CACHE_DIR)/print_version.sh
+		grep -vhE -e '^#!/' $(CACHE_DIR)/print_help.sh
 
-	echo "" >> $@
+		echo
 
-	[[ -d $(FUNCS_DIR) ]] && {
-		printf '%s\n' \
-		'for ___f in "$$__dir/$(FUNCS_DIR)"/*; do' \
-		'$(INDENT). "$$___f" ; done ; unset -v ___f' >> $@
-	}
+		[[ -d $(FUNCS_DIR) ]] && {
+			printf '%s\n' \
+			'for ___f in "$$__dir/$(FUNCS_DIR)"/*; do' \
+			'$(INDENT). "$$___f" ; done ; unset -v ___f'
+		}
 
-	echo "" >> $@
-	cat $(CACHE_DIR)/getopt >> $@
+		echo
+		
+		cat $(CACHE_DIR)/getopt
 
-	echo 'main "$$@"' >> $@
+		echo 'main "$$@"'
+	} > $@
 
-$(MONOLITH): $(NAME) $(CACHE_DIR)/print_help.sh $(function_files) $(CACHE_DIR)/getopt
+$(MONOLITH): $(NAME) $(CACHE_DIR)/print_version.sh $(CACHE_DIR)/print_help.sh $(function_files) $(CACHE_DIR)/getopt
 	@$(info making $@)
-	printf '%s\n' '$(SHBANG)' '' > $@
-	$(print_version)
-	re='#bashbud$$'
-	for f in $^; do
-		# ignore files where the first line ends with '#bashbud'
-		[[ $$(head -n1 $$f) =~ $$re ]] && continue	
-		# ignore lines that ends with '#bashbud' (and shbangs)
-		grep -vhE -e '^#!/' -e '#bashbud$$' $$f >> $@
-	done
+	{
+		printf '%s\n' '$(SHBANG)' ''
+		cat $(CACHE_DIR)/print_version.sh
+		re='#bashbud$$'
+		for f in $^; do
+			# ignore files where the first line ends with '#bashbud'
+			[[ $$(head -n1 $$f) =~ $$re ]] && continue	
+			# ignore lines that ends with '#bashbud' (and shbangs)
+			grep -vhE -e '^#!/' -e '#bashbud$$' $$f
+		done
 
-	printf '%s\n' '' 'main "@$$"' >> $@
+		printf '%s\n' '' 'main "@$$"'
+	} > $@
 	
 	chmod +x $@
 
@@ -230,16 +235,16 @@ $(FUNCS_DIR)/:
 	@$(info creating $(FUNCS_DIR)/ dir)
 	mkdir -p $(FUNCS_DIR)
 
-define print_version =
-@printf '%s\n'                                \
-	"__print_version()"                         \
-	"{"                                         \
-	"$(INDENT)>&3 printf '%s\n' \\"                    \
-	"$(INDENT)$(INDENT)'$(NAME) - version: $(VERSION)' \\"    \
-	"$(INDENT)$(INDENT)'updated: $(UPDATED) by $(AUTHOR)'"    \
-	"}"                                                       \
-	"" >> $@
-endef
+$(CACHE_DIR)/print_version.sh: config.mak | $(CACHE_DIR)/
+	@$(info making $@)
+	printf '%s\n'                                            \
+		"__print_version()"                                    \
+		"{"                                                    \
+		"$(INDENT)>&3 printf '%s\n' \\"                        \
+		"$(INDENT)$(INDENT)'$(NAME) - version: $(VERSION)' \\" \
+		"$(INDENT)$(INDENT)'updated: $(UPDATED) by $(AUTHOR)'" \
+		"}"                                                    \
+		"" > $@
 
 $(CACHE_DIR)/options_in_use $(CACHE_DIR)/getopt &: $(OPTIONS_FILE) | $(CACHE_DIR)/
 	@$(info parsing $(OPTIONS_FILE))
