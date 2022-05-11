@@ -86,7 +86,7 @@ $(CACHE_DIR)/options_in_use $(CACHE_DIR)/getopt &: $(OPTIONS_FILE) | $(CACHE_DIR
 				# 1 space after longoption
 				# longest_arg + space
 				fragment_length = 6+longest+1+longest_arg
-				out = "    " sprintf ("%-" fragment_length "s | ", out)
+				out = sprintf ("%-" fragment_length "s | ", out)
 				print out > docfile_fragment
 
 				if (system("[ ! -f " docfile " ]") == 0)

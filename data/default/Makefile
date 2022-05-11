@@ -115,11 +115,10 @@ $(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help.sh $(CACHE_DIR)/
 		echo 'main "$$@"'
 	} > $@
 
-$(MONOLITH): $(NAME) $(CACHE_DIR)/print_version.sh $(CACHE_DIR)/copyright.txt $(CACHE_DIR)/print_help.sh $(function_files) $(CACHE_DIR)/getopt
+$(MONOLITH): $(NAME) $(CACHE_DIR)/print_version.sh $(CACHE_DIR)/print_help.sh $(function_files) $(CACHE_DIR)/getopt
 	@$(info making $@)
 	{
 		printf '%s\n' '$(SHBANG)' ''
-		sed 's/^/# /g' $(CACHE_DIR)/copyright.txt
 		cat $(CACHE_DIR)/print_version.sh
 		re='#bashbud$$'
 		for f in $^; do
@@ -196,7 +195,7 @@ $(CACHE_DIR)/print_help.sh: $(CACHE_DIR)/help_table.txt $(CACHE_DIR)/synopsis.tx
 			cat $(CACHE_DIR)/synopsis.txt
 			echo
 		else 
-			printf '%s\n' '    usage: $(USAGE)' ''
+			printf '%s\n' 'usage: $(USAGE)' ''
 			echo
 		fi
 		cat $(CACHE_DIR)/help_table.txt
@@ -354,7 +353,7 @@ $(CACHE_DIR)/options_in_use $(CACHE_DIR)/getopt &: $(OPTIONS_FILE) | $(CACHE_DIR
 				# 1 space after longoption
 				# longest_arg + space
 				fragment_length = 6+longest+1+longest_arg
-				out = "    " sprintf ("%-" fragment_length "s | ", out)
+				out = sprintf ("%-" fragment_length "s | ", out)
 				print out > docfile_fragment
 
 				if (system("[ ! -f " docfile " ]") == 0)
