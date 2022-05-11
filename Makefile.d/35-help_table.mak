@@ -12,10 +12,7 @@ $(CACHE_DIR)/help_table.txt: $(CACHE_DIR)/long_help.md
 		paste <(echo "$$frag") <(echo "$$desc") | tr -d '\t'
 	done > $@
 
-$(CACHE_DIR)/synopsis.txt: $(OPTIONS_FILE)
-	@$(info making $@)
-	sed 's/^/    $(NAME) /g;s/$$/  /g' $< > $@
-	
+
 $(CACHE_DIR)/print_help.sh: $(CACHE_DIR)/help_table.txt $(CACHE_DIR)/synopsis.txt 
 	@$(info making $@)
 	{
