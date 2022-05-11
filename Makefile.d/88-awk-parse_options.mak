@@ -31,7 +31,8 @@ $(CACHE_DIR)/options_in_use $(CACHE_DIR)/getopt &: $(OPTIONS_FILE) | $(CACHE_DIR
 
 		}
 
-		else if (opt_name in options && !("arg" in options[opt_name]))
+		# ignore "Args" prefixed with an asterisk (*)
+		else if (opt_name in options && !("arg" in options[opt_name]) && $$0 ~ /^[^*]/)
 		{
 
 			if ($$0 ~ /^[[]/)
