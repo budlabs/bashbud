@@ -115,10 +115,11 @@ $(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help.sh $(CACHE_DIR)/
 		echo 'main "$$@"'
 	} > $@
 
-$(MONOLITH): $(NAME) $(CACHE_DIR)/print_version.sh $(CACHE_DIR)/print_help.sh $(function_files) $(CACHE_DIR)/getopt
+$(MONOLITH): $(NAME) $(CACHE_DIR)/print_version.sh $(CACHE_DIR)/copyright.txt $(CACHE_DIR)/print_help.sh $(function_files) $(CACHE_DIR)/getopt
 	@$(info making $@)
 	{
 		printf '%s\n' '$(SHBANG)' ''
+		sed 's/^/# /g' $(CACHE_DIR)/copyright.txt
 		cat $(CACHE_DIR)/print_version.sh
 		re='#bashbud$$'
 		for f in $^; do
@@ -132,6 +133,23 @@ $(MONOLITH): $(NAME) $(CACHE_DIR)/print_version.sh $(CACHE_DIR)/print_help.sh $(
 	} > $@
 	
 	chmod +x $@
+
+$(CACHE_DIR)/copyright.txt: config.mak
+	@$(info making $@)
+	year_created=$(CREATED) year_created=$${year_created%%-*}
+	year_updated=$$(date +'%Y')
+
+	copy_text="Copyright (c) "
+
+	((year_created == year_updated)) \
+		&& copy_text+=$$year_created   \
+		|| copy_text+="$${year_created}-$${year_updated}, $(AUTHOR)"
+
+	[[ $${org:=$(ORGANISATION)} ]] \
+		&& copy_text+=" of $(ORGANISATION)  "
+
+	printf '%s\n' \
+		"$$copy_text" "SPDX-License-Identifier: $(LICENSE)" > $@
 
 # if a file in docs/options contains more than
 # 2 lines, it will get added to the file .cache/long_help.md
@@ -150,6 +168,10 @@ $(CACHE_DIR)/long_help.md: $(CACHE_DIR)/options_in_use $(option_docs)
 		echo
 	done > $@
 
+$(CACHE_DIR)/synopsis.txt: $(OPTIONS_FILE)
+	@$(info making $@)
+	sed 's/^/$(NAME) /g;s/*//g' $< > $@
+
 $(CACHE_DIR)/help_table.txt: $(CACHE_DIR)/long_help.md
 	@$(info making $@)
 	for option in $$(cat $(CACHE_DIR)/options_in_use); do
@@ -164,10 +186,7 @@ $(CACHE_DIR)/help_table.txt: $(CACHE_DIR)/long_help.md
 		paste <(echo "$$frag") <(echo "$$desc") | tr -d '\t'
 	done > $@
 
-$(CACHE_DIR)/synopsis.txt: $(OPTIONS_FILE)
-	@$(info making $@)
-	sed 's/^/    $(NAME) /g;s/$$/  /g' $< > $@
-	
+
 $(CACHE_DIR)/print_help.sh: $(CACHE_DIR)/help_table.txt $(CACHE_DIR)/synopsis.txt 
 	@$(info making $@)
 	{
@@ -280,7 +299,8 @@ $(CACHE_DIR)/options_in_use $(CACHE_DIR)/getopt &: $(OPTIONS_FILE) | $(CACHE_DIR
 
 		}
 
-		else if (opt_name in options && !("arg" in options[opt_name]))
+		# ignore "Args" prefixed with an asterisk (*)
+		else if (opt_name in options && !("arg" in options[opt_name]) && $$0 ~ /^[^*]/)
 		{
 
 			if ($$0 ~ /^[[]/)
