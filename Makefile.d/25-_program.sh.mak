@@ -1,9 +1,7 @@
-$(MONOLITH): $(NAME) $(CACHE_DIR)/print_version.sh $(CACHE_DIR)/copyright.txt $(CACHE_DIR)/print_help.sh $(function_files) $(CACHE_DIR)/getopt
+$(MONOLITH): $(NAME) $(CACHE_DIR)/print_version.sh $(CACHE_DIR)/print_help.sh $(function_files) $(CACHE_DIR)/getopt
 	@$(info making $@)
 	{
 		printf '%s\n' '$(SHBANG)' ''
-		sed 's/^/# /g' $(CACHE_DIR)/copyright.txt
-		echo
 		cat $(CACHE_DIR)/print_version.sh
 		re='#bashbud$$'
 		for f in $^; do
