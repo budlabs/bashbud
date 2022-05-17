@@ -115,11 +115,10 @@ $(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help.sh $(CACHE_DIR)/
 		echo 'main "$$@"'
 	} > $@
 
-$(MONOLITH): $(NAME) $(CACHE_DIR)/print_version.sh $(CACHE_DIR)/print_help.sh $(function_files) $(CACHE_DIR)/getopt
+$(MONOLITH): $(CACHE_DIR)/print_version.sh $(NAME) $(CACHE_DIR)/print_help.sh $(function_files) $(CACHE_DIR)/getopt
 	@$(info making $@)
 	{
 		printf '%s\n' '$(SHBANG)' ''
-		cat $(CACHE_DIR)/print_version.sh
 		re='#bashbud$$'
 		for f in $^; do
 			# ignore files where the first line ends with '#bashbud'
@@ -167,7 +166,7 @@ $(CACHE_DIR)/long_help.md: $(CACHE_DIR)/options_in_use $(option_docs)
 		echo
 	done > $@
 
-$(CACHE_DIR)/synopsis.txt: $(OPTIONS_FILE)
+$(CACHE_DIR)/synopsis.txt: $(OPTIONS_FILE) | $(CACHE_DIR)/
 	@$(info making $@)
 	sed 's/^/$(NAME) /g;s/*//g' $< > $@
 
