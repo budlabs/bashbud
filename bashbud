@@ -10,7 +10,9 @@ main(){
   data_dir="$__dir"/data #bashbud
   [[ -d ETC_CONFIG_DIR ]] && data_dir='ETC_CONFIG_DIR'
 
-  [[ -d ${config_dir:=${_o[config-dir]:-$BASHBUD_CONFIG_DIR}} ]] || {
+  config_dir=${_o[config-dir]:-$BASHBUD_CONFIG_DIR}
+
+  [[ -d $config_dir ]] || {
     [[ -d $data_dir ]] \
       || ERX "default configuration files not found," \
              "consider reinstalling bashbud"
@@ -48,7 +50,7 @@ main(){
           )"
   }
 
-  mapfile -td '' _template_dirs < <(find "$_template_dir" -type d -print0)
+  mapfile -td '' _template_dirs < <(find -L "$_template_dir" -type d -print0)
   mapfile -td '' template_files < <(find -L "$_template_dir" -type f -print0)
 
   [[ ${_o[update]} ]] \
