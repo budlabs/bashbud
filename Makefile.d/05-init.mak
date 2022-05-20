@@ -14,14 +14,15 @@ CONF_DIR            := conf
 AWK_DIR             := awklib
 FUNCS_DIR           := func
 INDENT              := $(shell echo -e "  ")
-USAGE               := $(NAME) [OPTIONS]
+USAGE                = $(NAME) [OPTIONS]
 OPTIONS_FILE        := options
-MANPAGE             := $(NAME).1
-MONOLITH            := _$(NAME).sh
+MANPAGE              = $(NAME).1
+MONOLITH             = _$(NAME).sh
 BASE                := _init.sh
 SHBANG              := \#!/bin/bash
 OPTIONS_ARRAY_NAME  := _o
 MANPAGE_OUT          = _$(MANPAGE)
+FUNC_STYLE          := "() {"
 
 ifneq ($(wildcard config.mak),)
 include config.mak

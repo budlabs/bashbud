@@ -2,8 +2,9 @@ $(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help.sh $(CACHE_DIR)/
 	@$(info making $@)
 	{
 		printf '%s\n' '$(SHBANG)' '' 'exec 3>&2' ''
-		grep -vhE -e '^#!/' $(CACHE_DIR)/print_version.sh
-		grep -vhE -e '^#!/' $(CACHE_DIR)/print_help.sh
+
+		grep -vhE -e '^#!/' $(CACHE_DIR)/print_version.sh | sed '0,/2/s//3/'
+		grep -vhE -e '^#!/' $(CACHE_DIR)/print_help.sh    | sed '0,/2/s//3/'
 
 		echo
 
@@ -16,6 +17,9 @@ $(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help.sh $(CACHE_DIR)/
 		echo
 		
 		cat $(CACHE_DIR)/getopt
+
+		echo "((BASHBUD_VERBOSE)) && _o[verbose]=1"
+		echo
 
 		echo 'main "$$@"'
 	} > $@

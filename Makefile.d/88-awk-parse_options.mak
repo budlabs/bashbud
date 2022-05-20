@@ -159,8 +159,6 @@ $(CACHE_DIR)/options_in_use $(CACHE_DIR)/getopt &: $(OPTIONS_FILE) | $(CACHE_DIR
 		print "  shift"
 		print "done"
 		print ""
-		print "((BASHBUD_VERBOSE)) && _o[verbose]=1 #bashbud"
-		print ""
 	}
 	' $(OPTIONS_FILE)                  \
 			cache=$(CACHE_DIR)             \
