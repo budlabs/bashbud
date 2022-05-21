@@ -16,5 +16,4 @@ $(function_awklib): $(awk_files) | $(FUNCS_DIR)/
 		cat $(awk_files)
 		printf '%s\n' "EOAWK" '}'
 	} > $@
-	
 
