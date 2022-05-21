@@ -33,7 +33,7 @@ MANPAGE_OUT          = _$(MANPAGE)
 FUNC_STYLE          := "() {"
 
 ifneq ($(wildcard config.mak),)
-include config.mak
+  include config.mak
 endif
 
 manpage_section      = $(subst .,,$(suffix $(MANPAGE)))
@@ -41,19 +41,18 @@ function_createconf := $(FUNCS_DIR)/_createconf.sh
 function_awklib     := $(FUNCS_DIR)/_awklib.sh
 
 ifneq ($(wildcard $(CONF_DIR)/*),)
-include_createconf   = $(function_createconf)
-conf_dirs            = $(shell find $(CONF_DIR) -type d)
-conf_files           = $(shell find $(CONF_DIR) -type f)
+  include_createconf   = $(function_createconf)
+  conf_dirs            = $(shell find $(CONF_DIR) -type d)
+  conf_files           = $(shell find $(CONF_DIR) -type f)
 else
-$(shell rm -f $(function_createconf))
+  $(shell rm -f $(function_createconf))
 endif
 
 ifneq ($(wildcard $(AWK_DIR)/*),)
-
-include_awklib       = $(function_awklib)
-awk_files            = $(wildcard $(AWK_DIR)/*)
+  include_awklib       = $(function_awklib)
+  awk_files            = $(wildcard $(AWK_DIR)/*)
 else
-$(shell rm -f $(function_awklib))
+  $(shell rm -f $(function_awklib))
 endif
 
 option_docs          = $(wildcard $(DOCS_DIR)/options/*)
@@ -71,16 +70,21 @@ function_files := \
 # to be rebuilt on this event.
 
 ifneq ($(wildcard $(CACHE_DIR)/got_func),)
-ifneq ($(wildcard $(FUNCS_DIR)/*),)
-ifneq ($(file < $(CACHE_DIR)/got_func), 1)
-$(shell echo 1 > $(CACHE_DIR)/got_func)
+  ifneq ($(wildcard $(FUNCS_DIR)/*),)
+    ifneq ($(file < $(CACHE_DIR)/got_func), 1)
+      $(shell echo 1 > $(CACHE_DIR)/got_func)
+    endif
+  else
+    ifneq ($(file < $(CACHE_DIR)/got_func), 0)
+      $(shell echo 0 > $(CACHE_DIR)/got_func)
+    endif
+  endif
 endif
-else
-ifneq ($(file < $(CACHE_DIR)/got_func), 0)
-$(shell echo 0 > $(CACHE_DIR)/got_func)
-endif
-endif
-endif
+
+$(CACHE_DIR)/got_func: | $(CACHE_DIR)/
+  @$(info making $@)
+  [[ -d $${tmp:=$(FUNCS_DIR)} ]] && tmp=1 || tmp=0
+  echo $$tmp > $@
 
 clean:
 	rm -rf $(wildcard _*) $(CACHE_DIR) $(generated_functions)

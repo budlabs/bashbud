@@ -25,7 +25,7 @@ MANPAGE_OUT          = _$(MANPAGE)
 FUNC_STYLE          := "() {"
 
 ifneq ($(wildcard config.mak),)
-include config.mak
+  include config.mak
 endif
 
 manpage_section      = $(subst .,,$(suffix $(MANPAGE)))
@@ -33,19 +33,18 @@ function_createconf := $(FUNCS_DIR)/_createconf.sh
 function_awklib     := $(FUNCS_DIR)/_awklib.sh
 
 ifneq ($(wildcard $(CONF_DIR)/*),)
-include_createconf   = $(function_createconf)
-conf_dirs            = $(shell find $(CONF_DIR) -type d)
-conf_files           = $(shell find $(CONF_DIR) -type f)
+  include_createconf   = $(function_createconf)
+  conf_dirs            = $(shell find $(CONF_DIR) -type d)
+  conf_files           = $(shell find $(CONF_DIR) -type f)
 else
-$(shell rm -f $(function_createconf))
+  $(shell rm -f $(function_createconf))
 endif
 
 ifneq ($(wildcard $(AWK_DIR)/*),)
-
-include_awklib       = $(function_awklib)
-awk_files            = $(wildcard $(AWK_DIR)/*)
+  include_awklib       = $(function_awklib)
+  awk_files            = $(wildcard $(AWK_DIR)/*)
 else
-$(shell rm -f $(function_awklib))
+  $(shell rm -f $(function_awklib))
 endif
 
 option_docs          = $(wildcard $(DOCS_DIR)/options/*)
