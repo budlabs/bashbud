@@ -82,9 +82,9 @@ ifneq ($(wildcard $(CACHE_DIR)/got_func),)
 endif
 
 $(CACHE_DIR)/got_func: | $(CACHE_DIR)/
-  @$(info making $@)
-  [[ -d $${tmp:=$(FUNCS_DIR)} ]] && tmp=1 || tmp=0
-  echo $$tmp > $@
+	@$(info making $@)
+	[[ -d $${tmp:=$(FUNCS_DIR)} ]] && tmp=1 || tmp=0
+	echo $$tmp > $@
 
 clean:
 	rm -rf $(wildcard _*) $(CACHE_DIR) $(generated_functions)
@@ -193,65 +193,9 @@ $(CACHE_DIR)/help_table.txt: $(CACHE_DIR)/long_help.md
 		paste <(echo "$$frag") <(echo "$$desc") | tr -d '\t'
 	done > $@
 
-$(function_awklib): $(awk_files) | $(FUNCS_DIR)/
-	@$(info making $@)
-	{
-		printf '%s\n' \
-			'$(SHBANG)'                                                             \
-			''                                                                      \
-			'### _awklib() function is automatically generated'                     \
-			'### from makefile based on the content of the $(AWK_DIR)/ directory'   \
-			''
-
-		fstyle=$(FUNC_STYLE)
-		printf "_awklib$${fstyle}\n"
-		printf '%s\n' \
-			'[[ -d $$__dir ]] && { cat "$$__dir/$(AWK_DIR)/"* ; return ;} #bashbud' \
-			"cat << 'EOAWK'"
-		cat $(awk_files)
-		printf '%s\n' "EOAWK" '}'
-	} > $@
-	
-
-$(function_createconf): $(conf_files) | $(FUNCS_DIR)/
-	@$(info making $@)
-	{
-		printf '%s\n' \
-			'$(SHBANG)'                                                            \
-			''                                                                     \
-			'### _createconf() function is automatically generated'                \
-			'### from makefile based on the content of the $(CONF_DIR)/ directory' \
-			''
-
-
-		fstyle=$(FUNC_STYLE)
-		printf "_createconf$${fstyle}\n"
-
-		echo 'local trgdir="$$1"'
-
-		echo 'mkdir -p $(subst $(CONF_DIR),"$$trgdir",$(conf_dirs))'
-		for f in $(conf_files); do
-
-			echo ""
-			echo 'if [[ -d $$__dir ]]; then #bashbud'
-			echo "cat \"\$$__dir/$$f\" > \"$${f/$(subst /,\/,$(CONF_DIR))/\$$trgdir}\" #bashbud"
-			echo 'else #bashbud'
-			echo "cat << 'EOCONF' > \"$${f/$(subst /,\/,$(CONF_DIR))/\$$trgdir}\""
-			cat "$$f"
-			echo "EOCONF"
-			echo 'fi #bashbud'
-			[[ -x $$f ]] && echo "chmod +x \"$${f/$(subst /,\/,$(CONF_DIR))/\$$trgdir}\""
-		done
-
-		echo '}'
-	} > $@
-
 $(CACHE_DIR)/:
 	@$(info creating $(CACHE_DIR)/ dir)
 	mkdir -p $(CACHE_DIR) $(CACHE_DIR)/options
-	[[ -d $(FUNCS_DIR) ]] \
-		&& echo 1 > $(CACHE_DIR)/got_func \
-		|| echo 0 > $(CACHE_DIR)/got_func
 
 $(FUNCS_DIR)/:
 	@$(info creating $(FUNCS_DIR)/ dir)
@@ -286,6 +230,59 @@ $(CACHE_DIR)/print_help.sh: $(CACHE_DIR)/help_table.txt $(CACHE_DIR)/synopsis.tx
 		cat $(CACHE_DIR)/help_table.txt
 		printf '%s\n' 'EOB' '}'
 	} > $@
+
+$(function_createconf): $(conf_files) | $(FUNCS_DIR)/
+	@$(info making $@)
+	{
+		printf '%s\n' \
+			'$(SHBANG)'                                                            \
+			''                                                                     \
+			'### _createconf() function is automatically generated'                \
+			'### from makefile based on the content of the $(CONF_DIR)/ directory' \
+			''
+
+
+		fstyle=$(FUNC_STYLE)
+		printf "_createconf$${fstyle}\n"
+
+		echo 'local trgdir="$$1"'
+
+		echo 'mkdir -p $(subst $(CONF_DIR),"$$trgdir",$(conf_dirs))'
+		for f in $(conf_files); do
+
+			echo ""
+			echo 'if [[ -d $$__dir ]]; then #bashbud'
+			echo "cat \"\$$__dir/$$f\" > \"$${f/$(subst /,\/,$(CONF_DIR))/\$$trgdir}\" #bashbud"
+			echo 'else #bashbud'
+			echo "cat << 'EOCONF' > \"$${f/$(subst /,\/,$(CONF_DIR))/\$$trgdir}\""
+			cat "$$f"
+			echo "EOCONF"
+			echo 'fi #bashbud'
+			[[ -x $$f ]] && echo "chmod +x \"$${f/$(subst /,\/,$(CONF_DIR))/\$$trgdir}\""
+		done
+
+		echo '}'
+	} > $@
+
+$(function_awklib): $(awk_files) | $(FUNCS_DIR)/
+	@$(info making $@)
+	{
+		printf '%s\n' \
+			'$(SHBANG)'                                                             \
+			''                                                                      \
+			'### _awklib() function is automatically generated'                     \
+			'### from makefile based on the content of the $(AWK_DIR)/ directory'   \
+			''
+
+		fstyle=$(FUNC_STYLE)
+		printf "_awklib$${fstyle}\n"
+		printf '%s\n' \
+			'[[ -d $$__dir ]] && { cat "$$__dir/$(AWK_DIR)/"* ; return ;} #bashbud' \
+			"cat << 'EOAWK'"
+		cat $(awk_files)
+		printf '%s\n' "EOAWK" '}'
+	} > $@
+
 $(CACHE_DIR)/options_in_use $(CACHE_DIR)/getopt &: $(OPTIONS_FILE) | $(CACHE_DIR)/
 	@$(info parsing $(OPTIONS_FILE))
 	mkdir -p $(DOCS_DIR)/options

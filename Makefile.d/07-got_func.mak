@@ -18,6 +18,6 @@ ifneq ($(wildcard $(CACHE_DIR)/got_func),)
 endif
 
 $(CACHE_DIR)/got_func: | $(CACHE_DIR)/
-  @$(info making $@)
-  [[ -d $${tmp:=$(FUNCS_DIR)} ]] && tmp=1 || tmp=0
-  echo $$tmp > $@
+	@$(info making $@)
+	[[ -d $${tmp:=$(FUNCS_DIR)} ]] && tmp=1 || tmp=0
+	echo $$tmp > $@
