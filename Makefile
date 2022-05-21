@@ -133,10 +133,10 @@ $(MONOLITH): $(CACHE_DIR)/print_version.sh $(NAME) $(CACHE_DIR)/print_help.sh $(
 			# ignore files where the first line ends with '#bashbud'
 			[[ $$(head -n1 $$f) =~ $$re ]] && continue	
 			# ignore lines that ends with '#bashbud' (and shbangs)
-			grep -vhE -e '^#!/' -e '#bashbud$$' $$f
+			grep -vhE -e '^#!' -e '#bashbud$$' $$f
 		done
 
-		printf '%s\n' '' 'main "@$$"'
+		echo 'main "$$@"'
 	} > $@
 	
 	chmod +x $@
@@ -192,14 +192,6 @@ $(CACHE_DIR)/help_table.txt: $(CACHE_DIR)/long_help.md
 
 		paste <(echo "$$frag") <(echo "$$desc") | tr -d '\t'
 	done > $@
-
-$(CACHE_DIR)/:
-	@$(info creating $(CACHE_DIR)/ dir)
-	mkdir -p $(CACHE_DIR) $(CACHE_DIR)/options
-
-$(FUNCS_DIR)/:
-	@$(info creating $(FUNCS_DIR)/ dir)
-	mkdir -p $(FUNCS_DIR)
 
 $(CACHE_DIR)/print_version.sh: config.mak | $(CACHE_DIR)/
 	@$(info making $@)
@@ -282,6 +274,14 @@ $(function_awklib): $(awk_files) | $(FUNCS_DIR)/
 		cat $(awk_files)
 		printf '%s\n' "EOAWK" '}'
 	} > $@
+
+$(CACHE_DIR)/:
+	@$(info creating $(CACHE_DIR)/ dir)
+	mkdir -p $(CACHE_DIR) $(CACHE_DIR)/options
+
+$(FUNCS_DIR)/:
+	@$(info creating $(FUNCS_DIR)/ dir)
+	mkdir -p $(FUNCS_DIR)
 
 $(CACHE_DIR)/options_in_use $(CACHE_DIR)/getopt &: $(OPTIONS_FILE) | $(CACHE_DIR)/
 	@$(info parsing $(OPTIONS_FILE))
