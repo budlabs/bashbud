@@ -7,7 +7,7 @@ $(MONOLITH): $(CACHE_DIR)/print_version.sh $(NAME) $(CACHE_DIR)/print_help.sh $(
 			# ignore files where the first line ends with '#bashbud'
 			[[ $$(head -n1 $$f) =~ $$re ]] && continue	
 			# ignore lines that ends with '#bashbud' (and shbangs)
-			grep -vhE -e '^#!/' -e '#bashbud$$' $$f
+			grep -vhE -e '^#!' -e '#bashbud$$' $$f
 		done
 
 		echo 'main "$$@"'
