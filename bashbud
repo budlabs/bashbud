@@ -71,7 +71,7 @@ main(){
         cat "$template_file"
       } > "${_target_dir}/config.mak"
 
-    elif [[ $template_file = "$_template_dir"/main.sh ]]; then
+    elif [[ $template_file =~ ${_template_dir}/(options|main)(.sh)?$ ]]; then
       [[ -f "${_target_dir}/$target_name" ]] \
         || cp "$(readlink -f "$template_file")" "${_target_dir}/$target_name"
 

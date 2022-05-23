@@ -101,7 +101,7 @@ check: all
 $(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help.sh $(CACHE_DIR)/print_version.sh $(CACHE_DIR)/got_func
 	@$(info making $@)
 	{
-		printf '%s\n' '$(SHBANG)' '' 'exec 3>&2' ''
+		printf '%s\n' '$(SHBANG)' '' 
 
 		grep -vhE -e '^#!/' $(CACHE_DIR)/print_version.sh | sed '0,/2/s//3/'
 		grep -vhE -e '^#!/' $(CACHE_DIR)/print_help.sh    | sed '0,/2/s//3/'
