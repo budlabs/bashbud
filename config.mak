@@ -1,15 +1,12 @@
 NAME           := bashbud
+DESCRIPTION    := make(1) bash scripting better
+UPDATED        := 2022-06-05
 CREATED        := 2022-04-05
-VERSION        := 2.1
+VERSION        := 2.2
 AUTHOR         := budRich
 ORGANISATION   := budlabs
 CONTACT        := https://github.com/budlabs/bashbud
 USAGE          := bashbud [OPTIONS] [DIRECTORY]
-
-# ifdef DESTDIR
-# else
-# CUSTOM_TARGETS := data/default/Makefile wiki/Home.md
-# endif
 
 CUSTOM_TARGETS += data/default/Makefile
 
@@ -18,14 +15,69 @@ data/default/Makefile: $(wildcard Makefile.d/*)
 	cat $^ > $@
 	cp -f $@ Makefile
 
-# wiki/Home.md: docs/tutorial.md
-# 	[[ -d wiki ]] || git clone $(CONTACT).wiki.git wiki
-# 	cp -f $< $@
-# 	git -C wiki add .
-# 	git -C wiki commit -m 'updated wiki'
-# 	git -C wiki push
+MANPAGE_DEPS =                       \
+ $(CACHE_DIR)/help_table.txt         \
+ $(CACHE_DIR)/long_help.md           \
+ $(DOCS_DIR)/description.md          \
+ $(CACHE_DIR)/copyright.txt
 
-# --- INSTALLATION RULES --- #
+# CUSTOM_TARGETS += $(MANPAGE_OUT)
+MANPAGE_OUT = $(MANPAGE)
+.PHONY: manpage
+manpage: $(MANPAGE_OUT)
+
+$(MANPAGE_OUT): config.mak $(MANPAGE_DEPS) 
+	@$(info making $@)
+	uppercase_name=$(NAME)
+	uppercase_name=$${uppercase_name^^}
+	{
+		echo "# $$uppercase_name "           \
+				 "$(manpage_section) $(UPDATED)" \
+				 "$(ORGANISATION) \"User Manuals\""
+
+	  printf '%s\n' '## NAME' \
+								  '$(NAME) - $(DESCRIPTION)'
+
+		printf '%s\n' "## USAGE" "$(USAGE)"
+		cat $(DOCS_DIR)/description.md
+		echo "## OPTIONS"
+		sed 's/^/    /g' $(CACHE_DIR)/help_table.txt
+		cat $(CACHE_DIR)/long_help.md
+		printf '%s\n' '## CONTACT' \
+			"Send bugs and feature requests to:  " "$(CONTACT)/issues"
+
+		printf '%s\n' '## COPYRIGHT'
+		cat $(CACHE_DIR)/copyright.txt
+	} | go-md2man > $@
+
+
+
+
+
+
+
+
+
+
+# CUSTOM_TARGETS += README.md
+
+README.md:
+	@$(making $@)
+	{
+	  # cat $(DOCS_DIR)/reame_banner.md
+	  # cat $(DOCS_DIR)/reame_install.md
+	  # cat $(DOCS_DIR)/reame_usage.md
+	  cat $(CACHE_DIR)/help_table.txt
+	} > $@
+
+# README_LAYOUT  =                \
+# 	$(DOCS_DIR)/readme_banner.md  \
+# 	$(DOCS_DIR)/readme_install.md \
+# 	$(DOCS_DIR)/readme_usage.md   \
+# 	$(CACHE_DIR)/help_table.txt   \
+# 	$(DOCS_DIR)/readme_footer.md
+
+
 SHARE_DIR           := $(DESTDIR)$(PREFIX)/share
 ASSET_DIR           := $(SHARE_DIR)/$(NAME)
 installed_manpage    = $(SHARE_DIR)/man/man$(manpage_section)/$(MANPAGE)
@@ -50,58 +102,3 @@ uninstall:
 	done
 	
 	[[ -d $(ASSET_DIR) ]] && rm -r $(ASSET_DIR)
-
-# prefix generated manpage with _
-# MANPAGE_OUT     := _$(NAME).1
-
-# uncomment to automatically generate manpage
-CUSTOM_TARGETS += $(MANPAGE_OUT)
-
-$(MANPAGE_OUT): config.mak $(CACHE_DIR)/help_table.txt
-	@$(info making $@)
-	uppercase_name=$(NAME)
-	uppercase_name=$${uppercase_name^^}
-	{
-		# this first "<h1>" adds "corner" info to the manpage
-		echo "# $$uppercase_name "           \
-				 "$(manpage_section) $(UPDATED)" \
-				 "$(ORGANISATION) \"User Manuals\""
-
-		# main sections (NAME|OPTIONS..) should be "<h2>" (##), sub (###) ...
-	  printf '%s\n' '## NAME' \
-								  '$(NAME) - $(DESCRIPTION)' \
-	                '## OPTIONS'
-
-	  cat $(CACHE_DIR)/help_table.txt
-
-	} | go-md2man > $@
-
-# uncomment to automatically generate README.md
-# CUSTOM_TARGETS += README.md
-
-# protip: bashbud --template readme
-#         will create some boilerplate markdown in docs/
-README.md:
-	@$(making $@)
-	{
-	  # cat $(DOCS_DIR)/reame_banner.md
-	  # cat $(DOCS_DIR)/reame_install.md
-	  # cat $(DOCS_DIR)/reame_usage.md
-	  cat $(CACHE_DIR)/help_table.txt
-	} > $@
-
-# README_LAYOUT  =                \
-# 	$(DOCS_DIR)/readme_banner.md  \
-# 	$(DOCS_DIR)/readme_install.md \
-# 	$(DOCS_DIR)/readme_usage.md   \
-# 	$(CACHE_DIR)/help_table.txt   \
-# 	$(DOCS_DIR)/readme_footer.md
-
-# MANPAGE_LAYOUT =               \
-#  $(DOCS_DIR)/manpage_banner.md \
-#  $(DOCS_DIR)/manpage_usage.md  \
-#  $(CACHE_DIR)/help_table.txt   \
-#  $(CACHE_DIR)/long_help.md     \
-#  $(DOCS_DIR)/manpage_footer.md
-
-

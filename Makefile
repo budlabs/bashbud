@@ -150,8 +150,10 @@ $(CACHE_DIR)/copyright.txt: config.mak
 
 	((year_created == year_updated)) \
 		&& copy_text+=$$year_created   \
-		|| copy_text+="$${year_created}-$${year_updated}, $(AUTHOR)"
+		|| copy_text+="$${year_created}-$${year_updated}"
 
+	copy_text+=", $(AUTHOR)"
+	
 	[[ $${org:=$(ORGANISATION)} ]] \
 		&& copy_text+=" of $(ORGANISATION)  "
 

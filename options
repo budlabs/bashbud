@@ -1,4 +1,3 @@
---new|-n [DIRECTORY]
 --template|-t TEMPLATE [--force|-f] [DIRECTORY]
 --template|-t TEMPLATE [--force|-f] --add|-a 
 --update|-u [--force|-f] TEMPLATE
