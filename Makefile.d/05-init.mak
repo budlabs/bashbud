@@ -13,12 +13,13 @@ DOCS_DIR            := docs
 CONF_DIR            := conf
 AWK_DIR             := awklib
 FUNCS_DIR           := func
+FILE_EXT            := .sh
 INDENT              := $(shell echo -e "  ")
 USAGE                = $(NAME) [OPTIONS]
 OPTIONS_FILE        := options
 MANPAGE              = $(NAME).1
-MONOLITH             = _$(NAME).sh
-BASE                := _init.sh
+MONOLITH             = _$(NAME)$(FILE_EXT)
+BASE                := _init$(FILE_EXT)
 SHBANG              := \#!/bin/bash
 OPTIONS_ARRAY_NAME  := _o
 MANPAGE_OUT          = _$(MANPAGE)
@@ -29,8 +30,8 @@ ifneq ($(wildcard config.mak),)
 endif
 
 manpage_section      = $(subst .,,$(suffix $(MANPAGE)))
-function_createconf := $(FUNCS_DIR)/_createconf.sh
-function_awklib     := $(FUNCS_DIR)/_awklib.sh
+function_createconf := $(FUNCS_DIR)/_createconf$(FILE_EXT)
+function_awklib     := $(FUNCS_DIR)/_awklib$(FILE_EXT)
 
 ifneq ($(wildcard $(CONF_DIR)/*),)
   include_createconf   = $(function_createconf)

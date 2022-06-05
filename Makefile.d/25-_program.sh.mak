@@ -1,4 +1,4 @@
-$(MONOLITH): $(CACHE_DIR)/print_version.sh $(NAME) $(CACHE_DIR)/print_help.sh $(function_files) $(CACHE_DIR)/getopt
+$(MONOLITH): $(CACHE_DIR)/print_version$(FILE_EXT) $(NAME) $(CACHE_DIR)/print_help$(FILE_EXT) $(function_files) $(CACHE_DIR)/getopt
 	@$(info making $@)
 	{
 		printf '%s\n' '$(SHBANG)' ''

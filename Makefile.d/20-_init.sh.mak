@@ -1,10 +1,10 @@
-$(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help.sh $(CACHE_DIR)/print_version.sh $(CACHE_DIR)/got_func
+$(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help$(FILE_EXT) $(CACHE_DIR)/print_version$(FILE_EXT) $(CACHE_DIR)/got_func
 	@$(info making $@)
 	{
 		printf '%s\n' '$(SHBANG)' '' 
 
-		grep -vhE -e '^#!/' $(CACHE_DIR)/print_version.sh | sed '0,/2/s//3/'
-		grep -vhE -e '^#!/' $(CACHE_DIR)/print_help.sh    | sed '0,/2/s//3/'
+		grep -vhE -e '^#!/' $(CACHE_DIR)/print_version$(FILE_EXT) | sed '0,/2/s//3/'
+		grep -vhE -e '^#!/' $(CACHE_DIR)/print_help$(FILE_EXT)    | sed '0,/2/s//3/'
 
 		echo
 
