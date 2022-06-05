@@ -8,12 +8,13 @@ ORGANISATION   := budlabs
 CONTACT        := https://github.com/budlabs/bashbud
 USAGE          := bashbud [OPTIONS] [DIRECTORY]
 
-CUSTOM_TARGETS += data/default/Makefile
+.PHONY: makefile
+makefile: data/default/GNUmakefile
+CUSTOM_TARGETS += makefile
 
-data/default/Makefile: $(wildcard Makefile.d/*)
+data/default/GNUmakefile: $(wildcard Makefile.d/*)
 	@$(info genearating Makefile from Makefile.d)
 	cat $^ > $@
-	cp -f $@ Makefile
 
 MANPAGE_DEPS =                       \
  $(CACHE_DIR)/help_table.txt         \

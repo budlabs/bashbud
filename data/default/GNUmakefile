@@ -21,12 +21,13 @@ DOCS_DIR            := docs
 CONF_DIR            := conf
 AWK_DIR             := awklib
 FUNCS_DIR           := func
+FILE_EXT            := .sh
 INDENT              := $(shell echo -e "  ")
 USAGE                = $(NAME) [OPTIONS]
 OPTIONS_FILE        := options
 MANPAGE              = $(NAME).1
-MONOLITH             = _$(NAME).sh
-BASE                := _init.sh
+MONOLITH             = _$(NAME)$(FILE_EXT)
+BASE                := _init$(FILE_EXT)
 SHBANG              := \#!/bin/bash
 OPTIONS_ARRAY_NAME  := _o
 MANPAGE_OUT          = _$(MANPAGE)
@@ -37,8 +38,8 @@ ifneq ($(wildcard config.mak),)
 endif
 
 manpage_section      = $(subst .,,$(suffix $(MANPAGE)))
-function_createconf := $(FUNCS_DIR)/_createconf.sh
-function_awklib     := $(FUNCS_DIR)/_awklib.sh
+function_createconf := $(FUNCS_DIR)/_createconf$(FILE_EXT)
+function_awklib     := $(FUNCS_DIR)/_awklib$(FILE_EXT)
 
 ifneq ($(wildcard $(CONF_DIR)/*),)
   include_createconf   = $(function_createconf)
@@ -98,13 +99,13 @@ uninstall-dev: $(PREFIX)/bin/$(NAME)
 check: all
 	shellcheck $(MONOLITH)
 
-$(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help.sh $(CACHE_DIR)/print_version.sh $(CACHE_DIR)/got_func
+$(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help$(FILE_EXT) $(CACHE_DIR)/print_version$(FILE_EXT) $(CACHE_DIR)/got_func
 	@$(info making $@)
 	{
 		printf '%s\n' '$(SHBANG)' '' 
 
-		grep -vhE -e '^#!/' $(CACHE_DIR)/print_version.sh | sed '0,/2/s//3/'
-		grep -vhE -e '^#!/' $(CACHE_DIR)/print_help.sh    | sed '0,/2/s//3/'
+		grep -vhE -e '^#!/' $(CACHE_DIR)/print_version$(FILE_EXT) | sed '0,/2/s//3/'
+		grep -vhE -e '^#!/' $(CACHE_DIR)/print_help$(FILE_EXT)    | sed '0,/2/s//3/'
 
 		echo
 
@@ -124,7 +125,7 @@ $(BASE): config.mak $(CACHE_DIR)/getopt $(CACHE_DIR)/print_help.sh $(CACHE_DIR)/
 		echo 'main "$$@"'
 	} > $@
 
-$(MONOLITH): $(CACHE_DIR)/print_version.sh $(NAME) $(CACHE_DIR)/print_help.sh $(function_files) $(CACHE_DIR)/getopt
+$(MONOLITH): $(CACHE_DIR)/print_version$(FILE_EXT) $(NAME) $(CACHE_DIR)/print_help$(FILE_EXT) $(function_files) $(CACHE_DIR)/getopt
 	@$(info making $@)
 	{
 		printf '%s\n' '$(SHBANG)' ''
@@ -145,15 +146,16 @@ $(CACHE_DIR)/copyright.txt: config.mak
 	@$(info making $@)
 	year_created=$(CREATED) year_created=$${year_created%%-*}
 	year_updated=$$(date +'%Y')
+	author="$(AUTHOR)" org=$(ORGANISATION)
 
 	copy_text="Copyright (c) "
 
 	((year_created == year_updated)) \
 		&& copy_text+=$$year_created   \
-		|| copy_text+="$${year_created}-$${year_updated}, $(AUTHOR)"
+		|| copy_text+="$${year_created}-$${year_updated}"
 
-	[[ $${org:=$(ORGANISATION)} ]] \
-		&& copy_text+=" of $(ORGANISATION)  "
+	[[ $$author ]] && copy_text+=", $$author"
+	[[ $$org ]]    && copy_text+=" of $$org  "
 
 	printf '%s\n' \
 		"$$copy_text" "SPDX-License-Identifier: $(LICENSE)" > $@
@@ -193,7 +195,7 @@ $(CACHE_DIR)/help_table.txt: $(CACHE_DIR)/long_help.md
 		paste <(echo "$$frag") <(echo "$$desc") | tr -d '\t'
 	done > $@
 
-$(CACHE_DIR)/print_version.sh: config.mak | $(CACHE_DIR)/
+$(CACHE_DIR)/print_version$(FILE_EXT): config.mak | $(CACHE_DIR)/
 	@$(info making $@)
 	echo $(SHBANG)
 	fstyle=$(FUNC_STYLE)
@@ -205,7 +207,7 @@ $(CACHE_DIR)/print_version.sh: config.mak | $(CACHE_DIR)/
 		"}"                                                    \
 		"" >> $@
 
-$(CACHE_DIR)/print_help.sh: $(CACHE_DIR)/help_table.txt $(CACHE_DIR)/synopsis.txt 
+$(CACHE_DIR)/print_help$(FILE_EXT): $(CACHE_DIR)/help_table.txt $(CACHE_DIR)/synopsis.txt 
 	@$(info making $@)
 	{
 		echo $(SHBANG)
