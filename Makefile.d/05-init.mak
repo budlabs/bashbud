@@ -17,12 +17,10 @@ FILE_EXT            := .sh
 INDENT              := $(shell echo -e "  ")
 USAGE                = $(NAME) [OPTIONS]
 OPTIONS_FILE        := options
-MANPAGE              = $(NAME).1
 MONOLITH             = _$(NAME)$(FILE_EXT)
 BASE                := _init$(FILE_EXT)
 SHBANG              := \#!/bin/bash
 OPTIONS_ARRAY_NAME  := _o
-MANPAGE_OUT          = _$(MANPAGE)
 FUNC_STYLE          := "() {"
 
 config_mak          := config.mak
