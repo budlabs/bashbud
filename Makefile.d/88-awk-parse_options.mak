@@ -1,4 +1,4 @@
-$(CACHE_DIR)/options_in_use $(CACHE_DIR)/getopt &: $(OPTIONS_FILE) | $(CACHE_DIR)/
+$(CACHE_DIR)/options_in_use $(getopt) &: $(OPTIONS_FILE) | $(CACHE_DIR)/
 	@$(info parsing $(OPTIONS_FILE))
 	mkdir -p $(DOCS_DIR)/options
 	gawk '
@@ -162,4 +162,5 @@ $(CACHE_DIR)/options_in_use $(CACHE_DIR)/getopt &: $(OPTIONS_FILE) | $(CACHE_DIR
 	}
 	' $(OPTIONS_FILE)                  \
 			cache=$(CACHE_DIR)             \
-			name=$(NAME) > $(CACHE_DIR)/getopt
+			name=$(NAME) > $(getopt)
+

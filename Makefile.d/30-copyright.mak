@@ -1,4 +1,4 @@
-$(CACHE_DIR)/copyright.txt: config.mak
+$(CACHE_DIR)/copyright.txt: $(config_mak)
 	@$(info making $@)
 	year_created=$(CREATED) year_created=$${year_created%%-*}
 	year_updated=$$(date +'%Y')
@@ -15,4 +15,3 @@ $(CACHE_DIR)/copyright.txt: config.mak
 
 	printf '%s\n' \
 		"$$copy_text" "SPDX-License-Identifier: $(LICENSE)" > $@
-

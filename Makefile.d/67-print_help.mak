@@ -1,4 +1,4 @@
-$(CACHE_DIR)/print_help$(FILE_EXT): $(CACHE_DIR)/help_table.txt $(CACHE_DIR)/synopsis.txt 
+$(print_help): $(help_table) $(CACHE_DIR)/synopsis.txt 
 	@$(info making $@)
 	{
 		echo $(SHBANG)
@@ -12,7 +12,7 @@ $(CACHE_DIR)/print_help$(FILE_EXT): $(CACHE_DIR)/help_table.txt $(CACHE_DIR)/syn
 			printf '%s\n' 'usage: $(USAGE)' ''
 			echo
 		fi
-		cat $(CACHE_DIR)/help_table.txt
+		cat $(help_table)
 		printf '%s\n' 'EOB' '}'
 	} > $@
 

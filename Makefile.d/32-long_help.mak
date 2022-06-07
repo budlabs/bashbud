@@ -3,7 +3,7 @@
 # like this:
 #   ### -s, --long-option ARG
 #   text in docs/options/long-option after the first 2 lines
-$(CACHE_DIR)/long_help.md: $(CACHE_DIR)/options_in_use $(option_docs)
+$(long_help): $(CACHE_DIR)/options_in_use $(option_docs)
 	@$(info making $@)
 	for option in $(file < $(CACHE_DIR)/options_in_use); do
 		[[ $$(wc -l < $(DOCS_DIR)/options/$$option) -lt 2 ]] \

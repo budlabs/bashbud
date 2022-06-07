@@ -1,4 +1,4 @@
-$(CACHE_DIR)/print_version$(FILE_EXT): config.mak | $(CACHE_DIR)/
+$(print_version): $(config_mak) | $(CACHE_DIR)/
 	@$(info making $@)
 	echo $(SHBANG)
 	fstyle=$(FUNC_STYLE)

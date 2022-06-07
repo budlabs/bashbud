@@ -1,4 +1,4 @@
-$(CACHE_DIR)/help_table.txt: $(CACHE_DIR)/long_help.md
+$(help_table): $(long_help)
 	@$(info making $@)
 	for option in $$(cat $(CACHE_DIR)/options_in_use); do
 		[[ -f $(CACHE_DIR)/options/$$option ]]  \

@@ -2,7 +2,7 @@
 				install-dev uninstall-dev
 
 .ONESHELL:
-.DEFAULT_GOAL   := all
+.DEFAULT_GOAL       := all
 
-SHELL           := /bin/bash
+SHELL               := /bin/bash
 

@@ -25,18 +25,35 @@ OPTIONS_ARRAY_NAME  := _o
 MANPAGE_OUT          = _$(MANPAGE)
 FUNC_STYLE          := "() {"
 
-ifneq ($(wildcard config.mak),)
+config_mak          := config.mak
+help_table          := $(CACHE_DIR)/help_table.txt
+long_help           := $(CACHE_DIR)/long_help.md
+getopt              := $(CACHE_DIR)/getopt
+print_help          := $(CACHE_DIR)/print_help$(FILE_EXT)
+print_version       := $(CACHE_DIR)/print_version$(FILE_EXT)
+
+ifneq ($(wildcard $(config_mak)),)
   include config.mak
+else
+  config_mak    :=
 endif
 
-manpage_section      = $(subst .,,$(suffix $(MANPAGE)))
+ifeq ($(wildcard $(OPTIONS_FILE)),)
+  OPTIONS_FILE  :=
+  help_table    :=
+  long_help     :=
+  getopt        :=
+  print_help    :=
+  print_version :=
+endif
+
 function_createconf := $(FUNCS_DIR)/_createconf$(FILE_EXT)
 function_awklib     := $(FUNCS_DIR)/_awklib$(FILE_EXT)
 
 ifneq ($(wildcard $(CONF_DIR)/*),)
   include_createconf   = $(function_createconf)
-  conf_dirs            = $(shell find $(CONF_DIR) -type d)
-  conf_files           = $(shell find $(CONF_DIR) -type f)
+  conf_dirs            = $(patsubst ./%,%,$(shell find "./$(CONF_DIR)" -type d))
+  conf_files           = $(patsubst ./%,%,$(shell find "./$(CONF_DIR)" -type f))
 else
   $(shell rm -f $(function_createconf))
 endif
@@ -52,6 +69,6 @@ option_docs          = $(wildcard $(DOCS_DIR)/options/*)
 
 generated_functions := $(function_err) $(include_createconf) $(include_awklib)
 function_files := \
-	$(generated_functions) \
-	$(filter-out $(generated_functions),$(wildcard $(FUNCS_DIR)/*))
+  $(generated_functions) \
+  $(filter-out $(generated_functions),$(wildcard $(FUNCS_DIR)/*))
 
