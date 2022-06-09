@@ -1,1 +1,1 @@
-../TIMER/func/TIMER.sh
+../../TIMER/func/TIMER.sh

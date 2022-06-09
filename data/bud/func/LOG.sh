@@ -1,1 +1,1 @@
-../LOG/func/LOG.sh
+../../LOG/func/LOG.sh

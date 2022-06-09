@@ -1,1 +1,1 @@
-../MSG/func/MSG.sh
+../../MSG/func/MSG.sh

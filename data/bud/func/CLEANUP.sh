@@ -1,1 +1,1 @@
-../CLEANUP/func/CLEANUP.sh
+../../CLEANUP/func/CLEANUP.sh
