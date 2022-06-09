@@ -5,3 +5,5 @@
   exec 3>&2
   exec 2>> "$BASHBUD_LOG"
 }
+
+ERT() { >&3 echo  "$*"  ;}
