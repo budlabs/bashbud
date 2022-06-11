@@ -33,12 +33,18 @@ README.md: $(CACHE_DIR)/help_table.txt
 	  cat $(CACHE_DIR)/help_table.txt
 	} > $@
 
-# --- INSTALLATION RULES --- #
+
+.PHONY: check install uninstall manpage
+
+manpage: $(MANPAGE)
+
+check: all
+	shellcheck $(MONOLITH)
+
 installed_script    := $(DESTDIR)$(PREFIX)/bin/$(NAME)
 installed_license   := $(DESTDIR)$(PREFIX)/share/licenses/$(NAME)/LICENSE
 installed_manpage   := \
 	$(DESTDIR)$(PREFIX)/share/man/man$(subst .,,$(suffix $(MANPAGE)))/$(MANPAGE)
-
 
 install: all
 	@[[ -f $${manpage:=$(MANPAGE)} ]] && {

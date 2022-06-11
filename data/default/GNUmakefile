@@ -1,11 +1,9 @@
-.PHONY: clean check all install uninstall \
-				install-dev uninstall-dev
+.PHONY: all install-dev uninstall-dev
 
 .ONESHELL:
 .DEFAULT_GOAL       := all
 
 SHELL               := /bin/bash
-
 CUSTOM_TARGETS       =
 
 PREFIX              := /usr
@@ -110,9 +108,6 @@ install-dev: $(BASE) $(NAME)
 	
 uninstall-dev: $(PREFIX)/bin/$(NAME)
 	rm $^
-
-check: all
-	shellcheck $(MONOLITH)
 
 $(BASE): $(getopt) $(print_help) $(print_version) $(CACHE_DIR)/got_func
 	@$(info making $@)

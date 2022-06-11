@@ -12,10 +12,9 @@ add_files() {
   target_dir=$(realpath "$PWD")
 
   for file; do
-    ERT "$file"
-    [[ -f $file || -d $file ]] || continue
+    [[ -e $file ]] || continue
     file_to_add=$(readlink -f "$file")
-    target_file="${file_to_add/$target_dir/$_template_dir}"
+    target_file=${file_to_add/"$target_dir"/"$_template_dir"}
     mkdir -p "${target_file%/*}"
     cp -r "$_cp_flag" "$file" "$target_file"
   done

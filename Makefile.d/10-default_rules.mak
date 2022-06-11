@@ -8,6 +8,3 @@ install-dev: $(BASE) $(NAME)
 uninstall-dev: $(PREFIX)/bin/$(NAME)
 	rm $^
 
-check: all
-	shellcheck $(MONOLITH)
-

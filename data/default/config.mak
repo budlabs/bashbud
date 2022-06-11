@@ -2,45 +2,42 @@ DESCRIPTION  := short description for the script
 VERSION      := 0
 AUTHOR       := anon
 CONTACT      := address
-USAGE        := $(NAME) [OPTIONS]
-MANPAGE      := $(NAME).1
+
+# This file, config.mak, will be included in the makefile
+# before targets are executed, all configuration of make
+# should be done here, in config.mak
+# but it is not mandatory, you could remove this file
+# and the makefile will still work, using default values.
+# you can add additional targets for make in this file
+# included in this example are install: uninstall: manpage: and README.md:
+# if you want to add a custom target to all: (DEFAULT_GOAL)
+# just add them to the CUSTOM_TARGETS list.
+
+# ---
 # if USAGE is set to the string 'options' 
 # the content of OPTIONS_FILE will be used.
+# the USAGE string is displayed before the optionlist
+# when you invoke the --help option on your scripts.
 # USAGE        := options
+USAGE        := $(NAME) [OPTIONS]
 
 # ---
 # ORGANISATION is visible in the man page. (.cache/manpage_header.md)
+# and in .cache/copyright.txt
 # ORGANISATION :=
 
-# --- INSTALLATION RULES --- #
-installed_manpage    = $(DESTDIR)$(PREFIX)/share/man/man$(manpage_section)/$(MANPAGE)
-installed_script    := $(DESTDIR)$(PREFIX)/bin/$(NAME)
-installed_license   := $(DESTDIR)$(PREFIX)/share/licenses/$(NAME)/LICENSE
-
-install: all
-	@[[ -n $${manpage:=$(MANPAGE_OUT)} && -f $$manpage ]] && {
-		echo "install -Dm644 $(MANPAGE_OUT) $(installed_manpage)"
-		install -Dm644 $(MANPAGE_OUT) $(installed_manpage)
-	}
-	[[ -f LICENSE ]] && {
-		echo "install -Dm644 LICENSE $(installed_license)"
-		install -Dm644 LICENSE $(installed_license)
-	}
-
-	echo "install -Dm755 $(MONOLITH) $(installed_script)"
-	install -Dm755 $(MONOLITH) $(installed_script)
-
-uninstall:
-	@for f in $(installed_script) $(installed_manpage) $(installed_license); do
-		[[ -f $$f ]] || continue
-		echo "rm $$f"
-		rm "$$f"
-	done
-
+MANPAGE      := $(NAME).1
 # uncomment to automatically generate manpage
-# CUSTOM_TARGETS += $(MANPAGE_OUT)
+# CUSTOM_TARGETS += $(MANPAGE)
 
-$(MANPAGE_OUT): config.mak
+.PHONY: check install uninstall manpage
+
+manpage: $(MANPAGE)
+
+check: all
+	shellcheck $(MONOLITH)
+
+$(MANPAGE): config.mak $(CACHE_DIR)/help_table.txt
 	@$(info making $@)
 	uppercase_name=$(NAME)
 	uppercase_name=$${uppercase_name^^}
@@ -59,19 +56,51 @@ $(MANPAGE_OUT): config.mak
 
 	} | go-md2man > $@
 
-# uncomment to automatically generate README.md
 # CUSTOM_TARGETS += README.md
 
 # protip: bashbud --template readme
 #         will create some boilerplate markdown in docs/
-README.md:
+# README.md: $(DOCS_DIR)/readme_banner.md $(DOCS_DIR)/readme_install.md $(DOCS_DIR)/readme_usage.md
+README.md: $(CACHE_DIR)/help_table.txt
 	@$(making $@)
 	{
-	  # cat $(DOCS_DIR)/reame_banner.md
-	  # cat $(DOCS_DIR)/reame_install.md
-	  # cat $(DOCS_DIR)/reame_usage.md
+	  # cat $(DOCS_DIR)/readme_banner.md
+	  # cat $(DOCS_DIR)/readme_install.md
+	  # cat $(DOCS_DIR)/readme_usage.md
+
+	  # there are some files in .cache that can be 
+	  # usefull to cat out here:
+		#   .cache/long_help.md 
+		#   .cache/synopsis.txt 
+		#   .cache/copyright.txt
 	  cat $(CACHE_DIR)/help_table.txt
 	} > $@
+
+installed_script    := $(DESTDIR)$(PREFIX)/bin/$(NAME)
+installed_license   := $(DESTDIR)$(PREFIX)/share/licenses/$(NAME)/LICENSE
+installed_manpage   := \
+	$(DESTDIR)$(PREFIX)/share/man/man$(subst .,,$(suffix $(MANPAGE)))/$(MANPAGE)
+
+
+install: all
+	@[[ -f $${manpage:=$(MANPAGE)} ]] && {
+		echo "install -Dm644 $(MANPAGE) $(installed_manpage)"
+		install -Dm644 $(MANPAGE) $(installed_manpage)
+	}
+	[[ -f LICENSE ]] && {
+		echo "install -Dm644 LICENSE $(installed_license)"
+		install -Dm644 LICENSE $(installed_license)
+	}
+
+	echo "install -Dm755 $(MONOLITH) $(installed_script)"
+	install -Dm755 $(MONOLITH) $(installed_script)
+
+uninstall:
+	@for f in $(installed_script) $(installed_manpage) $(installed_license); do
+		[[ -f $$f ]] || continue
+		echo "rm $$f"
+		rm "$$f"
+	done
 
 
 # ---------------------------------------------- #
@@ -103,10 +132,10 @@ README.md:
 #
 # UPDATED        := $(shell date +%Y-%m-%d)
 # ---
-# FUNCS_DIR      != func
+# FUNCS_DIR      := func
 # ---
-# if AWK_DIR or CONF_DIR are not empty
-# special functions will get created in func/
+# if AWK_DIR or CONF_DIR contains files
+# special functions will get created in FUNCS_DIR
 # --- 
 # AWK_DIR        := awklib
 # CONF_DIR       := conf
@@ -123,3 +152,7 @@ README.md:
 # OPTIONS_ARRAY_NAME commandline options are stored
 # in an associative array, default name is _o
 # OPTIONS_ARRAY_NAME := _o
+# ---
+# FILE_EXT sets the file exstension of generated
+# script files. (_init.sh, func/_create_conf.sh ...)
+# FILE_EXT      := .sh

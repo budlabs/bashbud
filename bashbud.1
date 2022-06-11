@@ -1,0 +1,51 @@
+.nh
+.TH BASHBUD  1 2022-06-06 budlabs "User Manuals"
+.SH NAME
+.PP
+bashbud - make(1) bash scripting better
+
+.SH USAGE
+.PP
+bashbud [OPTIONS] [DIRECTORY]
+
+.PP
+\fBDIRECTOY\fP defaults to current
+working directory.
+
+.SH OPTIONS
+.PP
+.RS
+
+.nf
+-a, --add                  | add FILE to (mandatory --template) TEMPLATE  
+-c, --config-dir DIRECTORY | override the default (~/.config/bashbud)
+-f, --force      DIRECTORY | Overwrite already existing files imported from template
+-h, --help                 | print help and exit  
+-p, --pull       TEMPLATE  | `cp --update` files from TEMPLATE to DIRECTORY
+-t, --template   TEMPLATE  | TEMPLATE is the name of a directory in BASHBUD\\_DIR
+-u, --update               | update TEMPLATE based on current directory
+-v, --version              | print version info and exit  
+
+.fi
+.RE
+
+.SS -f, --force      DIRECTORY
+.PP
+\fB\fCconfig.mak\fR or the \fImain\fP script file will not be
+overwritten, even if this option is set.
+Whithout this option, files will get overwritten
+if the template file is newer.
+Or, this option decides if \fB\fC--force\fR or \fB\fC--update\fR
+will be used with \fB\fCcp(1)\fR\&.
+
+.SH CONTACT
+.PP
+Send bugs and feature requests to:
+.br
+https://github.com/budlabs/bashbud/issues
+
+.SH COPYRIGHT
+.PP
+Copyright (c) 2022, bud of budlabs
+.br
+SPDX-License-Identifier: MIT

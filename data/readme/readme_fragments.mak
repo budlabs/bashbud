@@ -2,6 +2,12 @@
 # markdown fragments for readme and manpage, and delete
 # itself (readme_fragments.mak) afterwards.
 
+.PHONY: readme_fragments
+readme_fragments: docs/readme_usage.md docs/readme_banner.md docs/manpage_footer.md docs/readme_install.md
+	rm readme_fragments.mak
+
+CUSTOM_TARGETS += readme_fragments
+
 docs/readme_install.md:
 	@$(info making $@)
 	printf '%s\n' \
@@ -49,8 +55,4 @@ docs/readme_usage.md:
 		'### options' \
 		'' > $@
 
-.PHONY: readme_fragments
-readme_fragments: docs/readme_usage.md docs/readme_banner.md docs/manpage_footer.md docs/readme_install.md
-	rm readme_fragments.mak
 
-CUSTOM_TARGETS += readme_fragments

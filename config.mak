@@ -1,10 +1,11 @@
 NAME           := bashbud
 DESCRIPTION    := make(1) bash scripting better
-UPDATED        := 2022-06-05
+UPDATED        := 2022-06-06
 CREATED        := 2022-04-05
 VERSION        := 2.2
-AUTHOR         := budRich
+AUTHOR         := bud
 ORGANISATION   := budlabs
+LICENSE        := MIT
 CONTACT        := https://github.com/budlabs/bashbud
 USAGE          := bashbud [OPTIONS] [DIRECTORY]
 
@@ -22,10 +23,7 @@ MANPAGE_DEPS =                       \
  $(DOCS_DIR)/description.md          \
  $(CACHE_DIR)/copyright.txt
 
-# CUSTOM_TARGETS += $(MANPAGE_OUT)
 MANPAGE_OUT = $(MANPAGE)
-.PHONY: manpage
-manpage: $(MANPAGE_OUT)
 
 $(MANPAGE_OUT): config.mak $(MANPAGE_DEPS) 
 	@$(info making $@)
@@ -51,17 +49,6 @@ $(MANPAGE_OUT): config.mak $(MANPAGE_DEPS)
 		cat $(CACHE_DIR)/copyright.txt
 	} | go-md2man > $@
 
-
-
-
-
-
-
-
-
-
-# CUSTOM_TARGETS += README.md
-
 README.md:
 	@$(making $@)
 	{
@@ -78,6 +65,12 @@ README.md:
 # 	$(CACHE_DIR)/help_table.txt   \
 # 	$(DOCS_DIR)/readme_footer.md
 
+.PHONY: check install uninstall manpage
+
+manpage: $(MANPAGE)
+
+check: all
+	shellcheck $(MONOLITH)
 
 SHARE_DIR           := $(DESTDIR)$(PREFIX)/share
 ASSET_DIR           := $(SHARE_DIR)/$(NAME)

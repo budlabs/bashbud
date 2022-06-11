@@ -1,6 +1,6 @@
 --template|-t TEMPLATE [--force|-f] [DIRECTORY]
 --template|-t TEMPLATE [--force|-f] --add|-a 
---update|-u [--force|-f] TEMPLATE
+--update|-u [--force|-f] [--pull|-p] TEMPLATE
 --config-dir|-c DIRECTORY
 --help|-h
 --version|-v

@@ -111,7 +111,7 @@ main(){
 
   done < <(find -L "$_template_dir" -type f -print0)
 
-  [[ -f "$_target_dir"/Makefile && ! "${_o[update]}" ]] \
+  [[ -f "$_target_dir"/GNUmakefile && ! "${_o[update]}" ]] \
     && make -C "$_target_dir"
 }
 
