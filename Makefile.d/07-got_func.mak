@@ -1,3 +1,4 @@
+
 # this hack writes 1 or 0 to the file .cache/got_func
 # depending on existence of files in FUNC_DIR
 # but it also makes sure to only update the file
