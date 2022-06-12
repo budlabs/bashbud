@@ -7,6 +7,10 @@ ORGANISATION := budlabs
 USAGE        := $(NAME) [OPTIONS]
 
 MONOLITH     := _$(NAME)
+
+.PHONY: manpage
+manpage: $(MANPAGE)
+
 MANPAGE      := $(NAME).1
 
 $(MANPAGE): config.mak $(CACHE_DIR)/help_table.txt
@@ -33,7 +37,3 @@ README.md: $(CACHE_DIR)/help_table.txt
 	  cat $(CACHE_DIR)/help_table.txt
 	} > $@
 
-
-
-.PHONY: manpage
-manpage: $(MANPAGE)
