@@ -17,6 +17,8 @@ data/default/GNUmakefile: $(wildcard Makefile.d/*)
 	@$(info genearating Makefile from Makefile.d)
 	cat $^ > $@
 
+all: $(CUSTOM_TARGETS) $(MONOLITH) $(BASE)
+
 MANPAGE_DEPS =                       \
  $(CACHE_DIR)/help_table.txt         \
  $(CACHE_DIR)/long_help.md           \

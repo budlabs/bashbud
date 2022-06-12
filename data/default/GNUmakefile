@@ -7,13 +7,14 @@ SHELL               := /bin/bash
 CUSTOM_TARGETS       =
 
 PREFIX              := /usr
+CREATED             := $(UPDATED)
+ORGANISATION        :=
+CONTACT             := address
+
 NAME                := $(notdir $(realpath .))
 VERSION             := 0
 UPDATED             := $(shell date +'%Y-%m-%d')
-CREATED             := $(UPDATED)
 AUTHOR              := anon
-CONTACT             := address
-ORGANISATION        :=
 CACHE_DIR           := .cache
 DOCS_DIR            := docs
 CONF_DIR            := conf
@@ -75,6 +76,7 @@ generated_functions := $(function_err) $(include_createconf) $(include_awklib)
 function_files := \
   $(generated_functions) \
   $(filter-out $(generated_functions),$(wildcard $(FUNCS_DIR)/*))
+
 
 # this hack writes 1 or 0 to the file .cache/got_func
 # depending on existence of files in FUNC_DIR
@@ -462,10 +464,3 @@ $(CACHE_DIR)/options_in_use $(getopt) &: $(OPTIONS_FILE) | $(CACHE_DIR)/
 			cache=$(CACHE_DIR)             \
 			name=$(NAME) > $(getopt)
 
-
-other_maks := $(filter-out $(config_mak),$(wildcard *.mak))
--include $(other_maks)
-
-# by having all:  last, it is possible to add CUSTOM_TARGETS
-# in "other_maks", and have them automatically apply
-all: $(CUSTOM_TARGETS) $(MONOLITH) $(BASE)

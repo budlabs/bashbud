@@ -89,13 +89,39 @@ main(){
         } > "${_target_dir}/config.mak"
       ;;
 
-      # append content of Makefile.d if it exist
+      # append content of Makefile.d
       "$_template_dir"/GNUmakefile )
-        {
-          cat "$template_file"
-          [[ -d "$_template_dir"/Makefile.d ]] \
-            && cat "$_template_dir"/Makefile.d/*
-        } > $target_file
+        
+        tmp_file=$(mktemp)
+
+        for f in "$template_file" "$_template_dir"/Makefile.d/* ; do
+          [[ -f $f ]] || continue
+          lf=$(readlink -f "$f")
+          cat "$lf"
+          [[ ! $latest || $lf -nt $latest ]] && latest=$lf
+        done > "$tmp_file"
+
+        printf '%s\n' '' \
+          'other_maks := $(filter-out $(config_mak),$(wildcard *.mak))'  \
+          '-include $(other_maks)'                                       \
+          ''                                                             \
+          '# by having all:  last, it is possible to add CUSTOM_TARGETS' \
+          '# in "other_maks", and have them automatically apply'         \
+          'all: $(CUSTOM_TARGETS) $(MONOLITH) $(BASE)' >> "$tmp_file"
+
+        touch -r "$latest" "$tmp_file"
+
+        if ((_o[force]))
+          then cp --force "$tmp_file" "$target_file"
+        elif ((_o[pull]))
+          then cp --update "$tmp_file" "$target_file"
+        elif [[ ! -f $target_file ]]
+          then cp "$tmp_file" "$target_file"
+        fi
+
+        rm "$tmp_file"
+        unset -v latest tmp_file f lf
+          
       ;;
 
       # rename main.sh, but only if target doens't exist

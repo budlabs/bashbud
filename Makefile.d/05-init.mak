@@ -1,13 +1,9 @@
 CUSTOM_TARGETS       =
 
-PREFIX              := /usr
 NAME                := $(notdir $(realpath .))
 VERSION             := 0
 UPDATED             := $(shell date +'%Y-%m-%d')
-CREATED             := $(UPDATED)
 AUTHOR              := anon
-CONTACT             := address
-ORGANISATION        :=
 CACHE_DIR           := .cache
 DOCS_DIR            := docs
 CONF_DIR            := conf
