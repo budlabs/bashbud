@@ -55,7 +55,7 @@ main(){
   ((_o[update])) || {
     TEMPLDIR=$_template_dir \
     TARGDIR=$_target_dir    \
-      find -L "$_template_dir" -type d -exec sh -c '
+      find -L "$_template_dir" -type d ! -path "*/Makefile.d" -exec sh -c '
         for arg ; do 
           mkdir -p -- "$arg" "$TARGDIR${arg#"$TEMPLDIR"}"
         done
@@ -87,6 +87,15 @@ main(){
           printf "CREATED     := %(%Y-%m-%d)T\n" -1
           cat "$template_file"
         } > "${_target_dir}/config.mak"
+      ;;
+
+      # append content of Makefile.d if it exist
+      "$_template_dir"/GNUmakefile )
+        {
+          cat "$template_file"
+          [[ -d "$_template_dir"/Makefile.d ]] \
+            && cat "$_template_dir"/Makefile.d/*
+        } > $target_file
       ;;
 
       # rename main.sh, but only if target doens't exist
