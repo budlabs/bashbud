@@ -12,10 +12,10 @@ _name=${_dir##*/}
 echo "$_name"
 while read -r ; do
   clear
-  make check
+  make && shellcheck "_$name"*
 done < <(
-  inotifywait --event close_write          \
-              --recursive --monitor        \
-              --exclude '/_[^.]+[.]sh$'    \
+  inotifywait --event close_write   \
+              --recursive --monitor \
+              --exclude '/_[^.]+$'  \
               "${to_watch[@]}"
 )
