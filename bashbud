@@ -44,7 +44,7 @@ main(){
   [[ ${_o[template]} && -d "$_template_dir" ]] || {
     available_templates=("$config_dir"/*)
     ERX "$(printf '%s\n' "--template '${_o[template]}' not found."     \
-             'usage: bashbud [--template TEMPLATE] [TARGET_DIR]' \
+             'usage: bashbud [--template TEMPLATE] [TARGET_DIR]'       \
              ''                                                        \
              "available templates in ${config_dir/~/'~'}:"             \
              "${available_templates[@]/*\//  }"                        \
@@ -67,9 +67,8 @@ main(){
     target_file=${template_file/"$_template_dir"/$_target_dir}
     linked_file=$(readlink -f "$template_file")
 
-    [[ ${_o[push]} ]] && {
-      [[ -f $target_file ]] \
-        && cp "$_cp_flag" "$target_file" "$linked_file"
+    ((_o[push])) && {
+      [[ -f $target_file ]] && cp "$_cp_flag" "$target_file" "$linked_file"
       continue
     }
 
@@ -101,13 +100,13 @@ main(){
           [[ ! $latest || $lf -nt $latest ]] && latest=$lf
         done > "$tmp_file"
 
-        printf '%s\n' '' \
-          'other_maks := $(filter-out $(config_mak),$(wildcard *.mak))'  \
-          '-include $(other_maks)'                                       \
-          ''                                                             \
-          '# by having all:  last, it is possible to add CUSTOM_TARGETS' \
-          '# in "other_maks", and have them automatically apply'         \
-          'all: $(CUSTOM_TARGETS) $(MONOLITH) $(BASE)' >> "$tmp_file"
+        printf '%s\n' ''   \
+          "other_maks := \$(filter-out \$(config_mak),\$(wildcard *.mak))" \
+          "-include \$(other_maks)"                                        \
+          ""                                                               \
+          "# by having all:  last, it is possible to add CUSTOM_TARGETS"   \
+          "# in 'other_maks', and have them automatically apply"           \
+          "all: \$(CUSTOM_TARGETS) \$(MONOLITH) \$(BASE)" >> "$tmp_file"
 
         touch -r "$latest" "$tmp_file"
 
@@ -144,7 +143,7 @@ main(){
       ;;
     esac
 
-  done < <(find -L "$_template_dir" -type f -print0)
+  done < <(find -L "$_template_dir" -type f ! -path "*/Makefile.d" -print0)
 
   [[ -f "$_target_dir"/GNUmakefile && ! "${_o[update]}" ]] \
     && make -C "$_target_dir"

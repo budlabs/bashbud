@@ -7,7 +7,7 @@ AUTHOR         := bud
 ORGANISATION   := budlabs
 LICENSE        := MIT
 CONTACT        := https://github.com/budlabs/bashbud
-USAGE          := bashbud [OPTIONS] [DIRECTORY]
+USAGE          := bashbud --template TEMPLATE [OPTIONS] [DIRECTORY]
 
 .PHONY: makefile
 makefile: data/default/GNUmakefile
