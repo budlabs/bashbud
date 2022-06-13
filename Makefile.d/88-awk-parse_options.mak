@@ -2,7 +2,7 @@ $(CACHE_DIR)/options_in_use $(getopt) &: $(OPTIONS_FILE) | $(CACHE_DIR)/
 	@$(info parsing $(OPTIONS_FILE))
 	mkdir -p $(DOCS_DIR)/options
 	gawk '
-	BEGIN { RS=" |\\n" }
+	BEGIN { RS=" |\\n" ; longest = length("version")}
 
 	/./ {
 		if (match($$0,/^\[?--([^][|[:space:]]+)(([|]-)(\S))?\]?$$/,ma)) 

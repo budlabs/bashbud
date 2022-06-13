@@ -6,11 +6,6 @@
 SHELL               := /bin/bash
 CUSTOM_TARGETS       =
 
-PREFIX              := /usr
-CREATED             := $(UPDATED)
-ORGANISATION        :=
-CONTACT             := address
-
 NAME                := $(notdir $(realpath .))
 VERSION             := 0
 UPDATED             := $(shell date +'%Y-%m-%d')
@@ -156,23 +151,6 @@ $(MONOLITH): $(print_version) $(NAME) $(print_help) $(function_files) $(getopt)
 	
 	chmod +x $@
 
-$(CACHE_DIR)/copyright.txt: $(config_mak)
-	@$(info making $@)
-	year_created=$(CREATED) year_created=$${year_created%%-*}
-	year_updated=$$(date +'%Y')
-	author="$(AUTHOR)" org=$(ORGANISATION)
-
-	copy_text="Copyright (c) "
-
-	((year_created == year_updated)) \
-		&& copy_text+=$$year_created   \
-		|| copy_text+="$${year_created}-$${year_updated}"
-
-	[[ $$author ]] && copy_text+=", $$author"
-	[[ $$org ]]    && copy_text+=" of $$org  "
-
-	printf '%s\n' \
-		"$$copy_text" "SPDX-License-Identifier: $(LICENSE)" > $@
 # if a file in docs/options contains more than
 # 2 lines, it will get added to the file .cache/long_help.md
 # like this:
@@ -302,7 +280,7 @@ $(CACHE_DIR)/options_in_use $(getopt) &: $(OPTIONS_FILE) | $(CACHE_DIR)/
 	@$(info parsing $(OPTIONS_FILE))
 	mkdir -p $(DOCS_DIR)/options
 	gawk '
-	BEGIN { RS=" |\\n" }
+	BEGIN { RS=" |\\n" ; longest = length("version")}
 
 	/./ {
 		if (match($$0,/^\[?--([^][|[:space:]]+)(([|]-)(\S))?\]?$$/,ma)) 
