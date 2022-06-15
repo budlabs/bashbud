@@ -4,9 +4,9 @@ $(BASE): $(getopt) $(print_help) $(print_version) $(CACHE_DIR)/got_func
 		printf '%s\n' '$(SHBANG)' '' 
 
 		[[ -f $${pv:=$(print_version)} ]] \
-			&& grep -vhE -e '^#!/' $(print_version) | sed '0,/2/s//3/'
+			&& grep -vhE -e '^#!/' $(print_version) | sed '0,/2/s//$$\{__stderr:-2\}/'
 		[[ -f $${ph:=$(print_help)} ]] \
-			&& grep -vhE -e '^#!/' $(print_help)    | sed '0,/2/s//3/'
+			&& grep -vhE -e '^#!/' $(print_help)    | sed '0,/2/s//$$\{__stderr:-2\}/'
 
 		echo
 
