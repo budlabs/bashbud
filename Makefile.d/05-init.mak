@@ -1,5 +1,7 @@
 CUSTOM_TARGETS       =
 
+PREFIX              ?= /usr
+
 NAME                := $(notdir $(realpath .))
 VERSION             := 0
 UPDATED             := $(shell date +'%Y-%m-%d')
