@@ -185,8 +185,8 @@ $(help_table): $(long_help)
 			&& desc=$$(head -qn1 $(DOCS_DIR)/options/$$option) \
 			|| desc='short description  '
 
-		paste <(echo "$$frag") <(echo "$$desc") | tr -d '\t\\'
-	done > $@
+		paste <(echo "$$frag") <(echo "$$desc")
+	done | tr -d '\t\\' > $@
 
 $(print_version): $(config_mak) | $(CACHE_DIR)/
 	@$(info making $@)
